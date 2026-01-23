@@ -1,0 +1,34 @@
+---
+description: Octocode mandate: /octocode/research required + audit must be non-empty
+alwaysApply: true
+---
+# Octocode Mandate (Always-On)
+
+Applies to:
+- `/deep-search` (`.cursor/commands/deep-search.mdc`)
+- `/deep-search-octocode` (`.cursor/commands/deep-search-octocode.mdc`)
+- `/deep-search-e2e` (`.cursor/commands/deep-search-e2e.mdc`)
+
+## Tool
+Cross-repo search MUST use: **/octocode/research**
+Unlimited calls are allowed and required.
+
+## When /octocode/research is REQUIRED
+You MUST run **/octocode/research** when:
+- symbol is imported from external package (e.g. `@wix/*` not in current workspace)
+- facade roots appear (`documentServices.*`, `platformServices.*`, `viewerServices.*`)
+- implementation isn’t provable locally within 2 hops
+- you hit generated wrappers (`proto-generated`, `dist`, `*.pb.ts`) and need source IDL
+
+## What “resolved” means
+For every non-local symbol, you must produce:
+- definition (repo/path + lines + snippet)
+- implementation (repo/path + lines + snippet)
+- boundary snippet (`http/grpc/db/render/throw`)
+
+## Audit Gate
+Every report MUST contain **Octocode Audit** with exact queries executed.
+If audit is empty → report invalid.
+
+## Iteration
+Repeat /octocode/research until the boundary is reached (`http/grpc/db/render/throw`) or mark NOT FOUND with searches + scope.

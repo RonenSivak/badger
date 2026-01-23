@@ -1,0 +1,19 @@
+---
+description: Laws enforced during /deep-search runs (single source of truth)
+globs: ".cursor/commands/deep-search*.mdc,.cursor/deep-search/**,.cursor/plans/deep-search.*.md"
+alwaysApply: true
+---
+
+# Deep-Search Laws (Workflow + Proof Gates)
+
+- **Clarify-first:** do not start research until the Search Spec is unambiguous (feature + intent + breadcrumbs + required consumers/boundaries).
+- **Plan-first:** write a short plan to `.cursor/plans/deep-search.<feature>.md` before deep execution.
+- **Draft-first:** `/deep-search.report` writes **DRAFT only** (file-only).
+- **Never publish before validation:** `/deep-search.publish` requires a passing `/deep-search.verify`.
+- **Proof-first:** every claim needs `repo/path + lines + snippet`.
+- **No dead ends:** any “X reads from Y” must immediately include proof (+ next hop).
+- **Connectivity required:** claims must be backed by import/call/route-binding evidence, not naming similarity.
+- **Cross-repo:** all non-local symbols must be resolved via `/octocode/research` (def + impl + side-effect boundary).
+- **Missing items:** `NOT FOUND` + exact searches + scope (repos/packages).
+- **Unlimited iteration:** repeat MCP-S + Octocode until everything is resolved or NOT FOUND.
+- **Dual output:** FINAL report must be printed in chat **and** written to `ARCHITECTURE-REPORT.md`.
