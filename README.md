@@ -1,0 +1,1 @@
+# cursor-deep-search-kit
