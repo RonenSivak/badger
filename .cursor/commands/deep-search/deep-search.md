@@ -1,6 +1,6 @@
 ---
 description: Deep forensic E2E search (clarify → resolve → draft → verify → publish)
-globs: ".cursor/commands/deep-search*.mdc"
+globs: ".cursor/commands/deep-search/**/*.md"
 alwaysApply: false
 ---
 
@@ -11,15 +11,15 @@ alwaysApply: false
 **Agent loop:** clarify → plan → execute → verify → publish.
 
 ## Enforces (rules)
-- [Deep-Search Laws](../rules/deep-search-laws.mdc)
-- [Octocode Mandate](../rules/octocode-mandate.mdc)
+- [Deep-Search Laws](../../rules/deep-search/deep-search-laws.mdc)
+- [Octocode Mandate](../../rules/deep-search/octocode-mandate.mdc)
 
 ## Delegates to (sub-commands)
-- `/deep-search.clarify`  → `.cursor/commands/deep-search.clarify.mdc`
-- `/deep-search.resolve`  → `.cursor/commands/deep-search.resolve.mdc`
-- `/deep-search.report`   → `.cursor/commands/deep-search.report.mdc` (DRAFT ONLY)
-- `/deep-search.verify`   → `.cursor/commands/deep-search.verify.mdc`
-- `/deep-search.publish`  → `.cursor/commands/deep-search.publish.mdc` (FINAL)
+- `/deep-search.clarify`  → `.cursor/commands/deep-search/deep-search.clarify.md`
+- `/deep-search.resolve`  → `.cursor/commands/deep-search/deep-search.resolve.md`
+- `/deep-search.report`   → `.cursor/commands/deep-search/deep-search.report.md` (DRAFT ONLY)
+- `/deep-search.verify`   → `.cursor/commands/deep-search/deep-search.verify.md`
+- `/deep-search.publish`  → `.cursor/commands/deep-search/deep-search.publish.md` (FINAL)
 
 ---
 

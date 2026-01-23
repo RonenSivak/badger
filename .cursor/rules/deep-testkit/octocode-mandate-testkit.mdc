@@ -1,0 +1,20 @@
+---
+description: Force /octocode/research for non-local symbols during /testkit
+globs:
+alwaysApply: false
+---
+
+# Octocode Mandate (Testkit) 🛰️
+
+A symbol is “non-local” if you cannot prove its implementation within the current package quickly.
+
+Mandatory `/octocode/research` triggers:
+- any import from `@wix/*` that isn’t implemented in the current workspace
+- WDS testkit factories/classes you rely on (prove canonical usage)
+- any shared BaseDriver / shared driver helper you plan to reuse
+- ambassador builders / generated client helpers
+
+Rule:
+- local search is only hop-1 discovery
+- cross-repo proof MUST be done via `/octocode/research`
+- paste queries + proof snippets into `MCP-EVIDENCE.md`

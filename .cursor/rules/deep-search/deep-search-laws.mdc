@@ -1,6 +1,6 @@
 ---
 description: Laws enforced during /deep-search runs (single source of truth)
-globs: ".cursor/commands/deep-search*.mdc,.cursor/deep-search/**,.cursor/plans/deep-search.*.md"
+globs: ".cursor/commands/deep-search/**,.cursor/deep-search/**,.cursor/plans/deep-search.*.md"
 alwaysApply: true
 ---
 
