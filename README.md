@@ -8,7 +8,7 @@ Use it when you want **end-to-end, cross-repo architecture understanding** with:
 - 🧪 **validation** that the hops actually connect (imports/calls/bindings)
 - 📝 a final report **printed in chat + saved to a file**
 
-> Built using Cursor’s **Commands / Rules / Skills** conventions. :contentReference[oaicite:0]{index=0}
+> Built using Cursor’s **Commands / Rules / Skills** conventions.
 
 ---
 
