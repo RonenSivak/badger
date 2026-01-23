@@ -1,34 +1,41 @@
 ---
-description: Octocode mandate: /octocode/research required + audit must be non-empty
-alwaysApply: true
+description: Force /octocode/research for non-local symbols and SDK generation chains
+globs:
+alwaysApply: false
 ---
-# Octocode Mandate (Always-On)
 
-Applies to:
-- `/deep-search` (`.cursor/commands/deep-search.mdc`)
-- `/deep-search-octocode` (`.cursor/commands/deep-search-octocode.mdc`)
-- `/deep-search-e2e` (`.cursor/commands/deep-search-e2e.mdc`)
+# Octocode Mandate 🛰️ (Non-Negotiable)
 
-## Tool
-Cross-repo search MUST use: **/octocode/research**
-Unlimited calls are allowed and required.
+## When Octocode is REQUIRED
+Run **`/octocode/research`** as soon as any of these triggers appear:
+- external import (`@wix/*`) not implemented in the current workspace
+- service facade (`documentServices.*`, `viewerServices.*`, `platformServices.*`)
+- implementation not found within 2 local hops
+- generated artifacts (`proto-generated`, `dist`, `*.pb.ts`)
+- SDK signals:
+  - `@wix/ambassador-*`
+  - imports from `.../rpc` or `.../types`
+  - `ctx.ambassador.request(...)`
+- Metro signals:
+  - “metro”, “package generation”, “fqdn”, `(.wix.api.entity)`, “platformization”
 
-## When /octocode/research is REQUIRED
-You MUST run **/octocode/research** when:
-- symbol is imported from external package (e.g. `@wix/*` not in current workspace)
-- facade roots appear (`documentServices.*`, `platformServices.*`, `viewerServices.*`)
-- implementation isn’t provable locally within 2 hops
-- you hit generated wrappers (`proto-generated`, `dist`, `*.pb.ts`) and need source IDL
+## What Octocode must return (minimum)
+For each required symbol:
+- **Definition**: repo/path + lines + snippet
+- **Implementation**: repo/path + lines + snippet
+- **Boundary**: a real side-effect snippet (network/persist/render/throw)
 
-## What “resolved” means
-For every non-local symbol, you must produce:
-- definition (repo/path + lines + snippet)
-- implementation (repo/path + lines + snippet)
-- boundary snippet (`http/grpc/db/render/throw`)
+## SDK Generation Chain Rule
+If `@wix/ambassador-*` (or equivalent SDK) appears, you must also Octocode-resolve:
+- source IDL (proto/openapi/graphql)
+- generator trigger/config (“package generation”)
+- runtime transport implementation (auth/baseUrl/retries + execution)
+- types generation proof
 
-## Audit Gate
-Every report MUST contain **Octocode Audit** with exact queries executed.
-If audit is empty → report invalid.
+## Logging requirement
+All queries and excerpts must be appended to:
+`.cursor/deep-search/<feature>/octocode-queries.md`
 
-## Iteration
-Repeat /octocode/research until the boundary is reached (`http/grpc/db/render/throw`) or mark NOT FOUND with searches + scope.
+If Octocode is unavailable:
+- downgrade claims to **NOT FOUND**
+- list the exact intended queries + scope that would have been searched

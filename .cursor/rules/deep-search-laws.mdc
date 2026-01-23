@@ -17,3 +17,5 @@ alwaysApply: true
 - **Missing items:** `NOT FOUND` + exact searches + scope (repos/packages).
 - **Unlimited iteration:** repeat MCP-S + Octocode until everything is resolved or NOT FOUND.
 - **Dual output:** FINAL report must be printed in chat **and** written to `ARCHITECTURE-REPORT.md`.
+- **SDK Generation Chain is mandatory** when any SDK is mentioned:
+  - IDL source → generator trigger/config → generated `/rpc` + `/types` → runtime transport boundary (+ auth/baseUrl/retries).

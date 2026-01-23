@@ -8,7 +8,7 @@ alwaysApply: false
 
 **Purpose:** produce a **provable, cross-repo E2E** architecture report (chat + file), with **mandatory validation** before publish.
 
-**Must follow Cursor’s agent loop:** clarify → plan → execute → verify → publish.
+**Agent loop:** clarify → plan → execute → verify → publish.
 
 ## Enforces (rules)
 - [Deep-Search Laws](../rules/deep-search-laws.mdc)
@@ -29,6 +29,7 @@ Run `/deep-search.clarify` until a complete **Search Spec** exists:
 - feature + intent (E2E understand | debug | clone/add)
 - 1–3 breadcrumbs
 - required consumers + boundaries (network/persistence/render/throw)
+- **SDKs involved (if any)** (e.g. `@wix/ambassador-*`, `ctx.ambassador.request`, `/rpc`, `/types`)
 
 Persist:
 - `.cursor/deep-search/<feature>/SEARCH-SPEC.md`
@@ -36,17 +37,29 @@ Persist:
 ---
 
 ## Step 1 — Plan (MANDATORY) 🗺️
-Write a short execution plan before deep execution and persist it:
+Write a short execution plan and persist it:
 - `.cursor/plans/deep-search.<feature>.md`
 
-Plan shape: contract → write path → storage → read path → consumers → risks → validation.
+Plan must include:
+- contract chain (source IDL → generated → runtime)
+- write path E2E
+- read path E2E
+- SDK generation chain (if any)
+- verification gates
 
 ---
 
 ## Step 2 — Deep Research Loop (MANDATORY, UNLIMITED) 🌍🛰️
 Run `/deep-search.resolve` repeatedly until:
-- all external/non-local/uncertain symbols are **resolved** OR marked **NOT FOUND** (with searches + scope)
-- **every** non-local symbol is resolved via **`/octocode/research`** (def + impl + side-effect boundary)
+- **ALL** external/non-local/uncertain symbols are **resolved** OR marked **NOT FOUND** (with searches + scope)
+- **ALL** non-local symbols are resolved via **`/octocode/research`** (def + impl + side-effect boundary)
+
+🚨 **SDK Generation Chain Gate**
+If any SDK/client is mentioned (especially `@wix/ambassador-*`), you MUST also resolve:
+- source IDL that generated it (proto/openapi/graphql)
+- generator/config & “package generation” trigger
+- runtime transport boundary (auth/baseUrl/retries + request execution)
+- types package proof (generated from same IDL)
 
 Persist evidence:
 - `.cursor/deep-search/<feature>/trace-ledger.md`
@@ -59,19 +72,20 @@ Persist evidence:
 Run `/deep-search.report` to generate:
 - `.cursor/deep-search/<feature>/ARCHITECTURE-REPORT.draft.md`
 
-**Do NOT print the draft in chat.**
+**Do NOT print the draft in chat.** (Write to files to avoid context loss.)
 
 ---
 
 ## Step 4 — Verify (MANDATORY, BEFORE ANY PUBLISH) ✅
 Run `/deep-search.verify` against the DRAFT to prove:
-- edges are connected by **imports/calls/route-bindings**, not naming similarity
-- every “flow arrow” has at least one snippet-backed proof (or NOT FOUND)
+- edges connect by **imports/calls/bindings**, not naming similarity
+- every flow arrow has snippet-backed proof (or NOT FOUND)
+- **SDK Generation Chain is connected end-to-end** (IDL → generated → runtime)
 
 Outputs:
 - `.cursor/deep-search/<feature>/VALIDATION-REPORT.md`
 
-If verification finds broken/unsupported claims:
+If broken claims exist:
 1) fix ledger/report
 2) re-run `/deep-search.verify`
 Repeat until **PASS** or items become **NOT FOUND**.
@@ -86,8 +100,8 @@ Run `/deep-search.publish`:
 ---
 
 ## Hard-fail conditions 🚫
-- publishing attempted without a **passing** `/deep-search.verify`
-- `.cursor/deep-search/<feature>/octocode-queries.md` is empty (Octocode not used when required)
-- any non-local symbol appears in the report without Octocode **def + impl + boundary**
-- any E2E arrow is asserted without snippet-backed evidence (or NOT FOUND)
-- verification fails and publish proceeds anyway
+- publish attempted without a **passing** `/deep-search.verify`
+- `octocode-queries.md` is empty (Octocode not used when required)
+- any non-local symbol lacks Octocode **def + impl + boundary**
+- any SDK mention lacks **SDK Generation Chain proof**
+- any E2E arrow asserted without evidence (or NOT FOUND)
