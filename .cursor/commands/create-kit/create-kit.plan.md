@@ -20,7 +20,7 @@ Use the KIT SPEC (from clarify) to generate:
 Plan rules:
 - Keep command files procedural (workflow steps).
 - Keep rules short + enforceable (gates/laws).
-- Use modular subcommands to reduce context bloat. :contentReference[oaicite:1]{index=1}
-- Prefer verifiable goals + verification steps (lint/tests/graph wiring). :contentReference[oaicite:2]{index=2}
+- Use modular subcommands to reduce context bloat.
+- Prefer verifiable goals + verification steps (lint/tests/graph wiring). 
 
 End with: “Run `/create-kit.scaffold`.”
