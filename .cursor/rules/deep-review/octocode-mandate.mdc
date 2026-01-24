@@ -1,0 +1,21 @@
+---
+description: Force /octocode/research when symbols aren’t provable locally
+globs:
+alwaysApply: false
+---
+
+# Octocode Mandate
+
+Trigger `/octocode/research` immediately when ANY is true:
+- import comes from external package not in the current workspace
+- you hit generated code (proto-generated/dist/*.pb.ts) and need the source contract
+- you can’t show implementation within 2 hops locally
+- you’re relying on an SDK/client wrapper and need the generator source + runtime boundary
+
+Octocode proof requirement:
+- definition snippet (repo/path + lines)
+- implementation snippet (repo/path + lines)
+- side-effect boundary snippet (network/persistence/render/throw)
+
+If Octocode can’t find it:
+- NOT FOUND + exact queries + scope + closest candidates
