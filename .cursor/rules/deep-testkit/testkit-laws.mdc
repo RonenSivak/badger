@@ -1,53 +1,25 @@
 ---
-description: Laws enforced during /testkit runs (BDD + DRY + plain-English specs + mandatory MCP proof)
+description: Laws enforced during /testkit runs (BDD + plain-English specs + ALWAYS GREEN gates)
 globs:
 alwaysApply: false
 ---
 
 # Testkit Laws 🚨🧪
 
-## Workflow gates
-- Never implement before Resolve: `/testkit.implement` requires non-empty `MCP-EVIDENCE.md`.
-- Never publish before Verify: `/testkit.publish` requires PASS `VALIDATION-REPORT.md`.
+## ALWAYS GREEN gates (hard)
+- Never implement before Preflight:
+  - `/testkit.implement` requires PASS `PREFLIGHT.md`
+- Never publish before Verify:
+  - `/testkit.publish` requires PASS `VALIDATION-REPORT.md`
+- Repair loop is mandatory:
+  - if lint/tsc/tests fail → fix → rerun until PASS or explicit NOT RUN blocker
 
-## Spec readability (hard)
-- `.spec.ts(x)` MUST read like plain English:
-  - Allowed in specs: `driver.given.*`, `driver.when.*`, `driver.get.*` + `expect(...)`
-  - Forbidden in specs:
-    - `querySelector`, `getBy*`, `container`, `baseElement`, `wrapper`, raw DOM plumbing
-    - asserting internal structure by hand (DOM traversal) instead of driver queries
-- If you need “existence” checks (data-hook, element present), add driver queries like:
-  - `driver.get.pageTitle.exists()`
-  - `driver.get.getStartedLink.href()`
-  - `driver.get.dataHook.pageTitleExists()`
+## Determinism (hard)
+- installs must be lockfile-based (immutable/ci mode):
+  - yarn `--immutable`, pnpm `--frozen-lockfile`, npm `ci`
 
-> Goal: keep tests behavior-focused and usage-like. :contentReference[oaicite:2]{index=2}
-
-## Driver API shape (hard)
-- Driver MUST be namespaced:
-  - `driver.given.<state>()`
-  - `driver.when.<action>()`
-  - `driver.get.<query>()`
-- Forbidden: flat methods like `driver.getTitleText()` / `driver.clickSave()`.
-
-## Comments (hard)
-- No comments in:
-  - `.spec.ts(x)`
-  - `*.driver.ts`
-  - builders
-- Use clear naming instead of comments.
-
-## Builders (hard)
-- Builders must live in a dedicated folder (chosen by convention from proven examples):
-  - Preferred: `test/builders/` (or `__tests__/builders/`) in the same package
-- Forbidden: builders defined inside driver/spec files.
-- If Ambassador builders exist and are proven, use them instead of writing new ones.
-
-## DRY rules
-- If 3+ tests repeat the same init/render/stubs → extract `setup()` helper.
-- If 2+ drivers share helper logic → extract `BaseDriver` or shared helper module.
-- `beforeEach` should be minimal (state reset + driver instantiation), not hiding behavioral differences. :contentReference[oaicite:3]{index=3}
-
-## Tooling (mandatory)
-- MCP-S is mandatory for classification + internal docs hints.
-- Octocode is mandatory for cross-repo resolution (`/octocode/research`) for non-local symbols.
+## Everything else remains:
+- specs are plain-English (driver-only)
+- no comments
+- builders in dedicated folder
+- MCP-S + Octocode mandatory for non-local symbols
