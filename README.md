@@ -1,26 +1,33 @@
-# 🧬 Cursor Deep Search Kit 🔎✨
+# 🦡 Badger
 
-A drop-in **`.cursor/` kit** that adds one main workflow command: **`/deep-search`**.
+A drop-in **`.cursor/` kit** with proof-driven workflows for code understanding, debugging, implementation, review, and testing.
 
-Use it when you want **end-to-end, cross-repo architecture understanding** with:
-- ✅ **proof in code** (repo/path + lines + snippet)
-- 🌍 **cross-repo resolution** via **`/octocode/research`**
-- 🧪 **validation** that the hops actually connect (imports/calls/bindings)
-- 📝 a final report **printed in chat + saved to a file**
-
-> Built using Cursor’s **Commands / Rules / Skills** conventions.
+> **Badger** — persistent, digs deep, won't stop until it finds it.
 
 ---
 
-## 🎯 What it does
+## 🎯 What's inside
 
-When you run **`/deep-search`**, the agent must follow this flow:
+| Command | Purpose |
+|---------|---------|
+| `/deep-search` | E2E architecture forensics with cross-repo resolution |
+| `/debug` | Cross-ecosystem debugging with hypothesis trees |
+| `/implement` | Implementation driven by deep-search outputs |
+| `/review` | Code review with impact sweep + pattern conformance |
+| `/testkit` | BDD test generation using proven patterns |
+| `/create-kit` | Meta-workflow to create new kits |
 
-1) 🧠 **Clarify** (ask questions until the search spec is crystal clear)
-2) 🗺️ **Resolve** (iterate MCP-S + Octocode as much as needed across repos)
-3) 🧾 **Draft** (write a draft report to a file)
-4) ✅ **Verify** (prove each hop links up codewise; fix anything wrong)
-5) 📣 **Publish** (print the final report to chat + write it to a final file)
+All workflows share a common pattern:
+**Clarify → Plan → Execute → Verify → Publish**
+
+---
+
+## ✨ Core principles
+
+- ✅ **Proof in code** — every claim needs `repo/path + lines + snippet`
+- 🌍 **Cross-repo resolution** — via MCP-S + Octocode
+- 🧪 **Verify-before-publish** — mandatory validation gate
+- 📝 **Dual output** — chat + file artifacts
 
 ---
 
@@ -34,116 +41,152 @@ Your Cursor setup needs to support:
 
 ### MCPs / Tools
 This kit assumes these are available in your environment:
-- **MCP-S** (`user-mcp-s-mcp`) — classification + internal docs/spec hints
-- **Octocode** (`user-octocode-mcp`) — cross-repo resolver
-  - trigger via: **`/octocode/research`**
+- **MCP-S** — classification + internal docs/spec hints
+- **Octocode** — cross-repo resolver (trigger via `/octocode/research`)
 
-If MCPs aren’t available, cross-repo items must be marked **NOT FOUND** (with searches + scope).
+If MCPs aren't available, cross-repo items must be marked **NOT FOUND** (with searches + scope).
 
 ---
 
 ## 📦 Install
 
-Copy this repo’s **`.cursor/`** folder into any target project root:
+Copy this repo's **`.cursor/`** folder into any target project root:
 
-1. Copy: `cursor-deep-search-kit/.cursor` → `your-project/.cursor`
+1. Copy: `badger/.cursor` → `your-project/.cursor`
 2. Reload Cursor (so it picks up the commands).
 
-That’s it ✅
+That's it ✅
 
 ---
 
-## 🚀 Quickstart
+## 🚀 Workflows
 
-In Cursor chat:
+### `/deep-search` — Architecture Forensics 🔍
 
-1) Run: `/deep-search`
-
-2) When asked “What would you like to deep-search?”, paste something like:
-
-```text
-Feature: <feature-name>
-
-Intent: E2E understanding | debug | clone/add similar feature
-
-Breadcrumbs:
-- <string/type/endpoint/config key 1>
-- <string/type/endpoint/config key 2>
-
-Must include:
-- cross-repo consumers (prove or NOT FOUND)
-- SDK/client generation source + runtime transport boundary
+```
+/deep-search
 ```
 
----
+Flow: **Clarify → Plan → Resolve → Draft → Verify → Publish**
 
-## 🧠 How to think about inputs (so it goes fast)
-
-### ✅ Good breadcrumbs
-- schema field/type names  
-- endpoint paths / RPC names  
-- config keys  
-- error codes  
-- unique strings  
-
-### 🔍 How the agent searches
-The agent will pick one breadcrumb and do **DFS** to a real boundary:
-- 🌐 network call  
-- 💾 persistence read/write  
-- 🎨 render boundary  
-- 💥 thrown error boundary  
-
-…and then do **BFS** around boundaries to find siblings (other consumers/producers).
+Use when you want E2E architecture understanding with proof. Outputs:
+- `ARCHITECTURE-REPORT.md` — final provable report
+- `trace-ledger.md` — all external symbols + proof chain
 
 ---
 
-## 🧰 What’s in this kit
+### `/debug` — Cross-Ecosystem Debugging 🐛
 
-### Commands (`.cursor/commands/`)
-- `deep-search.mdc` — 🧭 Orchestrator (Clarify → Resolve → Draft → Verify → Publish)
-- `deep-search.clarify.mdc` — 🧠 Clarification loop (build the Search Spec)
-- `deep-search.resolve.mdc` — 🌍 MCP-S + Octocode proof loop (unlimited iterations)
-- `deep-search.report.mdc` — 🧾 Writes DRAFT report (file-only)
-- `deep-search.verify.mdc` — ✅ Validates connectivity (imports/calls/bindings), writes validation report
-- `deep-search.publish.mdc` — 📣 Publishes FINAL report (chat + file), only after verify passes
+```
+/debug
+```
 
-### Rules (`.cursor/rules/`)
-- `deep-search-laws.mdc` — 🚨 hard gates (draft → verify → publish, proof rules, NOT FOUND discipline)
-- `octocode-mandate.mdc` — 🛰️ forces `/octocode/research` for non-local symbols
+Flow: **Clarify → Trace → Resolve → Hypothesize → Fix Plan → Verify → Publish**
 
-> This kit is deep-search only, so we intentionally don’t ship extra generic rules.
-
-### Skills
-- `.cursor/SKILL.md` — quick overview for agents
-- `.cursor/skills/octocode-research/SKILL.md` — how to query + record Octocode proof
-- `.cursor/skills/mcp-s/SKILL.md` — how to classify symbols + extract doc hints
+Use when you need to debug across repos with evidence. Outputs:
+- Hypothesis tree with experiments
+- Fix plan with verification signals
 
 ---
 
-## 🏗️ What gets generated during a run
+### `/implement` — Implementation from Deep-Search 🔨
 
-Per feature run, the agent will create:
-- `.cursor/plans/deep-search.<feature>.md` — the plan
-- `.cursor/deep-search/<feature>/SEARCH-SPEC.md` — clarified search spec (inputs + constraints)
-- `.cursor/deep-search/<feature>/octocode-queries.md` — exact Octocode queries (incl. verify)
-- `.cursor/deep-search/<feature>/mcp-s-notes.md` — MCP-S classifications + doc hints
-- `.cursor/deep-search/<feature>/trace-ledger.md` — ALL external/non-local symbols + proof chain
-- `.cursor/deep-search/<feature>/ARCHITECTURE-REPORT.draft.md` — draft report (pre-verify)
-- `.cursor/deep-search/<feature>/VALIDATION-REPORT.md` — broken claims + verified edges list
-- `.cursor/deep-search/<feature>/ARCHITECTURE-REPORT.md` — final report (published)
+```
+/implement
+```
+
+Flow: **Clarify → Load → Plan → Execute → Verify → Publish**
+
+Requires an existing `/deep-search` run. Outputs:
+- PR-ready implementation
+- Updated deep-search artifacts
 
 ---
 
-## ✅ What “Verify” actually checks (why this kit is strict)
+### `/review` — Deep Code Review 📋
+
+```
+/review
+```
+
+Flow: **Clarify → Scan → Conform → Impact → Resolve → Packet → Verify → Publish**
+
+Use for reviewing changes with impact analysis. Outputs:
+- Review packet with risk assessment (HIGH/MOD/LOW)
+
+---
+
+### `/testkit` — BDD Test Generation 🧪
+
+```
+/testkit
+```
+
+Flow: **Clarify → Resolve → Implement → Verify → Publish**
+
+Use to generate tests aligned to proven patterns. Outputs:
+- Drivers/builders/tests
+- MCP Evidence section
+
+---
+
+### `/create-kit` — Create New Workflow Kits 🛠️
+
+```
+/create-kit
+```
+
+Flow: **Clarify → Plan → Scaffold → Verify → Publish**
+
+Use to create new reusable Cursor workflow kits.
+
+---
+
+## 🧰 Kit structure
+
+```
+.cursor/
+├── commands/
+│   ├── deep-search.md      # Main orchestrator
+│   ├── deep-search/        # Sub-commands (clarify, resolve, verify, etc.)
+│   ├── debug.md
+│   ├── debug/
+│   ├── implement.md
+│   ├── implement/
+│   ├── review.md
+│   ├── review/
+│   ├── testkit.md
+│   ├── testkit/
+│   ├── create-kit.md
+│   └── create-kit/
+├── rules/
+│   ├── deep-search/        # deep-search-laws + octocode-mandate
+│   ├── debug/              # debug-laws + octocode-mandate
+│   ├── implement/          # implement-laws
+│   ├── review/             # review-laws + octocode-mandate
+│   ├── testkit/            # testkit-laws + octocode-mandate
+│   └── create-kit/         # create-kit-laws + frontmatter-guard
+└── skills/
+    ├── octocode-research/  # Cross-repo resolution
+    ├── mcp-s/              # Classification + docs hints
+    └── ...
+```
+
+**Command paths are now clean:**
+- `/badger/deep-search` (not `/badger/deep-search/deep-search`)
+
+---
+
+## ✅ What "Verify" actually checks
 
 This is the whole point:
 
-- “File exists” ❌ not enough  
-- We validate that hops are connected by code, for example:
-  - import → usage  
-  - call site → implementation  
-  - route/RPC binding → handler  
-  - cross-repo claim → Octocode proof  
+- "File exists" ❌ not enough
+- We validate that hops are connected by code:
+  - import → usage
+  - call site → implementation
+  - route/RPC binding → handler
+  - cross-repo claim → Octocode proof
 
 If something is ambiguous, it must become:
 - **NOT FOUND**
@@ -154,22 +197,23 @@ If something is ambiguous, it must become:
 
 ## 🧯 Troubleshooting
 
-### “`/deep-search` not found”
-- Confirm the files are in: `.cursor/commands/`
+### "Command not found"
+- Confirm files are in: `.cursor/commands/`
 - Reload Cursor after copying `.cursor/`
 
-### “Octocode/MCP-S didn’t run”
+### "Octocode/MCP-S didn't run"
 - Confirm MCPs are enabled in your environment
-- Rules require Octocode for non-local symbols; if it’s unavailable you should see **NOT FOUND + searches**
+- Rules require Octocode for non-local symbols; if unavailable you should see **NOT FOUND + searches**
 
 ### Verification failed
-- Good! That means it caught something before you trusted it 💪  
+- Good! That means it caught something before you trusted it 💪
 - Fix pointers/edges, re-run verify, then publish.
 
 ---
 
-## 🤝 Contributing (optional)
+## 🤝 Contributing
+
 Keep changes focused:
-- don’t bloat rules
+- don't bloat rules
 - prefer referencing files over copying long text
 - keep commands procedural and reusable
