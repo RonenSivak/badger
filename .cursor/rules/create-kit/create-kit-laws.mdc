@@ -1,0 +1,12 @@
+---
+description: Laws enforced during /create-kit runs
+globs:
+alwaysApply: false
+---
+
+# Create-Kit Laws
+
+- Never publish before verify: `/create-kit.publish` requires PASS from `/create-kit.verify`.
+- Plan first: `/create-kit.plan` must exist and generate FILE-MAP before scaffolding. :contentReference[oaicite:4]{index=4}
+- Modular by default: prefer multiple smaller commands over one huge command to reduce context loss. :contentReference[oaicite:5]{index=5}
+- Verifiable outputs: every kit should include at least one verification gate step. :contentReference[oaicite:6]{index=6}

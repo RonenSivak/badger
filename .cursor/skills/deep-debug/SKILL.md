@@ -4,7 +4,7 @@
 Turn a symptom into a proven E2E root-cause + fix plan across repos.
 
 ## Strong signals to prefer
-- Trace IDs / span linkage (best for E2E). :contentReference[oaicite:6]{index=6}
+- Trace IDs / span linkage (best for E2E).
 - Logs correlated to trace/span IDs (when available).
 - Error codes + exact strings.
 - Explicit route/RPC bindings.
