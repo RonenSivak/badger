@@ -1,22 +1,41 @@
 ---
-description: Publish the final review to chat + write the final packet (only after verify passes)
+description: Publish review results to chat + final files (simple triage + next actions)
 globs:
 alwaysApply: false
 ---
 
-# /deep-review.publish — Publish Final
+# /deep-review.publish — SIMPLE Output + Files
 
 Pre-req:
-- VERIFICATION.md exists and is PASS (or explicitly lists remaining NOT FOUND with searches + scope)
+- `/deep-review.verify` PASS
 
-Do:
-1) Produce final chat output:
-   - Summary
-   - Top risks + proofs
-   - Required changes before merge
-   - Test gaps
-   - Verification status (commands run + result)
-   - Remaining NOT FOUND (if any)
+Inputs:
+- CONFORMANCE.md
+- CONSUMER-MATRIX.md
+- VERIFICATION.md
+- REVIEW-PACKET.md (final)
 
-2) Write `.cursor/deep-review/<target>/REVIEW-PACKET.md` (final)
-3) Keep it high-signal, reviewer-ready.
+Chat output format (MANDATORY):
+1) Issues Found
+- HIGH: bullet list (each with 1-line fix)
+- MODERATE: bullet list
+- LOW: bullet list
+
+2) What I did (short)
+- conformance scan (N golden examples)
+- impact sweep (N consumers)
+- verification results (what ran, what passed)
+- remaining NOT FOUND (if any)
+
+3) What do you want to do next?
+Options:
+[A] Fix HIGH now
+[B] Fix HIGH + MODERATE
+[C] Ignore item(s) with rationale (I’ll record it)
+[D] Escalate to owner/team
+[E] Add guardrails (flag/compat layer) + tests
+[F] Re-run with wider scope (more repos/services)
+
+Files:
+- Write FINAL packet to `.cursor/deep-review/<target>/REVIEW-PACKET.md`
+- Keep all supporting artifacts

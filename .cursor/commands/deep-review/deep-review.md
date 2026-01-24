@@ -1,5 +1,5 @@
 ---
-description: Deep review a change (clarify → scan → impact-sweep → resolve → packet → verify → publish)
+description: Deep review a change (clarify → scan → conform → impact → resolve → packet → verify → publish)
 globs:
 alwaysApply: false
 ---
@@ -7,13 +7,14 @@ alwaysApply: false
 # /deep-review — Orchestrator
 
 Workflow:
-1) Clarify
+1) Clarify (what are we reviewing + goals)
 2) Scan (change surface)
-3) Impact Sweep (MANDATORY cross-repo consumer discovery)
-4) Resolve (MCP-S + Octocode proof loop)
-5) Draft packet (file-only)
-6) Verify (connectivity + build/lint/tsc/tests incl. key consumers)
-7) Publish (chat + file)
+3) Conform (MANDATORY: match existing patterns/structure/flow)
+4) Impact Sweep (MANDATORY: downstream consumers + semantic contract risks)
+5) Resolve (MCP-S + Octocode proof loop)
+6) Draft packet (file-only)
+7) Verify (connectivity + key consumers)
+8) Publish (chat + file) — SIMPLE output (HIGH/MOD/LOW + next actions)
 
 Enforces:
 - `.cursor/rules/deep-review-laws.mdc`
@@ -22,13 +23,9 @@ Enforces:
 Delegates to:
 - `/deep-review.clarify`
 - `/deep-review.scan`
+- `/deep-review.conform`
 - `/deep-review.impact`
 - `/deep-review.resolve`
 - `/deep-review.packet`
 - `/deep-review.verify`
 - `/deep-review.publish`
-
-Hard-fail:
-- Impact Sweep not produced
-- Any contract-shaped change without Consumer Matrix + Octocode evidence
-- Verify not PASS

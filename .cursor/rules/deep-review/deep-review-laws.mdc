@@ -6,11 +6,14 @@ alwaysApply: false
 
 # Deep-Review Laws
 
-- Never publish before verification: `/deep-review.publish` requires PASSing `/deep-review.verify`.
-- Impact Sweep is mandatory: `/deep-review.impact` must produce CONSUMER-MATRIX.md for any contract-shaped change.
-- Proof-first: every claim needs repo/path + lines + snippet.
-- Connectivity required: claims must be backed by import/call/route-binding evidence, not naming similarity.
-- Cross-repo: use `/octocode/research` for all non-local symbols (def + impl + boundary).
-- MCP-S required: classify every new abstraction/symbol; docs hints must be proven in code.
-- Missing items: NOT FOUND + exact searches + scope.
-- Unlimited iteration: keep running MCP-S + Octocode until resolved or NOT FOUND.
+- Code health + consistency matter (follow existing patterns).
+- Conformance is mandatory: `/deep-review.conform` must produce CONFORMANCE.md before publish.
+- Impact Sweep is mandatory for contract-shaped changes: CONSUMER-MATRIX.md required.
+- Proof-first: every claim has repo/path + lines + snippet.
+- Cross-repo: Octocode is mandatory for non-local symbols (def + impl + boundary).
+- MCP-S is mandatory for classification + internal docs hints (then prove in code).
+- Never publish before verify: `/deep-review.publish` requires PASS `/deep-review.verify`.
+- Publish output must be SIMPLE:
+  1) HIGH / MODERATE / LOW issues
+  2) short summary of what was done
+  3) user options: Fix now / Ignore with rationale / Escalate owner / Add tests / Add rollout/guardrails
