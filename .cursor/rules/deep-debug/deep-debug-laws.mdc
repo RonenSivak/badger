@@ -1,0 +1,14 @@
+---
+description: Laws enforced during /deep-debug runs
+globs:
+alwaysApply: false
+---
+
+# Deep-Debug Laws 🚨
+
+- Evidence-first: prefer trace/log/request IDs when available; traces provide E2E visibility. :contentReference[oaicite:4]{index=4}
+- No publish before verify: `/deep-debug.publish` requires a passing `/deep-debug.verify`.
+- Proof-first: every claim needs repo/path + lines + snippet (or NOT FOUND + searches + scope).
+- Connectivity required: claims must be backed by import/call/route-binding evidence, not naming similarity.
+- Cross-repo resolver: any non-local symbol MUST be resolved via `/octocode/research` to (def + impl + boundary).
+- Verifiable goals required: fixes must list objective gates (tests/tsc/lint) before claiming success. :contentReference[oaicite:5]{index=5}
