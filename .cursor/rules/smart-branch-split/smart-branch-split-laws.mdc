@@ -1,0 +1,39 @@
+---
+description: Laws enforced during /smart-branch-split runs (verification gates, isolation discipline)
+globs: ".cursor/commands/smart-branch-split/**,.cursor/smart-branch-split/**"
+alwaysApply: false
+---
+
+# Smart Branch Split — Laws 🚨
+
+## Verification Gates (Non-Negotiable)
+
+- **No publish before verify**: `/smart-branch-split.publish` requires ALL checks passing in `/smart-branch-split.verify`.
+- **TypeScript MUST pass**: Every split branch must pass `tsc --noEmit` for affected packages.
+- **Lint MUST pass**: Every split branch must pass lint checks.
+- **Tests MUST pass**: Tests must pass (or be explicitly marked SKIP with documented reason).
+- **Build MUST pass**: If a build script exists, it must succeed.
+
+## Isolation Discipline
+
+- **Base-first**: Every split branch starts from `<remote>/<base-branch>`, NOT from the source branch.
+- **Scope enforcement**: Each branch must only touch files in its declared bucket scope (unless explicitly allowed).
+- **No cross-contamination**: Split branches must not depend on each other unless explicitly stacked.
+
+## Commit Handling
+
+- **Mixed commits must be handled explicitly**: Use cherry-pick -n + selective staging, commit-splitting, or rebase-onto.
+- **Clean history**: Each split branch should have clean, logical commits.
+
+## Evidence Requirements
+
+- **Command log mandatory**: All commands must be recorded in `COMMAND-LOG.md`.
+- **Verification report mandatory**: `VALIDATION-REPORT.md` must include per-branch status for all checks.
+- **Failure documentation**: If something can't be done safely, stop and record WHY with attempted commands.
+
+## Verification Command Discovery
+
+Before running checks, discover available commands:
+1. Check `package.json` scripts for: `tsc`, `typecheck`, `lint`, `test`, `build`
+2. Use workspace tooling: `yarn workspace <pkg> <script>` or `npm run -w <pkg> <script>`
+3. Record discovered commands in verification artifacts
