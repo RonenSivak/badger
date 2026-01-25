@@ -1,0 +1,110 @@
+---
+description: Force MCP-S tools for ownership, context, and build info during /smart-merge
+globs: ".cursor/commands/smart-merge/**,.cursor/smart-merge/**"
+alwaysApply: false
+---
+
+# MCP-S Mandate for /smart-merge 🔀🔧 (Non-Negotiable)
+
+## Purpose
+MCP-S provides access to **ownership, context, and build information** essential for smart conflict resolution:
+- **DevEx** — code ownership (who owns conflicting code), build status, commit info
+- **Slack** — context about why changes were made (helps semantic decisions)
+- **Jira** — related tickets that inform merge strategy
+
+---
+
+## When MCP-S is REQUIRED
+
+### During `/smart-merge.plan` — Ownership Analysis
+Before resolving conflicts, know who owns the conflicting code:
+- [ ] `code_owners_for_path` — for each file with conflicts
+- [ ] `search_builds` — check if source/target branches have passing builds
+
+### During `/smart-merge.resolve` — Context for Decisions
+When conflict resolution requires understanding intent:
+- [ ] `slack__search-messages` — why was this change made?
+- [ ] `jira__get-issues` — related tickets for requirements/context
+- [ ] `get_commit_information` — commit details for conflicting changes
+
+---
+
+## Tool Quick Reference
+
+### 🔴 PRIORITY 1: Ownership & Build Status
+
+| Tool | When to Use | Purpose |
+|------|-------------|---------|
+| `code_owners_for_path` | Every conflicting file | Know who owns each side |
+| `search_builds` | Before merge attempt | Check branch build status |
+| `get_build` | Specific build details | CI status |
+
+### 🟡 PRIORITY 2: Context & History
+
+| Tool | When to Use | Purpose |
+|------|-------------|---------|
+| `slack__search-messages` | Semantic conflict | Why was this built? |
+| `jira__get-issues` | Requirements unclear | Feature/bug context |
+| `get_commit_information` | Conflict resolution | Commit intent |
+| `where_is_my_commit` | Post-merge | Track deployment |
+
+---
+
+## Usage Examples
+
+### Check ownership before resolving conflict:
+```
+server: user-MCP-S
+toolName: code_owners_for_path
+arguments:
+  path: "packages/my-package/src/conflicting-file.ts"
+```
+
+### Check if branches have passing builds:
+```
+server: user-MCP-S
+toolName: search_builds
+arguments:
+  projectName: "editor-platform"
+```
+
+### Find context for a change:
+```
+server: user-MCP-S
+toolName: slack__search-messages
+arguments:
+  searchText: "refactored componentService"
+  in: "#editor-platform"
+```
+
+---
+
+## Logging Requirement
+All MCP-S queries and findings must be appended to:
+`.cursor/smart-merge/<name>/mcp-s-notes.md`
+
+Format:
+```markdown
+## [Conflict/Topic]
+- **File**: <conflicting file path>
+- **Tool**: <tool name>
+- **Query**: <exact arguments>
+- **Owner(s)**: <team/person from code_owners>
+- **Context**: <why this change exists>
+- **Decision**: <how this informed resolution>
+```
+
+---
+
+## MCP-S + Octocode Complementary Rule
+- MCP-S provides **ownership + context** (who, why, build status)
+- Octocode provides **code proof** (implementation, API surface, dependencies)
+- Both inform conflict resolution:
+  - MCP-S → whose change takes priority, what was the intent
+  - Octocode → what does the code actually do, what depends on it
+
+## NOT FOUND Rule
+If MCP-S search yields no results:
+- mark as "MCP-S: NOT FOUND"
+- list exact queries attempted
+- proceed with code-based analysis (Octocode)

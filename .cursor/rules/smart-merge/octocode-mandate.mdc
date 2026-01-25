@@ -1,0 +1,15 @@
+---
+description: Non-local symbol => MUST use /octocode/research and record proof
+globs:
+alwaysApply: false
+---
+
+# Octocode Mandate 🛰️
+
+If any symbol/API/consumer is outside the current workspace scope:
+- You MUST run `/octocode/research`
+- Record:
+  - definition (repo/path + lines)
+  - implementation (repo/path + lines)
+  - boundary snippet (network/persistence/render/throw)
+- If unavailable: mark NOT FOUND + searches + scope
