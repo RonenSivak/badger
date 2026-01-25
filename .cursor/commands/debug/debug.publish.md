@@ -6,21 +6,63 @@ alwaysApply: false
 
 # /debug.publish — Publish 📣
 
-Hard gate:
-- MUST have a passing VALIDATION-REPORT.
+## Hard Gates
+- MUST have a passing VALIDATION-REPORT
+- MUST have `mcp-s-notes.md` with tool queries
+- MUST have ownership verified via `code_owners_for_path`
+- Frontend bugs MUST have Chrome DevTools evidence
+- Backend bugs MUST have Grafana evidence
 
-Write:
+---
+
+## Write
 - `.cursor/debug/<topic>/DEBUG-REPORT.md` (final)
 
 Also print the same report in chat.
 
-Format (simple):
-1) Executive summary (2–5 lines)
-2) Findings: HIGH / MODERATE / LOW
-3) Proven E2E flow (short) + pointer references
-4) Root cause (or NOT FOUND with searches + scope)
-5) Fix plan (from FIX-PLAN) + verification gates
-6) Next actions prompt:
-   - “Implement fix”
-   - “Gather more evidence”
-   - “Accept risk / defer”
+---
+
+## Format
+
+### 1) Executive Summary (2–5 lines)
+- What was the bug
+- Root cause (or NOT FOUND)
+- Impact/severity
+
+### 2) Evidence Summary
+| Source | Findings |
+|--------|----------|
+| Chrome DevTools | Console errors, network failures |
+| Grafana | Log patterns, metrics |
+| Jira | Related tickets |
+| DevEx | Code owners, deployment status |
+
+### 3) Proven E2E Flow (short)
+Entry → ... → Failure boundary
+(with pointer references to trace-ledger)
+
+### 4) Root Cause
+- Proven cause with evidence
+- OR NOT FOUND with searches + scope
+
+### 5) Fix Plan
+(from FIX-PLAN)
+- Smallest safe change
+- Verification gates
+- Rollback plan
+
+### 6) MCP-S Evidence Artifacts
+- Screenshots: [links]
+- Log snippets: [excerpts]
+- Metric values: [data]
+- Trace IDs: [IDs]
+
+### 7) Ownership
+- Code owners: @team (from `code_owners_for_path`)
+- On-call: @person (from `get_current_oncall_users`)
+
+### 8) Next Actions Prompt
+- "Implement fix"
+- "Gather more evidence"
+- "Escalate to on-call"
+- "Accept risk / defer"

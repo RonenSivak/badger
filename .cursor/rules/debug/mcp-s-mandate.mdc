@@ -1,0 +1,248 @@
+---
+description: Force MCP-S tools for debugging (Jira, Slack, DevEx, Chrome DevTools, Grafana)
+globs: ".cursor/commands/debug/**,.cursor/debug/**"
+alwaysApply: false
+---
+
+# MCP-S Mandate for /debug 🐛🔧 (Non-Negotiable)
+
+## Purpose
+MCP-S provides access to **runtime evidence and internal knowledge** essential for debugging:
+- **Jira/Slack** — bug reports, related tickets, team discussions
+- **DevEx** — code ownership, builds, commits, releases
+- **Chrome DevTools** — browser console, network, performance, DOM
+- **Grafana** — logs, metrics, alerts, incidents, on-call
+
+---
+
+## Tool Categories by Debugging Phase
+
+### 🔴 PHASE 1: Evidence Gathering (use in `/debug.trace`)
+
+#### Grafana — Log & Error Investigation (HIGHEST PRIORITY)
+| Tool | When to Use | Priority |
+|------|-------------|----------|
+| `find_error_pattern_logs` | First tool for backend errors — finds patterns | **P0** |
+| `query_loki_logs` | Search logs by service, trace ID, error message | **P0** |
+| `get_sift_analysis` | Automated root cause analysis | **P0** |
+| `find_slow_requests` | Performance issues — find slow endpoints | **P0** |
+| `list_incidents` | Check for active/recent incidents | **P1** |
+| `get_incident` | Get incident details, timeline | **P1** |
+
+#### Chrome DevTools — Frontend Evidence (HIGHEST PRIORITY for UI bugs)
+| Tool | When to Use | Priority |
+|------|-------------|----------|
+| `list-console-messages` | First tool for JS errors, warnings | **P0** |
+| `list-network-requests` | See all HTTP requests, failures | **P0** |
+| `take-screenshot` | Capture visual state of bug | **P0** |
+| `take-snapshot` | Get DOM structure at failure point | **P1** |
+| `evaluate-script` | Inspect JS state, variables | **P1** |
+| `get-network-request` | Deep dive into specific request | **P1** |
+
+#### Jira/Slack — Context & History
+| Tool | When to Use | Priority |
+|------|-------------|----------|
+| `jira__get-issues` | Find related bug reports, requirements | **P1** |
+| `slack__search-messages` | Find discussions about the bug | **P1** |
+
+---
+
+### 🟡 PHASE 2: Performance Profiling (use when perf issue suspected)
+
+#### Chrome DevTools — Performance
+| Tool | When to Use | Priority |
+|------|-------------|----------|
+| `performance-start-trace` | Begin profiling session | **P0** |
+| `performance-stop-trace` | End profiling, get results | **P0** |
+| `performance-analyze-insight` | Get actionable insights | **P0** |
+| `emulate-cpu` | Test under CPU throttling | **P1** |
+| `emulate-network` | Test under slow network | **P1** |
+
+#### Grafana — Metrics & Performance
+| Tool | When to Use | Priority |
+|------|-------------|----------|
+| `query_prometheus` | Query latency, throughput metrics | **P0** |
+| `list_prometheus_metric_names` | Discover available metrics | **P1** |
+| `get_dashboard_panel_queries` | See what metrics power dashboards | **P2** |
+
+---
+
+### 🟢 PHASE 3: Reproduction & Interaction (use in `/debug.hypothesize`)
+
+#### Chrome DevTools — User Simulation
+| Tool | When to Use | Priority |
+|------|-------------|----------|
+| `click` | Simulate user clicks | **P1** |
+| `fill` | Fill input fields | **P1** |
+| `fill-form` | Fill entire forms | **P1** |
+| `hover` | Trigger hover states | **P2** |
+| `drag` | Test drag & drop | **P2** |
+| `upload-file` | Test file uploads | **P2** |
+| `handle-dialog` | Handle alerts/confirms | **P2** |
+| `wait-for` | Wait for conditions | **P1** |
+
+#### Chrome DevTools — Navigation & Page Control
+| Tool | When to Use | Priority |
+|------|-------------|----------|
+| `navigate-page` | Navigate to URL | **P1** |
+| `navigate-page-history` | Back/forward navigation | **P2** |
+| `list-pages` | See open tabs | **P2** |
+| `select-page` | Switch to tab | **P2** |
+| `new-page` | Open new tab | **P2** |
+| `close-page` | Close tab | **P2** |
+| `resize-page` | Test responsive behavior | **P2** |
+
+---
+
+### 🔵 PHASE 4: Ownership & Escalation (use in `/debug.resolve`)
+
+#### DevEx — Ownership & CI/CD
+| Tool | When to Use | Priority |
+|------|-------------|----------|
+| `code_owners_for_path` | Find who owns the buggy code | **P0** |
+| `where_is_my_commit` | Track if fix is deployed | **P1** |
+| `get_build` | Check build status | **P1** |
+| `search_builds` | Find failed builds | **P1** |
+| `get_commit_information` | Commit that introduced bug | **P1** |
+| `get_rollout_history` | Deployment timeline | **P2** |
+
+#### Grafana — On-Call & Alerts
+| Tool | When to Use | Priority |
+|------|-------------|----------|
+| `get_current_oncall_users` | Who to escalate to | **P0** |
+| `list_oncall_teams` | Find responsible team | **P1** |
+| `list_alert_rules` | What alerts exist | **P1** |
+| `get_alert_rule_by_uid` | Specific alert config | **P2** |
+| `list_contact_points` | Notification channels | **P2** |
+
+---
+
+### ⚪ PHASE 5: Discovery & Context (use throughout)
+
+#### Grafana — Dashboard & Data Discovery
+| Tool | When to Use | Priority |
+|------|-------------|----------|
+| `search_dashboards` | Find relevant dashboards | **P1** |
+| `get_dashboard_by_uid` | Get dashboard details | **P2** |
+| `list_datasources` | Available data sources | **P2** |
+| `get_datasource_by_name` | Specific datasource config | **P2** |
+| `list_loki_label_names` | Discover log labels | **P2** |
+| `list_loki_label_values` | Values for a label | **P2** |
+| `list_prometheus_label_names` | Discover metric labels | **P2** |
+| `list_prometheus_metric_metadata` | Metric descriptions | **P2** |
+| `query_loki_stats` | Log volume statistics | **P2** |
+| `get_sift_investigation` | Detailed RCA | **P1** |
+| `list_sift_investigations` | Past RCAs | **P2** |
+| `get_assertions` | Service assertions | **P2** |
+| `list_teams` | Grafana teams | **P2** |
+| `get_oncall_shift` | Shift details | **P2** |
+| `list_oncall_users` | All on-call users | **P2** |
+| `list_oncall_schedules` | Schedule overview | **P2** |
+| `update_dashboard` | Update dashboard (use carefully) | **P3** |
+
+---
+
+## Quick Decision Tree
+
+```
+Bug Type?
+│
+├─ Frontend/UI Bug
+│  └─ START: list-console-messages → list-network-requests → take-screenshot
+│     └─ If perf: performance-start-trace → performance-analyze-insight
+│
+├─ Backend/API Error
+│  └─ START: find_error_pattern_logs → query_loki_logs → get_sift_analysis
+│     └─ Then: list_incidents, get_current_oncall_users
+│
+├─ Performance Issue
+│  └─ Frontend: emulate-cpu + emulate-network + performance traces
+│  └─ Backend: find_slow_requests → query_prometheus
+│
+├─ Deployment Issue
+│  └─ START: where_is_my_commit → get_build → get_rollout_history
+│     └─ Then: list_incidents, get_current_oncall_users
+│
+└─ Unknown Origin
+   └─ START: jira__get-issues + slack__search-messages (context)
+      └─ Then: code_owners_for_path (ownership)
+      └─ Then: list_incidents (check for ongoing issues)
+```
+
+---
+
+## 🔗 Request ID Tracing Workflow (Frontend → Backend)
+
+**Key insight:** Network requests contain `x-wix-request-id` in response headers that can be traced in Grafana.
+
+### Step 1: Get Request ID from Chrome DevTools
+```
+# List all network requests
+chrome-devtools__list-network-requests
+
+# Get specific request details (includes headers)
+chrome-devtools__get-network-request
+  url: "https://api.wix.com/..."
+```
+
+Look for `x-wix-request-id` in the response headers.
+
+### Step 2: Trace in Grafana
+Use the request ID in Grafana's Error Analytics dashboard:
+```
+https://grafana.wixpress.com/d/38cCoLymz/error-analytics-traceid?orgId=1&var-request_id={req_id}&from={time}&to={time}
+```
+
+Or query logs directly:
+```
+grafana__query_loki_logs
+  query: '{service="*"} |= "{request_id}"'
+```
+
+### When to Use This Workflow
+- API request returns error but frontend doesn't show details
+- Need to trace a specific user action through the backend
+- Debugging intermittent failures with specific request evidence
+- Correlating frontend timing with backend processing
+
+---
+
+## Logging Requirement
+All tool queries and findings must be appended to:
+`.cursor/debug/<topic>/mcp-s-notes.md`
+
+Format:
+```markdown
+## [Evidence/Topic]
+- **Tool**: <tool name>
+- **Phase**: Evidence | Profiling | Reproduction | Escalation | Discovery
+- **Query/Arguments**: <exact args>
+- **Findings**: <key insights>
+- **Links/IDs**: <trace IDs, dashboard URLs, incident IDs>
+- **Follow-up**: <next tool to use or code to investigate>
+```
+
+---
+
+## Mandatory Tool Usage by Bug Type
+
+### Frontend/UI Bugs — MUST use:
+- [ ] `list-console-messages` — JS errors
+- [ ] `list-network-requests` — failed requests
+- [ ] `take-screenshot` — visual evidence
+- [ ] `code_owners_for_path` — ownership
+
+### Backend/API Errors — MUST use:
+- [ ] `find_error_pattern_logs` — error patterns
+- [ ] `query_loki_logs` — detailed logs
+- [ ] `list_incidents` — check incidents
+- [ ] `code_owners_for_path` — ownership
+
+### Performance Issues — MUST use:
+- [ ] `find_slow_requests` (backend) OR `performance-start-trace` (frontend)
+- [ ] `query_prometheus` — metrics
+- [ ] `get_sift_analysis` — automated RCA
+
+### All Bugs — MUST use:
+- [ ] `jira__get-issues` — related tickets
+- [ ] `code_owners_for_path` — who to contact

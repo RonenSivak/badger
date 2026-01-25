@@ -1,14 +1,55 @@
 ---
 description: Laws enforced during /debug runs
-globs:
+globs: ".cursor/commands/debug/**,.cursor/debug/**"
 alwaysApply: false
 ---
 
-# Deep-Debug Laws 🚨
+# Debug Laws 🚨
 
-- Evidence-first: prefer trace/log/request IDs when available; traces provide E2E visibility. :contentReference[oaicite:4]{index=4}
-- No publish before verify: `/debug.publish` requires a passing `/debug.verify`.
-- Proof-first: every claim needs repo/path + lines + snippet (or NOT FOUND + searches + scope).
-- Connectivity required: claims must be backed by import/call/route-binding evidence, not naming similarity.
-- Cross-repo resolver: any non-local symbol MUST be resolved via `/octocode/research` to (def + impl + boundary).
-- Verifiable goals required: fixes must list objective gates (tests/tsc/lint) before claiming success. :contentReference[oaicite:5]{index=5}
+## Core Laws
+- **Evidence-first:** prefer trace/log/request IDs when available; traces provide E2E visibility.
+- **Request ID tracing:** extract `x-wix-request-id` from network requests and trace in Grafana for E2E correlation.
+- **No publish before verify:** `/debug.publish` requires a passing `/debug.verify`.
+- **Proof-first:** every claim needs repo/path + lines + snippet (or NOT FOUND + searches + scope).
+- **Connectivity required:** claims must be backed by import/call/route-binding evidence, not naming similarity.
+- **Cross-repo resolver:** any non-local symbol MUST be resolved via `/octocode/research` to (def + impl + boundary).
+- **Verifiable goals required:** fixes must list objective gates (tests/tsc/lint) before claiming success.
+
+## MCP-S Mandate (MANDATORY)
+
+### Evidence Tools — Use FIRST
+| Bug Type | Required Tools |
+|----------|----------------|
+| Frontend/UI | `list-console-messages`, `list-network-requests`, `take-screenshot` |
+| Backend/API | `find_error_pattern_logs`, `query_loki_logs`, `get_sift_analysis` |
+| Performance | `find_slow_requests` (backend) OR `performance-*` (frontend), `query_prometheus` |
+| All bugs | `jira__get-issues`, `code_owners_for_path` |
+
+### Context Tools — Use for investigation
+- **Jira:** `jira__get-issues` — related bugs, requirements
+- **Slack:** `slack__search-messages` — discussions, decisions
+- **DevEx:** `code_owners_for_path`, `where_is_my_commit`, `get_build`
+- **Grafana:** `list_incidents`, `get_current_oncall_users`, `search_dashboards`
+
+### Chrome DevTools — Use for frontend bugs
+- **Console:** `list-console-messages` — JS errors (MANDATORY for UI bugs)
+- **Network:** `list-network-requests`, `get-network-request` — HTTP issues
+- **Performance:** `performance-start-trace`, `performance-analyze-insight`
+- **DOM:** `take-snapshot`, `evaluate-script`
+- **Repro:** `click`, `fill`, `navigate-page`, `wait-for`
+
+### Grafana — Use for backend bugs
+- **Logs:** `find_error_pattern_logs`, `query_loki_logs` (MANDATORY for API errors)
+- **Metrics:** `query_prometheus`, `find_slow_requests`
+- **Incidents:** `list_incidents`, `get_incident`
+- **On-call:** `get_current_oncall_users`, `list_oncall_teams`
+- **RCA:** `get_sift_analysis`, `get_sift_investigation`
+
+## NOT FOUND Discipline
+- **Missing evidence:** `NOT FOUND` + exact tool queries + scope searched
+- **Log all attempts:** even failed Grafana/DevTools queries in `mcp-s-notes.md`
+
+## Output Requirements
+- **mcp-s-notes.md:** MUST exist with tool queries for each debugging phase
+- **Evidence required:** screenshots, log snippets, trace IDs, metric values
+- **Ownership proven:** `code_owners_for_path` used for affected files

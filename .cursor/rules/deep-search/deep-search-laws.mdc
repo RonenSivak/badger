@@ -1,7 +1,7 @@
 ---
 description: Laws enforced during /deep-search runs (single source of truth)
 globs: ".cursor/commands/deep-search/**,.cursor/deep-search/**,.cursor/plans/deep-search.*.md"
-alwaysApply: true
+alwaysApply: false
 ---
 
 # Deep-Search Laws (Workflow + Proof Gates)
