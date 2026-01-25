@@ -14,8 +14,13 @@ It MUST NOT print the report in chat.
 Publishing is done by `/deep-search.publish`.
 
 ## Content
-Same structure as before (MCP Evidence, Trace Ledger, E2E Map, etc),
-but add a banner at top:
+Include:
+- MCP-S Evidence (internal docs, Slack threads, Jira tickets found)
+- Trace Ledger (symbols with classification + proof)
+- E2E Map (mermaid + edge evidence)
+- SDK Generation Chain (if applicable)
+
+Add a banner at top:
 
 > DRAFT — must pass /deep-search.verify before publishing
 

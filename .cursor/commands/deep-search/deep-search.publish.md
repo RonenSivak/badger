@@ -25,5 +25,7 @@ If not, STOP and instruct to rerun `/deep-search.verify`.
 ## Quality Gates
 - Every claim has repo/path + lines + snippet
 - No dead ends
-- MCP-S + Octocode mandatory for non-local symbols
+- MCP-S mandatory for internal knowledge (docs/Slack/Jira context)
+- Octocode mandatory for code proof on non-local symbols
 - No unresolved symbol crosses a boundary
+- `mcp-s-notes.md` exists and has queries for major topics

@@ -13,6 +13,7 @@ alwaysApply: false
 ## Enforces (rules)
 - [Deep-Search Laws](../rules/deep-search/deep-search-laws.mdc)
 - [Octocode Mandate](../rules/deep-search/octocode-mandate.mdc)
+- [MCP-S Mandate](../rules/deep-search/mcp-s-mandate.mdc)
 
 ## Delegates to (sub-commands)
 - `/deep-search.clarify`  → `.cursor/commands/deep-search/deep-search.clarify.md`
@@ -53,6 +54,22 @@ Plan must include:
 Run `/deep-search.resolve` repeatedly until:
 - **ALL** external/non-local/uncertain symbols are **resolved** OR marked **NOT FOUND** (with searches + scope)
 - **ALL** non-local symbols are resolved via **`/octocode/research`** (def + impl + side-effect boundary)
+- **ALL** features/services have MCP-S context (internal docs, Slack, Jira)
+
+🔎 **MCP-S Internal Knowledge Gate (MANDATORY)**
+For every major feature/service/SDK, you MUST search:
+- **Internal Docs** (`docs-schema__search_docs`) — architecture, ownership, design specs
+- **Slack** (`slack__search-messages`) — team discussions, decisions, context
+- **Jira** (`jira__get-issues`) — requirements, tickets, acceptance criteria
+- **DevEx** (when applicable):
+  - `code_owners_for_path` — who owns the code
+  - `get_project` / `search_projects` — project metadata
+  - `get_build` / `search_builds` — CI/CD status
+  - `where_is_my_commit` — commit tracking
+  - `release_notes` / `get_rollout_history` — release info
+  - `get_devex_fqdn` — service endpoints
+
+MCP-S provides context; Octocode provides code proof. Both are required.
 
 🚨 **SDK Generation Chain Gate**
 If any SDK/client is mentioned (especially `@wix/ambassador-*`), you MUST also resolve:
@@ -64,7 +81,7 @@ If any SDK/client is mentioned (especially `@wix/ambassador-*`), you MUST also r
 Persist evidence:
 - `.cursor/deep-search/<feature>/trace-ledger.md`
 - `.cursor/deep-search/<feature>/octocode-queries.md`
-- `.cursor/deep-search/<feature>/mcp-s-notes.md`
+- `.cursor/deep-search/<feature>/mcp-s-notes.md` (MANDATORY — must have queries for docs/Slack/Jira/DevEx)
 
 ---
 
@@ -102,6 +119,9 @@ Run `/deep-search.publish`:
 ## Hard-fail conditions 🚫
 - publish attempted without a **passing** `/deep-search.verify`
 - `octocode-queries.md` is empty (Octocode not used when required)
+- `mcp-s-notes.md` is empty or missing (MCP-S not used for internal knowledge)
 - any non-local symbol lacks Octocode **def + impl + boundary**
 - any SDK mention lacks **SDK Generation Chain proof**
 - any E2E arrow asserted without evidence (or NOT FOUND)
+- any major feature/service lacks MCP-S context (docs/Slack/Jira/DevEx search)
+- ownership claims without DevEx `code_owners_for_path` proof

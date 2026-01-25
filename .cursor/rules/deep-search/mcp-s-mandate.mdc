@@ -1,0 +1,257 @@
+---
+description: Force MCP-S tools for internal docs, Slack, Jira, DevEx during /deep-search
+globs: ".cursor/commands/deep-search/**,.cursor/deep-search/**"
+alwaysApply: false
+---
+
+# MCP-S Mandate 📚💬🎫🔧 (Non-Negotiable)
+
+## Purpose
+MCP-S provides access to **internal knowledge sources** that code alone cannot reveal:
+- **Internal Docs** — architecture specs, design docs, ownership info
+- **Slack** — team discussions, decisions, context around changes
+- **Jira** — tickets, requirements, acceptance criteria, bug reports
+- **DevEx** — code ownership, CI/CD builds, commits, releases, deployment info
+
+## When MCP-S is REQUIRED (at least one source)
+Run MCP-S tools as soon as any of these triggers appear:
+- new service/package/SDK encountered (search docs for architecture)
+- unclear ownership or team responsibility (search docs/Slack + **DevEx code_owners**)
+- feature purpose unclear from code alone (search Jira for requirements)
+- debugging a bug (search Jira for related tickets, Slack for discussions)
+- generated code encountered (search docs for generation pipeline)
+- "why was this built this way?" questions (search Slack/docs for decisions)
+- **need to know who owns a file/path** (use DevEx `code_owners_for_path`)
+- **need build/CI status or history** (use DevEx `get_build`, `search_builds`)
+- **need commit tracking** (use DevEx `get_commit_information`, `where_is_my_commit`)
+- **need release/rollout info** (use DevEx `release_notes`, `get_rollout_history`)
+- **need service FQDN/endpoint** (use DevEx `get_devex_fqdn`)
+
+---
+
+## Available MCP-S Tools
+
+### 1) Internal Docs (`docs-schema__search_docs`)
+```
+server: user-MCP-S
+toolName: docs-schema__search_docs
+arguments:
+  query: "<search text>"        # max 256 chars
+  limit: 10                     # optional
+  portalId: "<GUID>"            # optional, narrow to portal
+```
+**Use when:** architecture docs, design specs, ownership, onboarding guides
+
+### 2) Slack Search (`slack__search-messages`)
+```
+server: user-MCP-S
+toolName: slack__search-messages
+arguments:
+  searchText: "<keywords>"
+  exactPhrase: "<exact match>"  # optional
+  in: "#channel-name"           # optional
+  from: "<@USER>"               # optional
+  after: "YYYY-MM-DD"           # optional
+  before: "YYYY-MM-DD"          # optional
+```
+**Use when:** team discussions, decisions, context around changes, debugging threads
+
+### 3) Slack Channel History (`slack__slack_get_channel_history`)
+```
+server: user-MCP-S
+toolName: slack__slack_get_channel_history
+arguments:
+  channel_id: "<channel_id>"
+  limit: 10                     # optional
+```
+**Use when:** recent activity in a known channel
+
+### 4) Jira Issues (`jira__get-issues`)
+```
+server: user-MCP-S
+toolName: jira__get-issues
+arguments:
+  projectKey: "PP"              # required (or use jql)
+  jql: "text ~ 'feature'"       # optional, JQL query
+  maxResults: 10                # optional
+  fields: ["key", "summary", "description", "status"]  # optional
+```
+**Use when:** requirements, acceptance criteria, bug reports, related tickets
+
+---
+
+## DevEx Tools (Wix Developer Experience)
+
+### 5) Code Owners (`code_owners_for_path`)
+```
+server: user-MCP-S
+toolName: code_owners_for_path
+arguments:
+  path: "<file or directory path>"
+```
+**Use when:** need to know who owns a file/directory, finding responsible team
+
+### 6) Get Ownership Tags (`get_ownership_tags`)
+```
+server: user-MCP-S
+toolName: get_ownership_tags
+arguments:
+  # check tool schema for exact params
+```
+**Use when:** looking up ownership metadata for a project/service
+
+### 7) Get Project (`get_project`)
+```
+server: user-MCP-S
+toolName: get_project
+arguments:
+  projectName: "<project name>"
+```
+**Use when:** project metadata, configuration, team info
+
+### 8) Search Projects (`search_projects`)
+```
+server: user-MCP-S
+toolName: search_projects
+arguments:
+  query: "<search term>"
+```
+**Use when:** finding projects by name/keyword
+
+### 9) Get Build (`get_build`)
+```
+server: user-MCP-S
+toolName: get_build
+arguments:
+  buildId: "<build id>"
+```
+**Use when:** CI/CD build status, build details
+
+### 10) Search Builds (`search_builds`)
+```
+server: user-MCP-S
+toolName: search_builds
+arguments:
+  projectName: "<project>"
+  # additional filters
+```
+**Use when:** finding builds for a project, build history
+
+### 11) Get Commit Information (`get_commit_information`)
+```
+server: user-MCP-S
+toolName: get_commit_information
+arguments:
+  commitSha: "<sha>"
+```
+**Use when:** commit details, author, changes
+
+### 12) Where Is My Commit (`where_is_my_commit`)
+```
+server: user-MCP-S
+toolName: where_is_my_commit
+arguments:
+  commitSha: "<sha>"
+```
+**Use when:** tracking where a commit is deployed, release status
+
+### 13) Find Commits By Date Range (`find_commits_by_date_range`)
+```
+server: user-MCP-S
+toolName: find_commits_by_date_range
+arguments:
+  startDate: "YYYY-MM-DD"
+  endDate: "YYYY-MM-DD"
+  projectName: "<project>"
+```
+**Use when:** finding commits in a time period
+
+### 14) Release Notes (`release_notes`)
+```
+server: user-MCP-S
+toolName: release_notes
+arguments:
+  projectName: "<project>"
+  version: "<version>"
+```
+**Use when:** what changed in a release
+
+### 15) Available RCs (`available_rcs`)
+```
+server: user-MCP-S
+toolName: available_rcs
+arguments:
+  projectName: "<project>"
+```
+**Use when:** finding release candidates
+
+### 16) Get Rollout History (`get_rollout_history`)
+```
+server: user-MCP-S
+toolName: get_rollout_history
+arguments:
+  projectName: "<project>"
+```
+**Use when:** deployment history, rollout status
+
+### 17) Get DevEx FQDN (`get_devex_fqdn`)
+```
+server: user-MCP-S
+toolName: get_devex_fqdn
+arguments:
+  serviceName: "<service>"
+```
+**Use when:** finding service endpoint/FQDN
+
+### 18) Fleets Pods Overview (`fleets_pods_overview`)
+```
+server: user-MCP-S
+toolName: fleets_pods_overview
+arguments:
+  serviceName: "<service>"
+```
+**Use when:** deployment/infrastructure status, pods info
+
+### 19) Project Quality Scores (`project_quality_service_get_scores`)
+```
+server: user-MCP-S
+toolName: project_quality_service_get_scores
+arguments:
+  projectName: "<project>"
+```
+**Use when:** quality metrics, test coverage, health scores
+
+---
+
+## What MCP-S must contribute (minimum)
+For each researched topic, record:
+- **Source type**: docs / Slack / Jira / DevEx
+- **Query used**: exact search terms or arguments
+- **Key findings**: ownership, decisions, requirements, context, build status
+- **Links**: URLs to docs/threads/tickets (when available)
+
+## Logging Requirement
+All MCP-S queries and findings must be appended to:
+`.cursor/deep-search/<feature>/mcp-s-notes.md`
+
+Format:
+```markdown
+## [Topic/Symbol]
+- **Source**: docs | Slack | Jira | DevEx
+- **Tool**: <tool name>
+- **Query**: <exact query/arguments>
+- **Findings**: <key insights>
+- **Links**: <URLs if available>
+```
+
+## MCP-S + Octocode Complementary Rule
+- MCP-S provides **context** (why, who, requirements, builds, releases)
+- Octocode provides **code proof** (implementation, definition, boundary)
+- Both are required for complete understanding
+- MCP-S findings are **hints** — always verify with code via Octocode
+
+## NOT FOUND Rule
+If MCP-S search yields no results:
+- mark as "MCP-S: NOT FOUND"
+- list exact queries attempted (tool + arguments)
+- note which sources were searched (docs/Slack/Jira/DevEx)
