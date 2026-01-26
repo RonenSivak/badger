@@ -1,0 +1,118 @@
+---
+description: TanStack Query (React Query) best practices
+globs: "**/*.ts, **/*.tsx"
+alwaysApply: false
+---
+
+# React Query Principles
+
+## Decision Flow
+
+### If React Query NOT installed:
+
+1. **Detect patterns that would benefit:**
+   - Multiple `useEffect` + `fetch` + `useState(loading/error)` patterns
+   - Same data fetched in multiple components (no caching)
+   - Manual cache invalidation logic
+   - Complex loading/error state management
+
+2. **If beneficial patterns found, ASK user:**
+   > "I found X data fetching patterns that could benefit from React Query (caching, deduplication, background refresh). Would you like me to install it?"
+
+3. **If user agrees — Version Selection (CRITICAL):**
+
+   **Step A: Check React version first**
+   ```bash
+   # Check package.json
+   grep '"react":' package.json
+   # Or check yarn.lock for actual resolved version
+   grep -A1 '"react@' yarn.lock | head -5
+   ```
+
+   **Step B: Choose compatible React Query version**
+   | React Version | React Query Version | Why |
+   |---------------|---------------------|-----|
+   | 16.x | `@tanstack/react-query@4` | v5 requires React 18+ |
+   | 17.x | `@tanstack/react-query@4` | v4 is safer, v5 may work |
+   | 18+ | `@tanstack/react-query@5` | Full compatibility |
+
+   **Step C: Check lockfile for existing transitive dep**
+   ```bash
+   grep "@tanstack/react-query" yarn.lock || grep "react-query" yarn.lock
+   ```
+   If found: prefer that major version to avoid conflicts.
+
+   **Step D: Install**
+   ```bash
+   # React 16/17:
+   yarn add @tanstack/react-query@^4
+   # React 18+:
+   yarn add @tanstack/react-query@^5
+   ```
+
+4. **Then implement** following patterns below.
+
+### If React Query IS installed:
+- Follow existing project patterns (query key conventions, QueryClient config)
+- Check for anti-patterns (Q1-Q8 violations)
+
+## When React Query Helps
+- Server state (API data)
+- Data needing cache across components
+- Data that might be stale
+- Multiple components need same data
+- Background refresh needed
+
+## When NOT to Use
+- UI state (modals, toggles)
+- Client-only ephemeral state
+- Project has working internal HTTP client patterns and no caching needs
+
+## Query Keys
+```typescript
+['users']                    // list
+['users', userId]            // detail
+['users', userId, 'posts']   // nested
+// BAD: Objects as keys
+useQuery([{ id: userId }], fn)  // Don't
+```
+
+## Patterns
+```typescript
+// Basic query
+const { data, isLoading } = useQuery({
+  queryKey: ['users', userId],
+  queryFn: () => fetchUser(userId),
+  staleTime: 5 * 60 * 1000,
+});
+
+// Conditional
+const { data } = useQuery({
+  queryKey: ['search', term],
+  queryFn: () => search(term),
+  enabled: !!term,
+});
+
+// Mutation + invalidate
+const mutation = useMutation({
+  mutationFn: updateUser,
+  onSuccess: () => {
+    queryClient.invalidateQueries({ queryKey: ['users'] });
+  },
+});
+```
+
+## Anti-Patterns
+
+| Don't | Do |
+|-------|-----|
+| Object as query key | Array with primitives |
+| `if (x) useQuery()` | `enabled` option |
+| Server data in Redux | Let React Query manage |
+| Forget invalidation | Always invalidate after mutation |
+| Manual loading state | Use `isLoading` from hook |
+
+## Existing Project Integration
+1. Check version: `npm list @tanstack/react-query`
+2. Match existing query key patterns
+3. Don't override QueryClient defaults

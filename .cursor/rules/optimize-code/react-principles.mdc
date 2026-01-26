@@ -1,0 +1,52 @@
+---
+description: 10 React simplification principles
+globs: "**/*.tsx"
+alwaysApply: false
+---
+
+# React Principles
+
+## 10 Principles
+
+| # | Principle | Rule |
+|---|-----------|------|
+| 1 | SRP Components | Split data fetching from UI rendering. |
+| 2 | State Colocation | Local state unless sharing truly needed. |
+| 3 | Limit Prop Drilling | Context or composition for 3+ levels. |
+| 4 | Composition | Separate components for variants, not flags. |
+| 5 | Custom Hooks | Extract shared logic (fetch, subscriptions). |
+| 6 | Minimal Props | Lean interfaces. Discriminated unions. |
+| 7 | TypeScript Safety | Explicit types at boundaries only. |
+| 8 | YAGNI/KISS | `useState` before Redux. Build for now. |
+| 9 | Readability | Clear JSX over clever one-liners. |
+| 10 | Testability | Error boundaries. Pure logic separation. |
+
+## Quick Patterns
+
+```tsx
+// Split hook + component
+function useSaveUser() {
+  const [saved, setSaved] = useState(false);
+  const saveUser = async (data) => { await api.save(data); setSaved(true); };
+  return { saveUser, saved };
+}
+
+// Local state for local concerns
+const [isOpen, setOpen] = useState(false);
+
+// Context for deep access
+<CurrentUserProvider value={user}>
+  <Page><UserMenu /></Page>
+</CurrentUserProvider>
+
+// Flatten conditionals
+const showAdvanced = user.isAdmin && mode === 'advanced';
+return <>{showAdvanced && <AdvancedOptions />}</>;
+
+// Provider pattern
+export function useAuth() {
+  const ctx = useContext(AuthContext);
+  if (!ctx) throw new Error("useAuth must be inside AuthProvider");
+  return ctx;
+}
+```

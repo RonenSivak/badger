@@ -1,0 +1,43 @@
+---
+description: 12 core TypeScript simplification principles
+globs: "**/*.ts, **/*.tsx"
+alwaysApply: false
+---
+
+# TypeScript Core Principles
+
+## 12 Principles
+
+| # | Principle | Rule |
+|---|-----------|------|
+| 1 | Single Responsibility | Functions do one thing. No "and" in names. |
+| 2 | Clear Naming | Avoid `data`, `obj`, `handle`. Be specific. |
+| 3 | Immutability | Return new values, don't mutate. |
+| 4 | Guard Clauses | Early returns to flatten nesting. |
+| 5 | No Flag Params | Split functions instead of boolean switches. |
+| 6 | Leverage Types | Discriminated unions, exhaustive checks. |
+| 7 | Use Built-ins | `.map`, `.filter`, `.reduce` over loops. |
+| 8 | DRY Carefully | Abstract only after 3+ repetitions. |
+| 9 | Composition | Small functions over class hierarchies. |
+| 10 | Separation | Keep UI, data, logic separate. |
+| 11 | Error Handling | Fail fast. Consider Result types. |
+| 12 | Simple Tests | One concept per test. Table-driven. |
+
+## Quick Patterns
+
+```typescript
+// Guard clause
+if (!order) return;
+if (!order.items.length) return;
+// flat logic here
+
+// Discriminated union
+type Result<T> = { ok: true; value: T } | { ok: false; error: Error };
+
+// Lookup over conditionals
+const handlers = { a: handleA, b: handleB };
+return handlers[type]();
+
+// Extract function
+const total = calculateTotal(items);
+```

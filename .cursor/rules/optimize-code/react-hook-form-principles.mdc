@@ -1,0 +1,159 @@
+---
+description: React Hook Form best practices
+globs: "**/*.ts, **/*.tsx"
+alwaysApply: false
+---
+
+# React Hook Form Principles
+
+## Decision Flow
+
+### If RHF NOT installed:
+
+1. **Detect patterns that would benefit:**
+   - Multiple `useState` for form fields + manual validation
+   - Formik with performance issues on large forms
+   - `onChange` handlers updating state on every keystroke
+   - Manual touched/dirty/error state tracking
+   - Complex forms with 5+ fields
+
+2. **If beneficial patterns found, ASK user:**
+   > "Found X form patterns using manual state. React Hook Form reduces re-renders and boilerplate. Install it?"
+
+3. **If user agrees — Version Selection:**
+
+   **Step A: Check React version**
+   ```bash
+   grep '"react":' package.json
+   ```
+
+   **Step B: Choose compatible version**
+   | React Version | RHF Version | Command |
+   |---------------|-------------|---------|
+   | 16.8+ | v7 | `yarn add react-hook-form@^7` |
+   | 18+ | v7 (latest) | `yarn add react-hook-form` |
+
+   **Step C: Check lockfile for existing**
+   ```bash
+   grep "react-hook-form" yarn.lock
+   ```
+
+4. **Then implement** following patterns below.
+
+### If RHF IS installed:
+- Check for anti-patterns (F1-F10 violations)
+- Follow existing project patterns
+
+## When RHF Helps
+- Forms with 3+ fields
+- Complex validation requirements
+- Performance-sensitive forms
+- Forms needing touched/dirty tracking
+
+## When NOT to Use
+- Single input (search box)
+- Forms already working well with simple useState
+
+## Core Patterns
+
+### Basic Form
+```typescript
+type FormData = { email: string; password: string };
+
+const { register, handleSubmit, formState: { errors } } = useForm<FormData>({
+  defaultValues: { email: '', password: '' },
+  mode: 'onSubmit',
+});
+
+<form onSubmit={handleSubmit(onSubmit)}>
+  <input {...register('email', { required: 'Email required' })} />
+  {errors.email && <span>{errors.email.message}</span>}
+</form>
+```
+
+### Controller (for UI libraries)
+```typescript
+// ONLY for components that don't support ref (MUI, Ant, etc.)
+<Controller
+  name="date"
+  control={control}
+  render={({ field, fieldState }) => (
+    <DatePicker {...field} error={!!fieldState.error} />
+  )}
+/>
+```
+
+### useWatch (not watch)
+```typescript
+// GOOD: Isolated re-renders
+const email = useWatch({ control, name: 'email' });
+
+// BAD: Re-renders entire form
+const allValues = watch();
+```
+
+### useFieldArray (dynamic fields)
+```typescript
+const { fields, append, remove } = useFieldArray({ control, name: 'items' });
+
+{fields.map((field, index) => (
+  <input key={field.id} {...register(`items.${index}.name`)} />
+))}
+```
+
+### FormProvider (nested components)
+```typescript
+// Parent
+<FormProvider {...methods}>
+  <NestedInput />
+</FormProvider>
+
+// Child
+const { register } = useFormContext();
+```
+
+## Anti-Patterns
+
+| # | Don't | Do |
+|---|-------|-----|
+| F1 | Controller for plain inputs | `register()` |
+| F2 | `watch()` for entire form | `useWatch({ name: 'field' })` |
+| F3 | `onChange` mode on large forms | `onSubmit` or `onBlur` mode |
+| F4 | Missing `defaultValues` | Always provide all field defaults |
+| F5 | `undefined` as default | Use `''`, `null`, `[]` |
+| F6 | Manual `value` prop on registered input | Let RHF manage value |
+| F7 | Prop drilling register/errors | `FormProvider` + `useFormContext` |
+| F8 | Manual array state for dynamic fields | `useFieldArray` |
+| F9 | Inline validation for complex rules | Schema resolver (Zod/Yup) |
+| F10 | Not typing `useForm<Type>()` | Always pass generic type |
+
+## Schema Validation (recommended for complex forms)
+```typescript
+import { zodResolver } from '@hookform/resolvers/zod';
+import { z } from 'zod';
+
+const schema = z.object({
+  email: z.string().email(),
+  age: z.number().min(18),
+});
+
+type FormData = z.infer<typeof schema>;
+
+useForm<FormData>({
+  resolver: zodResolver(schema),
+  defaultValues: { email: '', age: undefined },
+});
+```
+
+## Validation Modes
+| Mode | When | Use For |
+|------|------|---------|
+| `onSubmit` | Default | Most forms |
+| `onBlur` | After field focus lost | Long forms with guidance |
+| `onChange` | Every keystroke | Small forms, live feedback |
+| `onTouched` | Blur first, then change | UX balance |
+
+## Integration Notes
+- **MUI/Chakra/Ant**: Use `Controller`
+- **Zod/Yup**: Use `@hookform/resolvers`
+- **React Query**: Call mutation in `handleSubmit`, use `setError` for server errors

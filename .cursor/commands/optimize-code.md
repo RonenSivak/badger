@@ -58,7 +58,10 @@ Run `/optimize-code.publish` to:
 
 ## Rules Enforced
 - `.cursor/rules/optimize-code/optimize-code-laws.mdc`
-- `.cursor/rules/optimize-code/ts-simplification-principles.mdc`
+- `.cursor/rules/optimize-code/ts-core-principles.mdc`
+- `.cursor/rules/optimize-code/react-principles.mdc`
+- `.cursor/rules/optimize-code/react-query-principles.mdc`
+- `.cursor/rules/optimize-code/react-hook-form-principles.mdc`
 
 ## Example Usage
 ```

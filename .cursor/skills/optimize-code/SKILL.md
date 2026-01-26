@@ -60,6 +60,23 @@ Example:
 9. Readability Over Cleverness
 10. Design for Testing
 
+## TanStack Query (React Query) Best Practices
+
+- Use for server state, not UI state
+- Array-based query keys: `['users', userId]`
+- Use `enabled` option for conditional fetching
+- Always invalidate/setQueryData after mutations
+- Match existing project version and patterns
+
+## React Hook Form Best Practices
+
+- Use `register()` for plain inputs, `Controller` only for UI libraries
+- Use `useWatch` not `watch()` (performance)
+- Use `useFieldArray` for dynamic fields
+- Always provide `defaultValues`
+- Schema validation (Zod/Yup) for complex forms
+- `FormProvider` + `useFormContext` to avoid prop drilling
+
 ## Key Rules
 
 - One refactor at a time
@@ -71,5 +88,8 @@ Example:
 
 - Orchestrator: `.cursor/commands/optimize-code.md`
 - Laws: `.cursor/rules/optimize-code/optimize-code-laws.mdc`
-- Principles: `.cursor/rules/optimize-code/ts-simplification-principles.mdc`
+- TS Principles: `.cursor/rules/optimize-code/ts-core-principles.mdc`
+- React Principles: `.cursor/rules/optimize-code/react-principles.mdc`
+- React Query: `.cursor/rules/optimize-code/react-query-principles.mdc`
+- React Hook Form: `.cursor/rules/optimize-code/react-hook-form-principles.mdc`
 - Kit Spec: `.cursor/kits/optimize-code/KIT-SPEC.md`
