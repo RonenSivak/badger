@@ -1,5 +1,5 @@
 ---
-description: Verify each split branch is isolated and valid (diff sanity + tsc/lint/test/build), writes VALIDATION-REPORT.md
+description: Verify each split branch (isolation + tsc + lint + test + build + git cherry accounting), writes VALIDATION-REPORT.md
 globs:
 alwaysApply: false
 ---
@@ -8,7 +8,9 @@ alwaysApply: false
 
 Inputs:
 - `SPLIT-SPEC.md`
+- `SPLIT-PLAN.md`
 - `BRANCH-MAP.md`
+- `ANALYSIS.md` (for original commit count)
 
 **Hard rule: No publishing unless ALL verification checks pass.**
 
@@ -16,23 +18,20 @@ Inputs:
 
 ## Phase 1: Discover Verification Commands
 
-Before running checks, discover what commands are available in the workspace.
+Before running checks, discover what commands are available.
 
 ### Step 1.1: Detect Workspace Type
 ```bash
-# Check for monorepo tooling
 ls package.json turbo.json nx.json lerna.json 2>/dev/null
 ```
 
 ### Step 1.2: Extract Available Scripts
-For each affected package, extract scripts from `package.json`:
+For each affected package:
 ```bash
-# Get scripts from package.json
 cat <package-path>/package.json | jq '.scripts | keys'
 ```
 
 ### Step 1.3: Build Verification Command List
-Look for these scripts (in priority order):
 
 | Check Type | Common Script Names |
 |------------|---------------------|
@@ -41,14 +40,7 @@ Look for these scripts (in priority order):
 | **Test** | `test`, `test:unit`, `jest` |
 | **Build** | `build`, `compile`, `bundle` |
 
-Record discovered commands in `VERIFICATION-COMMANDS.md`:
-```markdown
-## Package: @scope/package-name
-- tsc: `yarn workspace @scope/package-name tsc --noEmit`
-- lint: `yarn workspace @scope/package-name lint`
-- test: `yarn workspace @scope/package-name test`
-- build: `yarn workspace @scope/package-name build`
-```
+Record in `VERIFICATION-COMMANDS.md`.
 
 ---
 
@@ -61,7 +53,7 @@ For EACH branch in `BRANCH-MAP.md`:
 git checkout <branch>
 git diff --name-only <BASE>..<branch>
 ```
-- **PASS**: All files match bucket's declared directories/globs
+- **PASS**: All files match bucket's declared scope
 - **FAIL**: Files outside declared scope found
 
 ### 2.2: Base Verification
@@ -71,62 +63,84 @@ git merge-base <BASE> <branch>
 - **PASS**: Branch is cleanly based on `<BASE>`
 - **FAIL**: Branch has unexpected ancestry
 
-### 2.3: No Cross-Branch Dependencies
-- Verify branch doesn't import/depend on changes from other split branches
-- Check for import paths that would break if other branch isn't merged
+### 2.3: Cross-Branch Import Dependencies
+Check if branch imports code from other split branches:
+```bash
+# For TypeScript/JavaScript
+grep -r "from '\.\./.*<other-bucket-dir>" --include="*.ts" --include="*.tsx"
+```
+- **PASS**: No cross-branch dependencies
+- **WARN**: Dependencies exist → document as stacking requirement
 
 ---
 
-## Phase 3: Verification Command Execution (per branch)
+## Phase 3: Git Cherry Accounting (NEW)
 
-For EACH branch, run verification commands for ALL affected packages.
+Verify all commits from source branch are accounted for.
 
-### 3.1: Identify Affected Packages
+```bash
+# List commits in source not in any split branch
+git cherry <combined-branches> <backup-branch>
+```
+
+Or compare counts:
+```bash
+# Original commit count (from ANALYSIS.md)
+ORIGINAL_COUNT=<from analysis>
+
+# Total commits across all split branches
+SPLIT_COUNT=$(for b in <branches>; do git log --oneline <BASE>..$b | wc -l; done | paste -sd+ | bc)
+
+# Should roughly match (may differ due to squashing)
+```
+
+- **PASS**: All commits accounted for
+- **FAIL**: Commits missing → investigate which are lost
+
+---
+
+## Phase 4: Verification Command Execution (per branch)
+
+For EACH branch, run verification for ALL affected packages.
+
+### 4.1: Identify Affected Packages
 ```bash
 git diff --name-only <BASE>..<branch> | cut -d'/' -f1-2 | sort -u
 ```
 
-### 3.2: Run Verification Suite
-For each affected package, execute in order:
+### 4.2: Run Verification Suite
 
 #### A) TypeScript Check (REQUIRED)
 ```bash
-# Yarn workspaces
 yarn workspace <package-name> tsc --noEmit
-
-# Or direct
-cd <package-path> && npx tsc --noEmit
+# Or: cd <package-path> && npx tsc --noEmit
 ```
 **Must pass. Type errors = FAIL.**
 
 #### B) Lint Check (REQUIRED)
 ```bash
 yarn workspace <package-name> lint
-# Or
-cd <package-path> && npm run lint
+# Or: cd <package-path> && npm run lint
 ```
 **Must pass. Lint errors = FAIL.**
 
 #### C) Test Check (REQUIRED if tests exist)
 ```bash
 yarn workspace <package-name> test
-# Or
-cd <package-path> && npm test
+# Or: cd <package-path> && npm test
 ```
 **Must pass. Test failures = FAIL.**
 
 #### D) Build Check (REQUIRED if build script exists)
 ```bash
 yarn workspace <package-name> build
-# Or
-cd <package-path> && npm run build
+# Or: cd <package-path> && npm run build
 ```
 **Must pass. Build errors = FAIL.**
 
-### 3.3: Handle Environment Issues
-If tests require CI environment variables (common in Wix projects):
+### 4.3: Handle Environment Issues
+If tests require CI environment:
 ```bash
-# Try with mock CI vars
 ARTIFACT_VERSION=1.0.0 SRC_MD5=local BUILD_ID=local yarn workspace <pkg> test
 ```
 
@@ -137,7 +151,19 @@ If still fails due to env:
 
 ---
 
-## Phase 4: Generate Validation Report
+## Phase 5: rerere Status Check
+
+If rerere was used during split:
+```bash
+git rerere status
+git rerere diff
+```
+
+Document any recorded resolutions for future reference.
+
+---
+
+## Phase 6: Generate Validation Report
 
 Write `VALIDATION-REPORT.md`:
 
@@ -145,10 +171,15 @@ Write `VALIDATION-REPORT.md`:
 # Validation Report: <topic>
 
 ## Summary
-| Branch | Isolation | TypeScript | Lint | Tests | Build | Status |
-|--------|-----------|------------|------|-------|-------|--------|
-| branch-1 | ✅ | ✅ | ✅ | ✅ | ✅ | **PASS** |
-| branch-2 | ✅ | ✅ | ✅ | ⚠️ SKIP | N/A | **PASS** |
+| Branch | Isolation | TypeScript | Lint | Tests | Build | Cherry | Status |
+|--------|-----------|------------|------|-------|-------|--------|--------|
+| branch-1 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | **PASS** |
+| branch-2 | ✅ | ✅ | ✅ | ⚠️ SKIP | N/A | ✅ | **PASS** |
+
+## Git Cherry Accounting
+- Original commits: <count>
+- Accounted commits: <count>
+- Status: PASS | FAIL
 
 ## Branch: <branch-name>
 
@@ -156,6 +187,7 @@ Write `VALIDATION-REPORT.md`:
 - Scope: <package-path>
 - Files changed: <count>
 - Out-of-scope files: NONE | <list>
+- Cross-branch dependencies: NONE | <list>
 
 ### TypeScript
 - Command: `yarn workspace @scope/pkg tsc --noEmit`
@@ -174,7 +206,7 @@ Write `VALIDATION-REPORT.md`:
 
 ### Build
 - Command: `yarn workspace @scope/pkg build`
-- Result: PASS | FAIL | N/A (no build script)
+- Result: PASS | FAIL | N/A
 - Errors: <if any>
 
 ## Overall Status: PASS | FAIL
@@ -184,6 +216,9 @@ Write `VALIDATION-REPORT.md`:
 
 ## Non-Blocking Notes
 <list skipped checks with reasons>
+
+## rerere Status
+<any recorded resolutions>
 ```
 
 ---
@@ -198,6 +233,8 @@ Before marking verification complete:
 - [ ] Tests pass (or explicitly skipped with reason)
 - [ ] Build passes (if applicable)
 - [ ] No isolation violations
+- [ ] Git cherry accounting passes
+- [ ] Cross-branch dependencies documented
 - [ ] `VALIDATION-REPORT.md` written
 - [ ] All commands logged in `COMMAND-LOG.md`
 
@@ -229,9 +266,17 @@ Before marking verification complete:
 2. Check for import errors
 3. Fix and amend
 
+### If Git Cherry shows missing commits:
+1. Identify missing commit SHAs
+2. Determine if intentionally dropped or forgotten
+3. Cherry-pick to appropriate branch if needed
+
 ---
 
 ## Output
 
 - `VALIDATION-REPORT.md` — full verification results
 - Updated `COMMAND-LOG.md` — all commands executed
+
+When PASS, instruct: "Run `/smart-branch-split.publish`"
+When FAIL, instruct: "Fix issues and re-run `/smart-branch-split.verify`"

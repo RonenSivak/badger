@@ -115,3 +115,10 @@ Examples:
 - React 16/17 → installs v4, React 18+ → installs v5
 - Asks permission before installing
 - Checks lockfile for existing transitive deps to avoid conflicts
+
+### React Hook Form
+- Detects manual form state (multiple useState + onChange patterns)
+- Suggests when forms have 3+ fields with manual state
+- Asks permission before installing
+- Works with React 16.8+ (no version conflicts)
+- Includes schema validation integration (Zod/Yup)
