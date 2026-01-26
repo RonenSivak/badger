@@ -37,6 +37,19 @@ Scan target code against the 12 core principles. Produce `ANALYSIS-REPORT.md`.
 | 10 | Separation | Mixed concerns (UI + data + logic) |
 | 11 | Error Handling | Nested try/catch, swallowed errors |
 | 12 | Simple Tests | (if test file exists) Multiple assertions per test |
+| 13 | Redundant Assertions | `as string` on already-string types, `as Type` where type is correct |
+
+### Type Assertion Fix Rules
+
+When fixing redundant `as Type` assertions:
+
+| Pattern | Correct Fix |
+|---------|-------------|
+| `fn() as string` (fn returns string) | Remove assertion: `fn()` |
+| `fn() as string` (fn returns string \| null) | Narrow properly or keep |
+| `value as any` | Fix upstream type |
+
+**NEVER replace `as Type` with runtime wrapper** like `String()`, `Number()`, `Boolean()`. These add runtime overhead for a compile-time issue.
 
 ### React-Specific Violations (for .tsx files)
 

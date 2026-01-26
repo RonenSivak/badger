@@ -41,3 +41,30 @@ return handlers[type]();
 // Extract function
 const total = calculateTotal(items);
 ```
+
+## Type Assertion Removal
+
+When removing unnecessary type assertions (`as Type`), **check if the type is already correct** before changing:
+
+| Scenario | Action |
+|----------|--------|
+| `fn() as string` where `fn` returns `string` | Just remove `as string` |
+| `fn() as string` where `fn` returns `string \| null` | Keep assertion OR fix with proper narrowing |
+| `fn() as string` where `fn` returns `unknown` | Fix upstream type, not the assertion |
+
+**WRONG:**
+```typescript
+// Before: fn() returns string, `as string` is redundant
+t('key') as string
+
+// BAD fix: Adding runtime overhead
+String(t('key'))
+```
+
+**CORRECT:**
+```typescript
+// Just remove the assertion - type is already string
+t('key')
+```
+
+**Rule:** Don't replace compile-time assertions with runtime wrappers (`String()`, `Number()`, `Boolean()`). If assertion is unnecessary, remove it. If assertion hides a real type issue, fix the type.
