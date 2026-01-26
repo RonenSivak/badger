@@ -1,0 +1,56 @@
+---
+description: Hard gates and workflow laws for /optimize-code
+globs: ".cursor/commands/optimize-code/**, .cursor/optimize-code/**"
+alwaysApply: false
+---
+
+# Optimize-Code Laws
+
+## Workflow Laws
+
+1. **Clarify before analyze** — Must have OPTIMIZATION-SPEC.md before scanning
+2. **Analyze before plan** — Must have ANALYSIS-REPORT.md before planning
+3. **Plan before execute** — Must have OPTIMIZATION-PLAN.md before refactoring
+4. **Verify before publish** — Must pass all gates before summary
+
+## Execution Laws
+
+### MUST (Hard gates - failure = stop)
+- **One refactor at a time** — Never batch multiple changes in one edit
+- **Verify after each refactor** — Tests + type-check must pass
+- **Preserve behavior** — No functional changes, only structural
+- **No new `any`** — Never introduce `any` type during refactoring
+
+### MUST NOT
+- Skip verification between refactors
+- Change public API signatures (unless spec allows)
+- Delete tests
+- Introduce new dependencies without approval
+
+## Quality Gates
+
+### Gate: Analyze
+```
+PASS if: (violations found) OR (explicit "no issues found")
+FAIL if: No analysis performed
+```
+
+### Gate: Execute
+```
+PASS if: Tests pass after each refactor
+FAIL if: Any test fails (must revert or skip)
+```
+
+### Gate: Verify
+```
+PASS if: All checks green (types, lint, tests)
+FAIL if: Any check fails
+```
+
+## Recovery
+
+If stuck:
+1. Revert last refactor
+2. Mark as SKIP with reason
+3. Continue to next item
+4. Report skipped items in publish
