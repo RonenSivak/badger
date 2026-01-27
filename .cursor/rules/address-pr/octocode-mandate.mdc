@@ -1,0 +1,46 @@
+---
+description: Force Octocode for non-local symbols during /address-pr
+globs: ".cursor/commands/address-pr/**, .cursor/address-pr/**"
+alwaysApply: false
+---
+
+# Octocode Mandate for /address-pr
+
+## When Required
+
+Octocode research is **mandatory** when a PR comment:
+
+1. References a function/type/class not defined in the current repo
+2. Questions behavior that depends on external API contracts
+3. Suggests a change that would affect cross-repo consumers
+4. Mentions SDK-generated code or external package internals
+
+## What to Capture
+
+For each non-local symbol, record:
+
+1. **Definition location**: `{repo}:{file}:{line}`
+2. **Snippet**: The actual code at that location
+3. **Contract/Interface**: Type signature or API contract
+4. **Usage patterns**: How it's used across repos (if relevant)
+
+## Proof Format
+
+```markdown
+### Octocode Proof: {symbol_name}
+
+- **Query**: `{octocode query used}`
+- **Definition**: `{repo}/{path}:{line}`
+- **Snippet**:
+\`\`\`{lang}
+{code}
+\`\`\`
+- **Contract**:
+\`\`\`{lang}
+{interface or type}
+\`\`\`
+```
+
+## Hard-fail
+
+If a comment references a non-local symbol and no Octocode proof is recorded in ANALYSIS.md, the `/address-pr.verify` step must FAIL.

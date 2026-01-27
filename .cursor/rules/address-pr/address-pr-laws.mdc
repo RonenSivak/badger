@@ -1,0 +1,43 @@
+---
+description: Laws enforced during /address-pr runs
+globs: ".cursor/commands/address-pr/**, .cursor/address-pr/**"
+alwaysApply: false
+---
+
+# Address-PR Laws
+
+## Core Prohibition
+
+**NEVER auto-commit or push.** All code changes require human action.
+
+## Workflow Gates
+
+1. **Fetch before triage**: Must run `gh api` to fetch comments before classification
+2. **Triage before analyze**: Classification must complete before deep analysis
+3. **Analyze before plan**: Analysis must complete before action planning
+4. **Verify before publish**: VERIFICATION.md must show PASS before publishing
+
+## Proof Requirements
+
+- **Every claim has evidence**: file + line + snippet
+- **Cross-repo symbols**: Octocode proof mandatory (definition + contract)
+- **Static analysis claims**: Must be verifiable via ESLint/TSC
+
+## Classification Rules
+
+- **AI is advisory**: Model classification is a suggestion, not authority
+- **Suggestion blocks signal action**: If comment has `\`\`\`suggestion`, it's likely actionable
+- **When in doubt, classify as actionable**: False positives are better than missed issues
+
+## Output Discipline
+
+- All artifacts go to `.cursor/address-pr/<pr-number>/`
+- Each step produces its designated output file
+- Do not overwrite previous step outputs without reason
+
+## Hard-fail Conditions
+
+- Publishing without verify pass
+- Auto-commit or push at any point
+- Non-local symbols without Octocode proof
+- Skipping workflow steps

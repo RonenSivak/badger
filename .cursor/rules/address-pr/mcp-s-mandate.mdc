@@ -1,0 +1,61 @@
+---
+description: MCP-S for context gathering during /address-pr
+globs: ".cursor/commands/address-pr/**, .cursor/address-pr/**"
+alwaysApply: false
+---
+
+# MCP-S Mandate for /address-pr
+
+## When to Use
+
+MCP-S tools are **recommended** (not always mandatory) when:
+
+1. PR-SPEC mentions linked Jira tickets
+2. Comment references discussions or decisions
+3. Code ownership unclear
+4. Need historical context for the change
+
+## Available MCP-S Tools
+
+### Jira
+- `jira__get-issues` — fetch linked tickets
+- Use when: Comment mentions ticket number or acceptance criteria
+
+### Slack
+- `slack__search-messages` — find related discussions
+- Use when: Comment references team decisions or past discussions
+
+### DevEx
+- `code_owners_for_path` — find code owners
+- Use when: Need to escalate or involve specific team
+- `where_is_my_commit` — track commit history
+- Use when: Understanding change history
+
+### Docs
+- `docs-schema__search_docs` — search internal docs
+- Use when: Comment references internal patterns or guidelines
+
+## Recording Context
+
+Add to ANALYSIS.md:
+
+```markdown
+### MCP-S Context
+
+#### Jira
+- Ticket: {JIRA-123}
+- Summary: {brief}
+- Acceptance criteria relevant: {yes/no}
+
+#### Slack
+- Thread: {link}
+- Key decision: {summary}
+
+#### Ownership
+- Code owner: {team/person}
+- Contact for escalation: {name}
+```
+
+## Not Mandatory But Valuable
+
+Unlike Octocode (which is mandatory for non-local symbols), MCP-S is advisory. Use it when context would improve analysis quality or help the developer understand the "why" behind comments.
