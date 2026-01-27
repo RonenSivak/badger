@@ -1,0 +1,66 @@
+---
+description: When to use octocode for cross-package symbol analysis
+globs: ".cursor/commands/better-names/**, .cursor/better-names/**"
+alwaysApply: false
+---
+
+# Octocode Mandate for /better-names
+
+## When Octocode is REQUIRED
+
+Use octocode MCP when the symbol being renamed:
+
+1. **Is exported from a package**
+   - `export const X = ...`
+   - `export function X() ...`
+   - `export class X ...`
+   - `export interface X ...`
+   - `export type X = ...`
+
+2. **Is re-exported in a barrel file**
+   - `export { X } from './module'`
+   - `export * from './module'`
+
+3. **Is part of a public API**
+   - Listed in package.json exports
+   - Used by external consumers
+
+## How to Use Octocode
+
+### Find External Usages
+
+```
+localSearchCode → find symbol definition
+lspFindReferences → find local references
+octocode/githubSearchCode → find cross-repo usages
+```
+
+### Verify External Impact
+
+1. Search for symbol in external packages
+2. Check if symbol is part of generated SDK
+3. Identify all consuming packages
+
+## Record Findings
+
+```
+## Cross-Package Impact
+
+### External Consumers
+| Package | File | Usage Type |
+|---------|------|------------|
+| @org/pkg | src/file.ts | import |
+
+### SDK Impact
+| SDK | Affected Method |
+|-----|-----------------|
+| ... | ... |
+```
+
+## NOT FOUND Protocol
+
+If octocode cannot find expected external usages:
+- Record as `NOT_FOUND: external usage of <symbol>`
+- Verify symbol is actually exported
+- Check if external packages are in searchable scope
+- Do NOT assume no external usage without proof

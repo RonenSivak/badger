@@ -1,0 +1,63 @@
+---
+description: Complete checklist of impact areas when renaming
+globs: ".cursor/commands/better-names/**, .cursor/better-names/**"
+alwaysApply: false
+---
+
+# Rename Impact Checklist
+
+## Code-Level (LSP Handles)
+
+- [ ] **Declaration** — Where symbol is defined
+- [ ] **Imports** — All import statements
+- [ ] **Re-exports** — Barrel file exports (`export { X }`)
+- [ ] **Direct references** — Function calls, variable usage
+- [ ] **Type references** — In type annotations
+
+## Semantic-Level (Deep Analysis)
+
+- [ ] **Inheritance chains** — Classes extending this class
+- [ ] **Method overrides** — Overridden methods in subclasses
+- [ ] **Interface implementations** — Classes implementing this interface
+- [ ] **Type aliases** — `type MyAlias = OriginalName`
+- [ ] **Generic constraints** — `<T extends OriginalName>`
+- [ ] **Discriminated unions** — `type Action = { type: 'OriginalName' }`
+- [ ] **Mapped types** — `Pick<OriginalName, 'field'>`
+- [ ] **Conditional types** — `T extends OriginalName ? X : Y`
+- [ ] **Declaration merging** — Multiple interface blocks
+- [ ] **Module augmentation** — Extending external types
+
+## String-Level (Grep Required)
+
+- [ ] **dataHooks** — `dataHooks<{ SymbolName: ... }>`
+- [ ] **Translation keys** — i18n keys derived from name
+- [ ] **Test descriptions** — `describe('SymbolName', ...)`
+- [ ] **Test variable names** — Mock names in tests
+- [ ] **Comments** — `// SymbolName does...`
+- [ ] **JSDoc** — `/** @see SymbolName */`
+- [ ] **Storybook** — Story titles and exports
+- [ ] **CSS classes** — Classes matching component name
+- [ ] **package.json** — Exports, main fields
+- [ ] **webpack.config** — Aliases, entries
+- [ ] **tsconfig.json** — Path mappings
+
+## Cross-Package (If Exported)
+
+- [ ] **External consumers** — Other packages using this
+- [ ] **Re-exports** — Packages re-exporting this
+- [ ] **Type-only imports** — `import type { X }`
+- [ ] **SDK generation** — Generated API clients
+
+## Validation Checklist
+
+Before execute:
+- [ ] No name collision in target scope
+- [ ] No shadowing of outer scope variables
+- [ ] New name is not a reserved keyword
+- [ ] New name follows convention for symbol kind
+
+After execute:
+- [ ] `tsc --noEmit` passes
+- [ ] All tests pass
+- [ ] ESLint passes
+- [ ] No orphaned old name references (grep)

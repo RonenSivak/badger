@@ -1,0 +1,80 @@
+---
+description: TypeScript naming convention rules from industry standards
+globs: "**/*.ts, **/*.tsx"
+alwaysApply: false
+---
+
+# TypeScript Naming Conventions
+
+## Variables
+
+| Rule | Good | Bad |
+|------|------|-----|
+| Use camelCase | `recordCount` | `record_count`, `RecordCount` |
+| Be descriptive | `userEmail` | `ue`, `x` |
+| Avoid abbreviations | `configuration` | `cfg`, `config` (context-dependent) |
+| Acronyms as words | `customerId` | `customerID` |
+
+## Constants
+
+| Context | Convention | Example |
+|---------|------------|---------|
+| Local (function scope) | camelCase | `const maxRetries = 3` |
+| Module-level exported | UPPER_SNAKE_CASE | `export const MAX_CONNECTIONS = 8` |
+| Class static readonly | UPPER_SNAKE_CASE | `static readonly DEFAULT_TIMEOUT = 3000` |
+
+## Functions
+
+| Rule | Good | Bad |
+|------|------|-----|
+| Use camelCase | `sendEmail` | `SendEmail`, `send_email` |
+| Start with verb | `getUserInfo` | `userInfo` |
+| Handlers: `handle*` or `on*` | `handleClick` | `clickHandler` |
+
+## Classes
+
+| Rule | Good | Bad |
+|------|------|-----|
+| Use PascalCase | `UserManager` | `userManager` |
+| Use nouns | `PaymentService` | `ProcessPayment` |
+| No `Class` suffix | `InternalHelper` | `InternalHelperClass` |
+
+## Interfaces
+
+| Rule | Good | Bad |
+|------|------|-----|
+| Use PascalCase | `AccountInfo` | `accountInfo` |
+| NO `I` prefix | `User` | `IUser` |
+| NO `Interface` suffix | `Order` | `OrderInterface` |
+| Properties in camelCase | `firstName` | `FirstName` |
+
+## Type Aliases
+
+| Rule | Good | Bad |
+|------|------|-----|
+| Use PascalCase | `ComponentProps` | `componentProps` |
+| NO `Type` suffix | `Address` | `AddressType` |
+| Properties in camelCase | `ageInYears` | `age_in_years` |
+
+## Enums
+
+| Rule | Good | Bad |
+|------|------|-----|
+| Enum name: PascalCase | `StatusCode` | `statusCodes` |
+| Members: PascalCase OR CONSTANT_CASE | `Ok` or `OK` | Mixed casing |
+| Be consistent within project | Pick one style | `{ Ok, NOT_FOUND }` |
+
+## Generics
+
+| Rule | Good | Bad |
+|------|------|-----|
+| Single letter for simple | `T`, `K`, `V` | `type` |
+| PascalCase if descriptive | `Item`, `Key` | `item`, `key` |
+| Common: T=Type, K=Key, V=Value | `Map<K, V>` | `Map<key, value>` |
+
+## Private Members
+
+| Rule | Good | Bad |
+|------|------|-----|
+| Use `private` keyword | `private value` | `private _value` |
+| NO underscore prefix | `count` | `_count` |
