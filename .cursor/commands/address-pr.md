@@ -6,7 +6,25 @@ alwaysApply: false
 
 # /address-pr — Orchestrator
 
-Automate handling of GitHub PR review comments: fetch, triage, analyze, and plan resolutions — **without auto-commit/push**.
+Automate handling of GitHub PR review comments: fetch, triage, analyze, and plan resolutions.
+
+## Git Read-Only Mode (MANDATORY)
+
+**FORBIDDEN git operations:**
+- `git commit`, `git push` — NEVER
+- `gh pr comment`, `gh pr review` — NEVER
+- Any action that modifies git history or PR state
+
+**ALLOWED git operations:**
+- `git status`, `git log`, `git diff` — OK (read-only)
+- `gh api` for fetching data — OK
+- `gh pr view` — OK
+
+## Address ALL Comments
+
+Every comment MUST be addressed — no exceptions:
+- Status: `FIX` or `RESPONSE`
+- No "non-actionable" category — even praise/questions get a response suggestion
 
 ## Workflow (must follow in order)
 
@@ -19,6 +37,15 @@ Automate handling of GitHub PR review comments: fetch, triage, analyze, and plan
 7) Verify → `/address-pr.verify`
 8) Publish report → `/address-pr.publish`
 
+## Final Output Format
+
+A summary table listing ALL comments:
+
+| # | Comment | Status | Solution |
+|---|---------|--------|----------|
+| 1 | {summary} | FIX | {file:line + what changed} |
+| 2 | {summary} | RESPONSE | {suggested reply} |
+
 ## Enforces (rules)
 
 - [Address-PR Laws](../rules/address-pr/address-pr-laws.mdc)
@@ -27,14 +54,15 @@ Automate handling of GitHub PR review comments: fetch, triage, analyze, and plan
 
 ## Hard-fail conditions
 
+- Any git write operation (commit, push, pr comment, pr review)
 - Publishing before verify passes
-- Auto-commit or push (NEVER allowed)
 - Triage before fetch completes
 - Analysis before triage completes
 - Non-local symbols without Octocode proof
 - Claims without file + line + snippet proof
+- **Leaving any comment unaddressed**
 
-## gh CLI Commands Reference
+## gh CLI Commands Reference (READ-ONLY)
 
 ```bash
 # Get PR number from current branch

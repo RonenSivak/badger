@@ -1,5 +1,5 @@
 ---
-description: Create action plan per comment; produce ACTION-PLAN.md
+description: Create action plan per comment; produce ACTION-PLAN.md — ALL comments addressed
 globs:
 alwaysApply: false
 ---
@@ -10,15 +10,17 @@ Input:
 - `.cursor/address-pr/<pr-number>/ANALYSIS.md`
 - `.cursor/address-pr/<pr-number>/TRIAGE.md`
 
-## For Each Actionable Comment
+## Git Read-Only Reminder
+
+**FORBIDDEN:** `git commit`, `git push`, `gh pr comment`, `gh pr review`
+
+## For EVERY Comment (no exceptions)
 
 Create a concrete action plan:
 
-1) **Decide action type**:
-   - `FIX` — implement the change
-   - `RESPOND` — reply to reviewer explaining why no change
-   - `DISCUSS` — needs sync with reviewer/team
-   - `DEFER` — valid but out of scope for this PR
+1) **Decide action type** (only two options):
+   - `FIX` — code change needed
+   - `RESPONSE` — reply to reviewer needed
 
 2) **For FIX actions**:
    - Exact file(s) to modify
@@ -27,7 +29,7 @@ Create a concrete action plan:
    - Code sketch (if helpful)
    - Tests to add/update
 
-3) **For RESPOND actions**:
+3) **For RESPONSE actions**:
    - Draft response to reviewer
    - Evidence/rationale
 
@@ -35,7 +37,7 @@ Create a concrete action plan:
    - P0: Security issues
    - P1: Logic bugs
    - P2: Refactoring
-   - P3: Style/nits
+   - P3: Style/nits/questions/praise
 
 ## Output
 
@@ -46,11 +48,16 @@ Template:
 # Action Plan: PR #{number}
 
 ## Summary
-- Total actions: {count}
+- Total comments: {count}
 - FIX: {count}
-- RESPOND: {count}
-- DISCUSS: {count}
-- DEFER: {count}
+- RESPONSE: {count}
+
+## Summary Table (Preview)
+
+| # | Comment | Status | Solution |
+|---|---------|--------|----------|
+| 1 | {summary} | FIX | `{file}:{line}` — {description} |
+| 2 | {summary} | RESPONSE | {reply suggestion} |
 
 ## Priority Order
 
@@ -63,7 +70,7 @@ Template:
 ### P2 — Refactoring (should fix)
 {list or "None"}
 
-### P3 — Style/Nits (nice to fix)
+### P3 — Style/Nits/Other (complete the PR)
 {list or "None"}
 
 ---
@@ -71,16 +78,15 @@ Template:
 ## Detailed Actions
 
 ### Action #{n}: Comment #{id}
-- **Type**: {FIX|RESPOND|DISCUSS|DEFER}
+- **Type**: {FIX|RESPONSE}
 - **Priority**: {P0|P1|P2|P3}
-- **Category**: {logic|security|style|refactor}
+- **Category**: {logic|security|style|refactor|nit|question|praise}
 
-#### Change Plan
+#### For FIX:
 - **File**: {path}
 - **Lines**: {start}-{end}
 - **Description**: {what to change}
 
-#### Code Sketch
 \`\`\`{lang}
 // Before
 {current code}
@@ -89,12 +95,12 @@ Template:
 {proposed change}
 \`\`\`
 
-#### Tests
-- [ ] {test file}: {test description}
+#### For RESPONSE:
+- **Suggested reply**: "{draft response text}"
 
 ---
 ```
 
-**REMINDER**: This plan is for human review. Do NOT auto-commit or push.
+**REMINDER**: Git read-only mode — no commits, pushes, or PR comments. Human applies all changes.
 
 Then instruct: "Run `/address-pr.verify`."

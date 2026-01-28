@@ -6,9 +6,25 @@ alwaysApply: false
 
 # Address-PR Laws
 
-## Core Prohibition
+## Core Prohibition — Git Read-Only Mode
 
-**NEVER auto-commit or push.** All code changes require human action.
+**NEVER perform git write operations.** This includes:
+- `git commit` — FORBIDDEN
+- `git push` — FORBIDDEN
+- `gh pr comment` — FORBIDDEN
+- `gh pr review` — FORBIDDEN
+- Any action that modifies git history or PR state
+
+**ALLOWED git operations** (read-only):
+- `git status`, `git log`, `git diff` — OK
+- `gh api` for fetching data — OK
+- `gh pr view` — OK
+
+## Address ALL Comments
+
+**Every comment MUST be addressed** — no exceptions. After user specifies the PR:
+- Each comment gets a status: `FIX` or `RESPONSE`
+- There is no "non-actionable" — praise/questions still need a response suggestion
 
 ## Workflow Gates
 
@@ -23,11 +39,14 @@ alwaysApply: false
 - **Cross-repo symbols**: Octocode proof mandatory (definition + contract)
 - **Static analysis claims**: Must be verifiable via ESLint/TSC
 
-## Classification Rules
+## Output Format — Summary Table
 
-- **AI is advisory**: Model classification is a suggestion, not authority
-- **Suggestion blocks signal action**: If comment has `\`\`\`suggestion`, it's likely actionable
-- **When in doubt, classify as actionable**: False positives are better than missed issues
+Final output MUST include a markdown table:
+
+| # | Comment | Status | Solution |
+|---|---------|--------|----------|
+| 1 | {comment summary} | FIX | {file:line + change description} |
+| 2 | {comment summary} | RESPONSE | {suggested reply text} |
 
 ## Output Discipline
 
@@ -38,6 +57,7 @@ alwaysApply: false
 ## Hard-fail Conditions
 
 - Publishing without verify pass
-- Auto-commit or push at any point
+- **Any git write operation** (commit, push, pr comment, pr review)
 - Non-local symbols without Octocode proof
 - Skipping workflow steps
+- Leaving any comment unaddressed

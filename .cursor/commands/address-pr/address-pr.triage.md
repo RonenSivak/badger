@@ -9,29 +9,35 @@ alwaysApply: false
 Input:
 - `.cursor/address-pr/<pr-number>/COMMENTS.md`
 
+## ALL Comments Must Be Addressed
+
+**No comment is "non-actionable"** — every comment gets either:
+- `FIX` — code change needed
+- `RESPONSE` — reply to reviewer needed
+
 ## Classification Categories
 
-| Category | Actionable | Signals |
+| Category | Resolution | Signals |
 |----------|------------|---------|
-| `logic` | YES | Bug, incorrect behavior, missing edge case, wrong algorithm |
-| `security` | YES | Vulnerability, unsafe pattern, injection risk, auth issue |
-| `style` | YES | Naming, formatting, code style (verifiable via linter) |
-| `refactor` | YES | DRY violation, complexity, structural improvement |
-| `nit` | OPTIONAL | "nit:", minor suggestion, "nice to have" |
-| `question` | NO | "?", "why", clarification request |
-| `praise` | NO | "LGTM", "looks good", "+1", positive feedback |
+| `logic` | FIX | Bug, incorrect behavior, missing edge case, wrong algorithm |
+| `security` | FIX | Vulnerability, unsafe pattern, injection risk, auth issue |
+| `style` | FIX | Naming, formatting, code style (verifiable via linter) |
+| `refactor` | FIX | DRY violation, complexity, structural improvement |
+| `nit` | FIX | "nit:", minor suggestion, "nice to have" |
+| `question` | RESPONSE | "?", "why", clarification request — needs explanation |
+| `praise` | RESPONSE | "LGTM", "looks good", "+1" — needs acknowledgment |
 
 ## Classification Process
 
 For each comment:
 
-1) **Check for suggestion blocks** — if present, likely actionable
+1) **Check for suggestion blocks** — if present, it's a FIX
 2) **Keyword scan**:
-   - `nit:`, `nitpick`, `minor` → `nit`
-   - `LGTM`, `looks good`, `nice`, `great` → `praise`
-   - `?`, `why`, `how come` → `question`
-   - `bug`, `wrong`, `incorrect`, `broken` → `logic`
-   - `security`, `vulnerability`, `unsafe`, `injection` → `security`
+   - `nit:`, `nitpick`, `minor` → `nit` (FIX)
+   - `LGTM`, `looks good`, `nice`, `great` → `praise` (RESPONSE)
+   - `?`, `why`, `how come` → `question` (RESPONSE)
+   - `bug`, `wrong`, `incorrect`, `broken` → `logic` (FIX)
+   - `security`, `vulnerability`, `unsafe`, `injection` → `security` (FIX)
 3) **AI classification** (advisory): Ask model to classify if ambiguous
 4) **Record confidence**: HIGH / MEDIUM / LOW
 
@@ -45,11 +51,10 @@ Template:
 
 ## Summary
 - Total comments: {count}
-- Actionable: {count} (logic: X, security: Y, style: Z, refactor: W)
-- Optional: {count} (nit)
-- Non-actionable: {count} (question: X, praise: Y)
+- FIX needed: {count} (logic: X, security: Y, style: Z, refactor: W, nit: N)
+- RESPONSE needed: {count} (question: X, praise: Y)
 
-## Actionable Comments
+## Comments Requiring FIX
 
 ### Comment #{id} — {category} (confidence: {level})
 - **File**: {path}:{line}
@@ -57,11 +62,11 @@ Template:
 - **Reason**: {why classified this way}
 - **Has suggestion block**: {yes/no}
 
-## Non-Actionable Comments
+## Comments Requiring RESPONSE
 
 ### Comment #{id} — {category}
 - **Body**: {truncated body}
-- **Reason**: {why non-actionable}
+- **Response type**: {explanation | acknowledgment | clarification}
 ```
 
 Then instruct: "Run `/address-pr.analyze`."

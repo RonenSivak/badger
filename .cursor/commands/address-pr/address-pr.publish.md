@@ -1,5 +1,5 @@
 ---
-description: Output final report; produce REPORT.md — NO CODE COMMITS
+description: Output final report with summary table — GIT READ-ONLY (no commits/push/comments)
 globs:
 alwaysApply: false
 ---
@@ -15,11 +15,19 @@ Input:
 - **VERIFICATION.md status must be PASS**
 - If not PASS, do NOT publish — go back and fix issues
 
+## Git Read-Only Reminder
+
+**FORBIDDEN:**
+- `git commit`, `git push`
+- `gh pr comment`, `gh pr review`
+
+This step produces a REPORT only. Human applies all changes.
+
 ## Output
 
 Write: `.cursor/address-pr/<pr-number>/REPORT.md`
 
-Also print summary to chat.
+Also **print the summary table to chat**.
 
 Template:
 ```markdown
@@ -27,74 +35,73 @@ Template:
 
 ## PR #{number}: {title}
 
-### Quick Stats
+### Summary Table — ALL Comments Addressed
+
+| # | Comment | Status | Solution |
+|---|---------|--------|----------|
+| 1 | {comment summary - max 60 chars} | FIX | `{file}:{line}` — {change description} |
+| 2 | {comment summary - max 60 chars} | FIX | `{file}:{line}` — {change description} |
+| 3 | {comment summary - max 60 chars} | RESPONSE | {suggested reply text} |
+| ... | ... | ... | ... |
+
+### Stats
 - **Total comments**: {n}
-- **Actionable**: {n}
-- **Fixes needed**: {n}
-- **Responses needed**: {n}
+- **FIX**: {n}
+- **RESPONSE**: {n}
 
-### Priority Summary
+---
 
-| Priority | Category | Count | Status |
-|----------|----------|-------|--------|
-| P0 | Security | {n} | {action needed/none} |
-| P1 | Logic | {n} | {action needed/none} |
-| P2 | Refactor | {n} | {action needed/none} |
-| P3 | Style | {n} | {action needed/none} |
+### Detailed Fixes
 
-### Action Items
+#### Fix #{n}: Comment #{id}
+- **File**: `{path}:{line}`
+- **Comment**: {full comment body}
+- **Change**:
+\`\`\`{lang}
+// Before
+{old code}
 
-#### Must Do (P0-P1)
-1. **Comment #{id}** ({category}): {one-line description}
-   - File: `{path}:{line}`
-   - Action: {FIX|RESPOND}
+// After  
+{new code}
+\`\`\`
 
-#### Should Do (P2)
-1. ...
+---
 
-#### Nice to Do (P3)
-1. ...
+### Detailed Responses
 
-### Suggested Responses
-
-For non-actionable comments that need replies:
-
-> **Comment #{id}** by @{author}:
-> "{comment body truncated}"
->
-> **Suggested response**:
-> "{draft response}"
+#### Response #{n}: Comment #{id}
+- **Comment by @{author}**: "{comment body}"
+- **Suggested response**: "{draft reply}"
 
 ---
 
 ## Next Steps
 
-1. Review this report
-2. Apply fixes manually (files listed in ACTION-PLAN.md)
+1. Review the summary table above
+2. Apply fixes manually (code changes listed above)
 3. Run tests: `npm test`
-4. Respond to reviewers as needed
+4. Copy/paste suggested responses to PR
 5. Request re-review
 
-**REMINDER**: This workflow does NOT auto-commit or push. All changes require human action.
+**REMINDER**: Git read-only mode — no commits, pushes, or PR comments made by this workflow.
 ```
 
-## Chat Output
+## Chat Output — MANDATORY TABLE
 
-Print a concise summary:
+Print to chat:
 
 ```
-## PR #{number} Review Comments Addressed
+## PR #{number} — All Comments Addressed
 
-**Summary**: {n} comments analyzed, {n} fixes needed, {n} responses needed
+| # | Comment | Status | Solution |
+|---|---------|--------|----------|
+| 1 | {summary} | FIX | `{file}:{line}` — {what} |
+| 2 | {summary} | RESPONSE | {reply} |
+| ... | ... | ... | ... |
 
-**Priority breakdown**:
-- P0 (Security): {n}
-- P1 (Logic): {n}
-- P2 (Refactor): {n}
-- P3 (Style): {n}
+**Stats**: {n} total — {n} FIX, {n} RESPONSE
 
 **Full report**: `.cursor/address-pr/{pr}/REPORT.md`
-**Action plan**: `.cursor/address-pr/{pr}/ACTION-PLAN.md`
 
-Ready for you to apply changes manually.
+Ready for manual application. No git writes performed.
 ```

@@ -1,5 +1,5 @@
 ---
-description: Fetch all PR review comments via gh api; produce COMMENTS.md
+description: Fetch all PR review comments via gh api (READ-ONLY); produce COMMENTS.md
 globs:
 alwaysApply: false
 ---
@@ -9,9 +9,15 @@ alwaysApply: false
 Input:
 - `.cursor/address-pr/<pr-number>/PR-SPEC.md`
 
+## Git Read-Only Reminder
+
+**FORBIDDEN:** `git commit`, `git push`, `gh pr comment`, `gh pr review`
+
+**ALLOWED:** `gh api` (read), `gh pr view` (read)
+
 ## Actions
 
-1) **Fetch review comments** via `gh api`:
+1) **Fetch review comments** via `gh api` (read-only):
 ```bash
 gh api repos/{owner}/{repo}/pulls/{pr}/comments \
   --jq '.[] | {
@@ -26,7 +32,7 @@ gh api repos/{owner}/{repo}/pulls/{pr}/comments \
   }'
 ```
 
-2) **Fetch PR conversation comments** (top-level):
+2) **Fetch PR conversation comments** (top-level, read-only):
 ```bash
 gh pr view {pr} --json comments --jq '.comments[]'
 ```
@@ -39,7 +45,7 @@ gh pr view {pr} --json comments --jq '.comments[]'
    - Comment body
    - Thread info (reply chains)
 
-4) **Count verification**: Log total comments fetched
+4) **Count verification**: Log total comments fetched — ALL will be addressed
 
 ## Output
 
@@ -66,7 +72,7 @@ Template per comment:
 ```
 
 ## Verification
-- Total comments: {count}
+- Total comments: {count} — **ALL will be addressed (FIX or RESPONSE)**
 - Inline comments: {count}
 - Conversation comments: {count}
 

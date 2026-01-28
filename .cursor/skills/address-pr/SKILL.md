@@ -1,6 +1,6 @@
 # Address-PR Skill
 
-Purpose: Help the agent efficiently handle GitHub PR review comments without auto-committing.
+Purpose: Handle GitHub PR review comments — address ALL comments, output a summary table, **git read-only mode**.
 
 ## Quick Start
 
@@ -9,6 +9,37 @@ User: "Address the review comments on PR #123"
 Agent: Run /address-pr
 ```
 
+## Core Principles
+
+### 1. Git Read-Only Mode (MANDATORY)
+
+**FORBIDDEN:**
+- `git commit`, `git push`
+- `gh pr comment`, `gh pr review`
+- Any action that modifies git history or PR state
+
+**ALLOWED:**
+- `git status`, `git log`, `git diff` (read-only)
+- `gh api` for fetching data
+- `gh pr view`
+
+### 2. Address ALL Comments
+
+Every comment MUST be addressed — no exceptions:
+- `FIX` — code change needed
+- `RESPONSE` — reply suggestion needed
+
+There is no "non-actionable" category. Even praise/questions get a response suggestion.
+
+### 3. Output: Summary Table
+
+Final output MUST include this table format:
+
+| # | Comment | Status | Solution |
+|---|---------|--------|----------|
+| 1 | {summary} | FIX | `{file}:{line}` — {change description} |
+| 2 | {summary} | RESPONSE | {suggested reply} |
+
 ## Workflow Overview
 
 ```
@@ -16,54 +47,31 @@ Agent: Run /address-pr
       ↓
 /address-pr.fetch    → COMMENTS.md (all comments with file/line/diff)
       ↓
-/address-pr.triage   → TRIAGE.md (classify: actionable vs not)
+/address-pr.triage   → TRIAGE.md (classify: FIX vs RESPONSE)
       ↓
-/address-pr.analyze  → ANALYSIS.md (deep dive on actionable)
+/address-pr.analyze  → ANALYSIS.md (deep dive on all)
       ↓
 /address-pr.resolve  → Update ANALYSIS.md (cross-repo proofs)
       ↓
-/address-pr.plan     → ACTION-PLAN.md (what to fix, how)
+/address-pr.plan     → ACTION-PLAN.md (what to fix/respond, how)
       ↓
 /address-pr.verify   → VERIFICATION.md (check everything)
       ↓
-/address-pr.publish  → REPORT.md (final summary)
+/address-pr.publish  → REPORT.md + SUMMARY TABLE
 ```
 
-## Key Principles
+## Comment Classification
 
-### 1. Never Auto-Commit
-All changes are planned but never executed. Human applies fixes.
+| Signal | Category | Status |
+|--------|----------|--------|
+| `\`\`\`suggestion` block | varies | FIX |
+| `nit:`, `nitpick` | nit | FIX |
+| `LGTM`, `looks good` | praise | RESPONSE |
+| `?`, `why` | question | RESPONSE |
+| `bug`, `wrong`, `broken` | logic | FIX |
+| `security`, `unsafe` | security | FIX |
 
-### 2. Fetch First
-Always use `gh api repos/{owner}/{repo}/pulls/{pr}/comments` before analysis.
-
-### 3. Classify Before Analyzing
-Don't deep-dive until you know what's actionable:
-- `logic`, `security`, `style`, `refactor` → Actionable
-- `nit` → Optional
-- `question`, `praise` → Non-actionable
-
-### 4. Proof Everything
-Every claim needs:
-- File path
-- Line number
-- Code snippet
-
-### 5. Cross-Repo = Octocode
-Non-local symbols require Octocode proof before verify can pass.
-
-## Comment Classification Quick Reference
-
-| Signal | Category | Actionable |
-|--------|----------|------------|
-| `\`\`\`suggestion` block | varies | YES |
-| `nit:`, `nitpick` | nit | OPTIONAL |
-| `LGTM`, `looks good` | praise | NO |
-| `?`, `why` | question | NO |
-| `bug`, `wrong`, `broken` | logic | YES |
-| `security`, `unsafe` | security | YES |
-
-## gh CLI Commands
+## gh CLI Commands (READ-ONLY)
 
 ```bash
 # Get PR number from current branch
@@ -89,7 +97,7 @@ gh pr view {pr} --json comments
 ├── ANALYSIS.md       # From analyze + resolve
 ├── ACTION-PLAN.md    # From plan
 ├── VERIFICATION.md   # From verify
-└── REPORT.md         # From publish
+└── REPORT.md         # From publish (includes summary table)
 ```
 
 ## When to Use Each MCP
@@ -102,20 +110,20 @@ gh pr view {pr} --json comments
 | Historical context | MCP-S Slack |
 | Static analysis claim | ESLint/TSC |
 
-## Error Recovery
+## Hard-Fail Conditions
 
-If verification fails:
-1. Check which check failed in VERIFICATION.md
-2. Go back to the relevant step
-3. Fix the issue
-4. Re-run from that step forward
-5. Re-verify
+- Any git write operation (commit, push, pr comment, pr review)
+- Publishing before verify passes
+- Leaving any comment unaddressed
+- Non-local symbols without Octocode proof
+- Missing summary table in final output
 
 ## Anti-Patterns
 
+- **Any git write operation** (NEVER)
 - Starting analysis without fetching comments first
-- Skipping triage and analyzing everything equally
+- Skipping triage
 - Making claims without file:line proof
 - Using non-local symbols without Octocode
 - Publishing before verify passes
-- **Auto-committing anything** (NEVER do this)
+- Leaving comments as "non-actionable" (ALL must be addressed)

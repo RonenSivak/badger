@@ -1,5 +1,5 @@
 ---
-description: Deep analysis of actionable comments; produce ANALYSIS.md
+description: Deep analysis of ALL comments (FIX and RESPONSE); produce ANALYSIS.md
 globs:
 alwaysApply: false
 ---
@@ -10,7 +10,13 @@ Input:
 - `.cursor/address-pr/<pr-number>/TRIAGE.md`
 - `.cursor/address-pr/<pr-number>/COMMENTS.md`
 
-## For Each Actionable Comment
+## Git Read-Only Reminder
+
+**FORBIDDEN:** `git commit`, `git push`, `gh pr comment`, `gh pr review`
+
+## For EVERY Comment (FIX and RESPONSE)
+
+### For FIX comments:
 
 1) **Read the code context**
    - Fetch the file at the commented line
@@ -37,6 +43,16 @@ Input:
    - Are there tests that need updating?
    - Cross-repo implications?
 
+### For RESPONSE comments:
+
+1) **Understand the question/feedback**
+   - What is the reviewer asking/saying?
+   - What context do they need?
+
+2) **Draft response**
+   - For questions: prepare explanation
+   - For praise: prepare acknowledgment
+
 ## Output
 
 Write: `.cursor/address-pr/<pr-number>/ANALYSIS.md`
@@ -46,31 +62,31 @@ Template per comment:
 ## Analysis: Comment #{id}
 
 ### Comment Summary
-- **Category**: {logic|security|style|refactor}
-- **File**: {path}:{line}
+- **Category**: {logic|security|style|refactor|nit|question|praise}
+- **Status**: {FIX|RESPONSE}
+- **File**: {path}:{line} (or N/A for conversation comments)
 - **Reviewer**: {author}
 
-### Code Context
+### Code Context (for FIX)
 \`\`\`{lang}
 {code with line numbers}
 \`\`\`
 
-### Reviewer's Concern
-{What they're pointing out}
+### Reviewer's Concern/Question
+{What they're pointing out or asking}
 
-### Validation
+### For FIX:
 - **Is concern valid?**: {YES|NO|PARTIAL}
 - **Evidence**: {file:line or test result or linter output}
-
-### Complexity Assessment
 - **Effort**: {simple|moderate|complex}
 - **Lines affected**: ~{estimate}
 - **Files affected**: {list}
+- **Cross-repo**: {yes/no — if yes, note for /address-pr.resolve}
 
-### Dependencies
-- Related files: {list}
-- Tests to update: {list}
-- Cross-repo: {yes/no — if yes, note for /address-pr.resolve}
+### For RESPONSE:
+- **Response type**: {explanation|acknowledgment|clarification}
+- **Key points to address**: {list}
+- **Draft response**: "{suggested reply text}"
 
 ### Suggestion Block (if present)
 \`\`\`diff

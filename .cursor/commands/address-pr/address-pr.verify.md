@@ -1,5 +1,5 @@
 ---
-description: Verify analysis correctness + static analysis; produce VERIFICATION.md
+description: Verify ALL comments addressed + static analysis; produce VERIFICATION.md
 globs:
 alwaysApply: false
 ---
@@ -10,12 +10,18 @@ Input:
 - `.cursor/address-pr/<pr-number>/ACTION-PLAN.md`
 - `.cursor/address-pr/<pr-number>/ANALYSIS.md`
 
+## Git Read-Only Reminder
+
+**FORBIDDEN:** `git commit`, `git push`, `gh pr comment`, `gh pr review`
+
 ## Verification Steps
 
-### A) Completeness Check
+### A) Completeness Check — ALL Comments Addressed
 - [ ] All comments from COMMENTS.md accounted for in TRIAGE.md
-- [ ] All actionable comments have entries in ANALYSIS.md
+- [ ] **Every single comment** has an entry in ACTION-PLAN.md (FIX or RESPONSE)
 - [ ] All FIX actions have concrete file + line targets
+- [ ] All RESPONSE actions have draft reply text
+- [ ] **No comment left unaddressed**
 
 ### B) Static Analysis (for style claims)
 Run linters to verify style-related claims:
@@ -61,11 +67,14 @@ Template:
 
 ## Status: {PASS|FAIL}
 
-## Completeness
+## Completeness — ALL Comments Addressed
 - Comments total: {n}
 - Triaged: {n} ✓
 - Analyzed: {n} ✓
 - Planned: {n} ✓
+- **FIX actions**: {n}
+- **RESPONSE actions**: {n}
+- **Unaddressed**: 0 ✓ (MUST be zero)
 
 ## Static Analysis
 
@@ -87,8 +96,16 @@ Template:
 ## Blockers
 {list any blocking issues or "None"}
 
+## Git Read-Only Verified
+- [ ] No git commit commands executed
+- [ ] No git push commands executed  
+- [ ] No gh pr comment commands executed
+- [ ] No gh pr review commands executed
+
 ## Ready for Publish: {YES|NO}
 ```
 
 If PASS: instruct "Run `/address-pr.publish`."
 If FAIL: list what needs fixing, then re-verify.
+
+**HARD-FAIL if any comment is unaddressed.**

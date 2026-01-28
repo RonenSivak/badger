@@ -6,7 +6,13 @@ alwaysApply: false
 
 # /address-pr.clarify — Clarification Loop
 
-Ask:
+## Git Read-Only Mode Reminder
+
+**FORBIDDEN:** `git commit`, `git push`, `gh pr comment`, `gh pr review`
+
+This entire workflow is read-only. Human applies all changes.
+
+## Ask:
 
 1) **What PR?** (pick one)
    - PR number (e.g., `#123`)
@@ -16,7 +22,7 @@ Ask:
 2) **Scope constraints?**
    - All comments or specific files only
    - Specific reviewers to focus on
-   - Ignore resolved comments?
+   - Include resolved comments?
 
 3) **Context needed?**
    - Related Jira tickets
@@ -43,12 +49,16 @@ Template:
 - Reviewers: [all | specific list]
 - Include resolved: [yes | no]
 
+## Mode
+- **Git read-only**: YES (no commits, pushes, or PR comments)
+- **Address all comments**: YES (every comment gets FIX or RESPONSE)
+
 ## Context
 - Jira: [tickets if any]
 - Slack: [threads if any]
 - Notes: [any additional context]
 
-## Fetch command
+## Fetch command (read-only)
 gh api repos/{owner}/{repo}/pulls/{number}/comments
 ```
 

@@ -1,5 +1,5 @@
 ---
-description: Cross-repo resolution via Octocode/MCP-S; enrich ANALYSIS.md
+description: Cross-repo resolution via Octocode/MCP-S (READ-ONLY); enrich ANALYSIS.md
 globs:
 alwaysApply: false
 ---
@@ -8,6 +8,12 @@ alwaysApply: false
 
 Input:
 - `.cursor/address-pr/<pr-number>/ANALYSIS.md`
+
+## Git Read-Only Reminder
+
+**FORBIDDEN:** `git commit`, `git push`, `gh pr comment`, `gh pr review`
+
+This step only gathers information — no writes to git or PR.
 
 ## When to Use
 
