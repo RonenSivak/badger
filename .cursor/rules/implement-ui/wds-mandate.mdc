@@ -1,0 +1,71 @@
+---
+description: Wix Design System usage rules for /implement-ui
+globs: ".cursor/commands/implement-ui/**, .cursor/implement-ui/**"
+alwaysApply: false
+---
+
+# WDS Mandate
+
+## MUST Call First
+
+Before creating, building, or implementing ANY component:
+
+```
+MUST call getComponentsList from wix-design-system-mcp
+```
+
+This gives you:
+- Available components with descriptions
+- Dos and don'ts for each component
+- Context for informed decisions
+
+## NOT FOUND Flow (STRICT)
+
+When a requested component is NOT in the WDS list:
+
+### Step 1: STOP
+- Do NOT generate any code
+- Do NOT assume what the component should be
+
+### Step 2: INFORM
+Tell user:
+> "X is not an official Wix Design System component."
+
+### Step 3: ASK
+> "Would you like me to search wix-private and wix-playground repositories for similar implementations?"
+
+### Step 4: WAIT
+Do not proceed without user confirmation.
+
+### Step 5: SEARCH (if confirmed)
+Use octocode with:
+- `owner="wix-private"` 
+- `owner="wix-playground"`
+
+Show real examples and patterns found.
+
+## NEVER
+
+- ❌ Generate code for non-existent WDS components without checking
+- ❌ Create components based on assumptions
+- ❌ Skip asking permission to search
+- ❌ Hallucinate component implementations
+
+## For Existing WDS Components
+
+When component IS in the list:
+1. Get props with `getComponentProps`
+2. Get examples with `getComponentExamples` if complex
+3. Use `verify` tool to type-check JSX before applying
+4. Offer real examples from wix-private/wix-playground automatically
+
+## WDS MCP Tools Quick Reference
+
+| Tool | When to Use |
+|------|-------------|
+| `getComponentsList` | **FIRST** — before any component work |
+| `getComponentProps` | After selecting components |
+| `getComponentExamples` | For complex components or patterns |
+| `getIconsList` | When UI needs icons |
+| `verify` | Before applying generated JSX |
+| `figma-to-code` prompt | When Figma URL provided |

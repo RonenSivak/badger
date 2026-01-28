@@ -1,0 +1,40 @@
+---
+description: Laws enforced during /implement-ui runs
+globs: ".cursor/commands/implement-ui/**, .cursor/implement-ui/**"
+alwaysApply: false
+---
+
+# Implement-UI Laws
+
+## Workflow Gates
+
+1. **Clarify before analyze**: UI-SPEC must exist before running analyze.
+2. **Plan before implement**: COMPONENT-MAP must exist before coding.
+3. **Verify before publish**: VERIFICATION-REPORT must show PASS.
+4. **No publish on FAIL**: Hard-fail if verification not passed.
+
+## WDS Rules
+
+5. **Check components list FIRST**: Always call `getComponentsList` before any component work.
+6. **NOT FOUND discipline**: If component doesn't exist in WDS, STOP and ask before proceeding.
+7. **Use WDS imports**: Import from `'wix-design-system'`, not individual packages.
+8. **Follow dos/don'ts**: Respect WDS component guidelines from the list.
+
+## Code Quality
+
+9. **Type everything**: All props and handlers must be typed with TypeScript.
+10. **Keep components small**: Split if > 150 lines.
+11. **No guessing**: If unsure about a component, get examples first.
+
+## Verification
+
+12. **Figma mode**: Visual comparison required (browser screenshot if MCP available).
+13. **Semantic mode**: 100% requirements checklist coverage.
+14. **Technical checks**: TypeScript + lint must pass.
+
+## MCP Selection
+
+15. **wix-design-system-mcp**: ALWAYS use for WDS components.
+16. **octocode**: Use when component NOT in WDS — search wix-private/wix-playground.
+17. **MCP-S**: Optional — use for Figma data extraction (`figma__get-file-nodes`) or Wix docs (`docs-schema__search_docs`).
+18. **cursor-ide-browser**: Use for visual verification in Figma mode.
