@@ -1,3 +1,8 @@
+---
+name: better-names
+description: "Safely rename TypeScript identifiers following naming conventions, with impact analysis (LSP + string usages) and verification (typecheck/tests/lint). Use when renaming symbols or fixing naming convention violations."
+---
+
 # Better-Names Skill
 
 Purpose: Safely rename TypeScript identifiers following industry-standard naming conventions with comprehensive impact analysis.

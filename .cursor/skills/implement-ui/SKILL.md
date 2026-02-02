@@ -1,3 +1,8 @@
+---
+name: implement-ui
+description: "Create UI components from Figma designs or semantic descriptions using Wix Design System, with a clarify→plan→implement→verify workflow. Use when implementing UI and you must map to WDS components."
+---
+
 # implement-ui Skill
 
 Create UI components from Figma designs or semantic descriptions using Wix Design System.

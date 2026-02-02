@@ -1,3 +1,8 @@
+---
+name: troubleshoot
+description: "Turn a symptom into a proven end-to-end root cause and fix plan across repos using runtime evidence (Chrome DevTools first, BrowserMCP fallback) plus MCP-S + Octocode proof. Use when debugging frontend/backend/perf issues."
+---
+
 # Troubleshoot Skill 🐛
 
 ## Goal

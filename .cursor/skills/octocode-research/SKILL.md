@@ -1,3 +1,8 @@
+---
+name: octocode-research
+description: "Resolve non-local symbols with authoritative cross-repo proof: definition, implementation, and boundary evidence, recorded with repo/path + line ranges. Use whenever a symbol cannot be proven locally."
+---
+
 # Octocode Research Skill 🛰️
 
 ## Purpose

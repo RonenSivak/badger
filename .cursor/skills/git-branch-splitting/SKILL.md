@@ -1,3 +1,8 @@
+---
+name: git-branch-splitting
+description: "Split a large Git branch into smaller reviewable branches using cherry-pick, selective staging, patch+stash, rebase --onto, or milestone branches. Use when you need to break a big change into multiple PRs."
+---
+
 # SKILL: Git Branch Splitting (big branch → multiple PR branches)
 
 Split a large Git branch into smaller, reviewable branches using the appropriate technique.

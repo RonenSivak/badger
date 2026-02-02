@@ -1,3 +1,8 @@
+---
+name: create-kit
+description: "Help generate repeatable Cursor workflow kits (commands + rules + skills) with a KIT-SPEC, FILE-MAP, and verification gates. Use when creating a new workflow kit or standardizing an existing one."
+---
+
 # Create-Kit Skill
 
 Purpose: help the agent generate **repeatable Cursor workflows** (commands + rules + skills) without bloating context.

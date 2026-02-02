@@ -1,3 +1,8 @@
+---
+name: smart-merge
+description: "Safely merge branches by simulating merge, resolving conflicts using existing patterns and ownership context, verifying with real checks, and scanning blast radius. Use when performing non-trivial merges with conflicts."
+---
+
 # Smart Merge Skill 🔀
 
 ## What "smart" means

@@ -1,3 +1,8 @@
+---
+name: conventional-branch-naming
+description: "Standardize branch names using <type>/<scope>/<short-kebab> to make purpose obvious and consistent. Use when creating or splitting branches and you need a predictable naming scheme."
+---
+
 # SKILL: Conventional branch naming (for split branches)
 
 ## Goal

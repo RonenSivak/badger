@@ -1,3 +1,8 @@
+---
+name: optimize-code
+description: "Systematically simplify TypeScript/React code with staged refactors and verification (tests/types/lint). Use when asked to simplify code, reduce complexity, remove duplication, or improve maintainability."
+---
+
 # Skill: /optimize-code
 
 Systematically simplify TypeScript code following the "Best Practices for Simplifying TypeScript Code" guide.

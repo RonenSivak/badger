@@ -1,3 +1,8 @@
+---
+name: deep-search-consumer
+description: "Use deep-search artifacts as portable context to implement changes safely, re-pin non-local symbols with /octocode/research, and carry forward pitfalls/contracts. Use when implementing from an existing deep-search report."
+---
+
 # Skill: deep-search-consumer
 
 Goal:

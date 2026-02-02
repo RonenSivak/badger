@@ -1,3 +1,7 @@
+---
+name: address-pr
+description: "Handle GitHub PR review comments end-to-end: fetch, triage (FIX vs RESPONSE), analyze, verify, and produce a summary table. Use when you need to address all PR review comments in a strict git read-only workflow."
+---
 # Address-PR Skill
 
 Purpose: Handle GitHub PR review comments — address ALL comments, output a summary table, **git read-only mode**.

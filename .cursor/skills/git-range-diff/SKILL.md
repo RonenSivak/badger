@@ -1,3 +1,8 @@
+---
+name: git-range-diff
+description: "Verify that a rewritten history (e.g., split/reworded commits) preserves the intended patchset using git range-diff. Use when you rewrote commits but need confidence the diff matches the original."
+---
+
 # SKILL: Verifying split equivalence with git range-diff
 
 ## Use case

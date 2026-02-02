@@ -1,3 +1,8 @@
+---
+name: mcp-s
+description: "Use MCP-S internal knowledge tools (docs, Slack, Jira, DevEx) to answer questions code cannot, then verify claims via code/Octocode. Use when ownership, intent, requirements, or generated pipelines are unclear."
+---
+
 # Skill: MCP-S Internal Knowledge Research
 
 ## Purpose

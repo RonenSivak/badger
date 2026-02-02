@@ -1,3 +1,8 @@
+---
+name: implementation-verify
+description: "Verify an implementation is correct and that the story connects in code (import→usage, callsite→impl, binding→handler), including Octocode proof for cross-repo hops and running standard checks. Use before publish."
+---
+
 # Skill: implementation-verify
 
 Goal:
