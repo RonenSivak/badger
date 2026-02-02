@@ -26,7 +26,8 @@ When triggered, prompt the user with clickable options:
    - File name: `session-memory-<flow-summary>-<date>.md`
      - `<flow-summary>`: 3–4 words, kebab-cased (e.g. `deep-search-auth-flow`)
      - `<date>`: full timestamp (e.g. `2026-02-02T15-30`)
-   - Then tell the user to create a new agent and reference this file.
+   - Then tell the user to create a new agent and run:
+     - `/continue <path-to-session-memory-file>`
 
 2) **Continue as usual**
    - Proceed without dumping, accepting higher risk of losing context.
