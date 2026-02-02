@@ -1,0 +1,31 @@
+---
+description: Enforce context-budget prompting and optional session memory dump when near context limit
+globs: ".cursor/commands/rnd/**,.cursor/rnd/**,.cursor/session-memory/**"
+alwaysApply: false
+---
+
+# Context Budget Gate for /rnd
+
+## Core rule (MANDATORY)
+
+When the agent estimates context usage is near-full (≈ 90%), it MUST:
+1) stop and prompt the user with clickable options
+2) WAIT for the user’s decision
+
+## Options (clickable, required)
+
+1) **Dump session memory**
+- Write a memory dump to `.cursor/session-memory/`
+- Filename: `session-memory-<flow-summary>-<date>.md`
+  - `<flow-summary>`: 3–4 words, kebab-cased
+  - `<date>`: full timestamp (e.g. `2026-02-02T15-30`)
+- Then instruct the user to create a new agent and reference the file.
+
+2) **Continue as usual**
+- Continue without dumping.
+
+## No silent behavior
+
+- The agent MUST NOT silently keep going when it believes it is close to the context limit.
+- The agent MUST NOT dump memory without user choice.
+

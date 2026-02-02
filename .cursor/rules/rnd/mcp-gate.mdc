@@ -1,0 +1,35 @@
+---
+description: Enforce MCP availability checks and mandatory user prompt when MCPs are missing
+globs: ".cursor/commands/rnd/**,.cursor/rnd/**"
+alwaysApply: false
+---
+
+# MCP Gate for /rnd
+
+## Core rule (MANDATORY)
+
+Before routing to any Badger workflow command, `/rnd` MUST:
+1) run `/rnd.preflight`
+2) if **any** required MCP is missing/not active, **prompt the user with clickable options and WAIT**
+
+## Required behavior
+
+### 1) No silent downgrades
+- If an MCP is missing, you MUST NOT silently proceed.
+- You MUST explicitly ask the user whether to:
+  - enable it now (recheck), or
+  - proceed without it (degraded mode), or
+  - request help/alternative.
+
+### 2) Degraded mode must be explicit
+If the user chooses to proceed without an MCP:
+- Record the MCP as **SKIPPED** in `.cursor/rnd/<topic>/MCP-PREFLIGHT.md`.
+- Any downstream workflow that depends on that MCP must:
+  - mark cross-repo claims as **NOT FOUND** (with searches + scope), OR
+  - use a documented fallback (if available).
+
+### 3) Hard stop on “missing + required”
+If a routed command requires a missing MCP and the user has NOT chosen `skip`:
+- STOP
+- return to `/rnd.preflight`
+
