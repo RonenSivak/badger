@@ -4,7 +4,7 @@ globs:
 alwaysApply: false
 ---
 
-# /debug.publish — Publish 📣
+# /troubleshoot.publish — Publish 📣
 
 ## Hard Gates
 - MUST have a passing VALIDATION-REPORT
@@ -16,7 +16,7 @@ alwaysApply: false
 ---
 
 ## Write
-- `.cursor/debug/<topic>/DEBUG-REPORT.md` (final)
+- `.cursor/troubleshoot/<topic>/DEBUG-REPORT.md` (final)
 
 Also print the same report in chat.
 

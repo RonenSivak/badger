@@ -1,15 +1,15 @@
 ---
-description: MCP-S + Octocode proof loop (unlimited) to resolve all non-local symbols in the trace
+description: Deep-debug: MCP-S + Octocode + BrowserMCP proof loop (unlimited) to resolve all non-local symbols in the trace
 globs:
 alwaysApply: false
 ---
 
-# /debug.resolve — Proof Loop 🛰️
+# /troubleshoot.resolve — Proof Loop 🛰️
 
 Goal: produce:
-- `.cursor/debug/<topic>/mcp-s-notes.md`
-- `.cursor/debug/<topic>/octocode-queries.md`
-- `.cursor/debug/<topic>/trace-ledger.md`
+- `.cursor/troubleshoot/<topic>/mcp-s-notes.md`
+- `.cursor/troubleshoot/<topic>/octocode-queries.md`
+- `.cursor/troubleshoot/<topic>/trace-ledger.md`
 
 ---
 
@@ -75,6 +75,29 @@ Goal: produce:
 | `handle-dialog` | Handle alerts |
 | `upload-file` | File upload |
 | `resize-page` | Responsive test |
+
+### ⚪ Reproduction Tools (BrowserMCP — Playwright-style)
+
+| Tool | When to Use |
+|------|-------------|
+| `browser_navigate` | Navigate to URL |
+| `browser_snapshot` | Get DOM with element refs (REQUIRED before interaction) |
+| `browser_click` | Click by ref (from snapshot) |
+| `browser_type` | Type text into input |
+| `browser_hover` | Trigger hover states |
+| `browser_press_key` | Keyboard input |
+| `browser_wait` | Wait N seconds |
+| `browser_screenshot` | Capture visual state |
+| `browser_get_console_logs` | Check console after action |
+
+**BrowserMCP Workflow:**
+```
+1. browser_navigate(url) → go to bug location
+2. browser_snapshot() → get element refs (uid)
+3. browser_click(ref=uid) → interact with element
+4. browser_get_console_logs() → check for errors
+5. browser_screenshot() → capture result
+```
 
 ---
 
@@ -142,11 +165,11 @@ Run **`/octocode/research`** to fetch:
 - Side-effect boundary snippet (network/persist/render/throw)
 
 Write queries + results into:
-`.cursor/debug/<topic>/octocode-queries.md`
+`.cursor/troubleshoot/<topic>/octocode-queries.md`
 
 ### D) Update Trace Ledger
 
-Append to `.cursor/debug/<topic>/trace-ledger.md`:
+Append to `.cursor/troubleshoot/<topic>/trace-ledger.md`:
 
 | Symbol | Owner | Layer | Def | Impl | Boundary | Evidence | Status |
 |--------|-------|-------|-----|------|----------|----------|--------|
@@ -181,7 +204,7 @@ arguments:
   query: "<service name>"
 ```
 
-### If you need to reproduce in browser:
+### If you need to reproduce in browser (Chrome DevTools):
 ```
 server: user-MCP-S
 toolName: chrome-devtools__navigate-page
@@ -198,12 +221,44 @@ toolName: chrome-devtools__list-console-messages
 arguments: {}
 ```
 
+### If you need to reproduce in browser (BrowserMCP):
+```
+# Navigate to bug location
+server: user-browsermcp
+toolName: browser_navigate
+arguments:
+  url: "<URL to reproduce>"
+
+# Get element refs from DOM
+server: user-browsermcp
+toolName: browser_snapshot
+arguments: {}
+
+# Interact by ref (get ref from snapshot above)
+server: user-browsermcp
+toolName: browser_click
+arguments:
+  ref: "<uid from snapshot>"
+  element: "Button description"
+
+# Check console for errors
+server: user-browsermcp
+toolName: browser_get_console_logs
+arguments: {}
+
+# Capture visual state
+server: user-browsermcp
+toolName: browser_screenshot
+arguments: {}
+```
+
 ---
 
 ## Rules
 - **Generated wrappers do NOT count:** find generator source + runtime implementer
 - **Record every Octocode query** in `octocode-queries.md`
 - **Record every MCP-S query** in `mcp-s-notes.md`
+- **Record every BrowserMCP query** in `mcp-s-notes.md`
 - **Add every symbol** to `trace-ledger.md` with proof pointers
 
 ## Stop Conditions
@@ -211,4 +266,4 @@ arguments: {}
 - Marked NOT FOUND with:
   - Exact Octocode searches + scope
   - Exact MCP-S tool queries attempted
-  - Chrome DevTools / Grafana queries tried
+  - Chrome DevTools / BrowserMCP / Grafana queries tried

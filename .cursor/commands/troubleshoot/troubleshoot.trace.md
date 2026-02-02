@@ -1,20 +1,26 @@
 ---
-description: Build an E2E trace map from evidence (trace/logs/devtools/grafana) or from code breadcrumbs
+description: Deep-debug: Build an E2E trace map from evidence (trace/logs/devtools/grafana) with BrowserMCP fallback
 globs:
 alwaysApply: false
 ---
 
-# /debug.trace — Evidence Trace 🌐
+# /troubleshoot.trace — Evidence Trace 🌐
 
-Goal: produce `.cursor/debug/<topic>/E2E-TRACE.md`
+Goal: produce `.cursor/troubleshoot/<topic>/E2E-TRACE.md`
 
 ---
 
-## 🔴 STEP 1: Gather Runtime Evidence (MCP-S FIRST)
+## 🔴 STEP 1: Gather Runtime Evidence (Chrome DevTools FIRST, BrowserMCP FALLBACK)
 
-Before tracing code, gather runtime evidence using MCP-S tools.
+Before tracing code, gather runtime evidence using available tools.
 
-### For Frontend/UI Bugs — Chrome DevTools
+### For Frontend/UI Bugs — Chrome DevTools FIRST, BrowserMCP as FALLBACK
+
+**PRIORITY ORDER:**
+1. **TRY Chrome DevTools FIRST** — Full capabilities (network, performance, JS eval)
+2. **FALLBACK to BrowserMCP** — Only if Chrome DevTools unavailable/fails
+
+#### PRIMARY: Chrome DevTools (TRY FIRST)
 
 **1) Console Errors (MANDATORY)**
 ```
@@ -63,6 +69,90 @@ toolName: chrome-devtools__evaluate-script
 arguments:
   expression: "window.__DEBUG_STATE__"  # or relevant expression
 ```
+
+#### FALLBACK: BrowserMCP (Use ONLY if Chrome DevTools unavailable)
+
+**When to use BrowserMCP:**
+- Chrome DevTools MCP tools return errors
+- Chrome DevTools MCP is not connected
+- Browser tab is not accessible via DevTools
+
+**1) Navigate to Bug Location (if needed)**
+```
+server: user-browsermcp
+toolName: browser_navigate
+arguments:
+  url: "<URL where bug occurs>"
+```
+
+**2) DOM/Accessibility Snapshot (MANDATORY)**
+```
+server: user-browsermcp
+toolName: browser_snapshot
+arguments: {}
+```
+→ Returns DOM tree with element refs (uid) for interaction
+→ Use refs in subsequent click/type/hover calls
+
+**3) Console Logs (MANDATORY)**
+```
+server: user-browsermcp
+toolName: browser_get_console_logs
+arguments: {}
+```
+→ Captures JS console output (logs, errors, warnings)
+
+**4) Screenshot (MANDATORY)**
+```
+server: user-browsermcp
+toolName: browser_screenshot
+arguments: {}
+```
+→ Visual capture of current state
+
+**5) Reproduce Bug via Interaction**
+```
+# Get snapshot first to find element refs
+server: user-browsermcp
+toolName: browser_snapshot
+arguments: {}
+
+# Click element by ref (from snapshot)
+server: user-browsermcp
+toolName: browser_click
+arguments:
+  ref: "<uid from snapshot>"
+  element: "Button that triggers bug"
+
+# Check console after interaction
+server: user-browsermcp
+toolName: browser_get_console_logs
+arguments: {}
+```
+
+#### Tool Selection Logic
+
+```
+TRY Chrome DevTools FIRST
+│
+├─ SUCCESS → Continue with Chrome DevTools
+│  - Network requests: ✅ ONLY in Chrome DevTools
+│  - Performance: ✅ ONLY in Chrome DevTools
+│  - Console: ✅ list-console-messages
+│  - DOM: ✅ take-snapshot
+│  - Screenshot: ✅ take-screenshot
+│  - Evaluate JS: ✅ evaluate-script
+│
+└─ FAILED/UNAVAILABLE → FALLBACK to BrowserMCP
+   - Console: ✅ browser_get_console_logs
+   - DOM: ✅ browser_snapshot (with refs)
+   - Screenshot: ✅ browser_screenshot
+   - Network: ❌ NOT AVAILABLE
+   - Performance: ❌ NOT AVAILABLE
+   - Evaluate JS: ❌ NOT AVAILABLE
+```
+
+**Rule:** Always try Chrome DevTools first. Only fallback to BrowserMCP if Chrome DevTools is unavailable.
 
 ---
 
@@ -192,7 +282,7 @@ List each boundary (must later be proven with code):
 
 ## 🔵 STEP 4: Output "Next Resolution Targets"
 
-List symbols/methods/services that must be resolved cross-repo in `/debug.resolve`:
+List symbols/methods/services that must be resolved cross-repo in `/troubleshoot.resolve`:
 
 ```markdown
 ## Next Resolution Targets
@@ -205,7 +295,7 @@ List symbols/methods/services that must be resolved cross-repo in `/debug.resolv
 
 ## Deliverables
 
-Write `.cursor/debug/<topic>/E2E-TRACE.md` with:
+Write `.cursor/troubleshoot/<topic>/E2E-TRACE.md` with:
 
 1. **Runtime Evidence Summary**
    - Console errors found
@@ -218,11 +308,11 @@ Write `.cursor/debug/<topic>/E2E-TRACE.md` with:
 
 3. **Boundary List** (with evidence pointers)
 
-4. **Next Resolution Targets** (feeds `/debug.resolve`)
+4. **Next Resolution Targets** (feeds `/troubleshoot.resolve`)
 
 ---
 
 ## Rules
 - **Prefer evidence anchors** (trace/log/request IDs) when available
-- **If no traces/log IDs exist**, start from strongest breadcrumb in DEBUG-SPEC
-- **Log all MCP-S queries** to `.cursor/debug/<topic>/mcp-s-notes.md`
+- **If no traces/log IDs exist**, start from strongest breadcrumb in TROUBLESHOOT-SPEC
+- **Log all MCP-S queries** to `.cursor/troubleshoot/<topic>/mcp-s-notes.md`

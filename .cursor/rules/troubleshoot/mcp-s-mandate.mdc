@@ -1,25 +1,26 @@
 ---
-description: Force MCP-S tools for debugging (Jira, Slack, DevEx, Chrome DevTools, Grafana)
-globs: ".cursor/commands/debug/**,.cursor/debug/**"
+description: Force MCP-S + BrowserMCP tools for troubleshootging (Jira, Slack, DevEx, Chrome DevTools, Grafana, BrowserMCP)
+globs: ".cursor/commands/troubleshoot/**,.cursor/troubleshoot/**"
 alwaysApply: false
 ---
 
-# MCP-S Mandate for /debug 🐛🔧 (Non-Negotiable)
+# MCP-S + BrowserMCP Mandate for /troubleshoot 🐛🔧 (Non-Negotiable)
 
 ## Purpose
-MCP-S provides access to **runtime evidence and internal knowledge** essential for debugging:
+MCP-S and BrowserMCP provide access to **runtime evidence and internal knowledge** essential for debugging:
 - **Jira/Slack** — bug reports, related tickets, team discussions
 - **DevEx** — code ownership, builds, commits, releases
 - **Chrome DevTools** — browser console, network, performance, DOM
 - **Grafana** — logs, metrics, alerts, incidents, on-call
+- **BrowserMCP** — Playwright-style DOM inspection, console logs, screenshots, interactions
 
 ---
 
 ## Tool Categories by Debugging Phase
 
-### 🔴 PHASE 1: Evidence Gathering (use in `/debug.trace`)
+### 🔴 PHASE 1: Evidence Gathering (use in `/troubleshoot.trace`)
 
-#### Grafana — Log & Error Investigation (HIGHEST PRIORITY)
+#### Grafana — Log & Error Investigation (HIGHEST PRIORITY for backend)
 | Tool | When to Use | Priority |
 |------|-------------|----------|
 | `find_error_pattern_logs` | First tool for backend errors — finds patterns | **P0** |
@@ -38,6 +39,28 @@ MCP-S provides access to **runtime evidence and internal knowledge** essential f
 | `take-snapshot` | Get DOM structure at failure point | **P1** |
 | `evaluate-script` | Inspect JS state, variables | **P1** |
 | `get-network-request` | Deep dive into specific request | **P1** |
+
+#### BrowserMCP — FALLBACK (Use only if Chrome DevTools unavailable)
+| Tool | When to Use | Priority |
+|------|-------------|----------|
+| `browser_snapshot` | Get DOM with element refs (uid) | **FALLBACK** |
+| `browser_get_console_logs` | JS console output | **FALLBACK** |
+| `browser_screenshot` | Capture visual state | **FALLBACK** |
+| `browser_navigate` | Navigate to bug URL | **FALLBACK** |
+
+**Tool Selection Priority:**
+```
+TRY Chrome DevTools FIRST → FALLBACK to BrowserMCP if unavailable
+```
+
+| Task | Chrome DevTools (PRIMARY) | BrowserMCP (FALLBACK) |
+|------|---------------------------|----------------------|
+| Network requests | ✅ ONLY | ❌ NOT AVAILABLE |
+| Performance trace | ✅ ONLY | ❌ NOT AVAILABLE |
+| Evaluate JS | ✅ ONLY | ❌ NOT AVAILABLE |
+| Console errors | ✅ `list-console-messages` | ✅ `browser_get_console_logs` |
+| DOM structure | ✅ `take-snapshot` | ✅ `browser_snapshot` |
+| Screenshot | ✅ `take-screenshot` | ✅ `browser_screenshot` |
 
 #### Jira/Slack — Context & History
 | Tool | When to Use | Priority |
@@ -67,7 +90,7 @@ MCP-S provides access to **runtime evidence and internal knowledge** essential f
 
 ---
 
-### 🟢 PHASE 3: Reproduction & Interaction (use in `/debug.hypothesize`)
+### 🟢 PHASE 3: Reproduction & Interaction (use in `/troubleshoot.hypothesize`)
 
 #### Chrome DevTools — User Simulation
 | Tool | When to Use | Priority |
@@ -81,6 +104,25 @@ MCP-S provides access to **runtime evidence and internal knowledge** essential f
 | `handle-dialog` | Handle alerts/confirms | **P2** |
 | `wait-for` | Wait for conditions | **P1** |
 
+#### BrowserMCP — User Simulation (Playwright-style)
+| Tool | When to Use | Priority |
+|------|-------------|----------|
+| `browser_click` | Click element by ref (from snapshot) | **P1** |
+| `browser_type` | Type text into input | **P1** |
+| `browser_hover` | Trigger hover states | **P2** |
+| `browser_press_key` | Keyboard input | **P2** |
+| `browser_select_option` | Select dropdown option | **P2** |
+| `browser_wait` | Wait N seconds | **P1** |
+
+**BrowserMCP Workflow:**
+```
+1. browser_navigate(url) → go to bug location
+2. browser_snapshot() → get element refs (uid)
+3. browser_click(ref=uid) → interact with element
+4. browser_get_console_logs() → check for errors
+5. browser_screenshot() → capture result
+```
+
 #### Chrome DevTools — Navigation & Page Control
 | Tool | When to Use | Priority |
 |------|-------------|----------|
@@ -92,9 +134,16 @@ MCP-S provides access to **runtime evidence and internal knowledge** essential f
 | `close-page` | Close tab | **P2** |
 | `resize-page` | Test responsive behavior | **P2** |
 
+#### BrowserMCP — Navigation
+| Tool | When to Use | Priority |
+|------|-------------|----------|
+| `browser_navigate` | Navigate to URL | **P1** |
+| `browser_go_back` | Navigate back | **P2** |
+| `browser_go_forward` | Navigate forward | **P2** |
+
 ---
 
-### 🔵 PHASE 4: Ownership & Escalation (use in `/debug.resolve`)
+### 🔵 PHASE 4: Ownership & Escalation (use in `/troubleshoot.resolve`)
 
 #### DevEx — Ownership & CI/CD
 | Tool | When to Use | Priority |
@@ -148,15 +197,20 @@ MCP-S provides access to **runtime evidence and internal knowledge** essential f
 Bug Type?
 │
 ├─ Frontend/UI Bug
-│  └─ START: list-console-messages → list-network-requests → take-screenshot
-│     └─ If perf: performance-start-trace → performance-analyze-insight
+│  ├─ TRY: Chrome DevTools FIRST
+│  │  └─ list-console-messages → list-network-requests → take-screenshot
+│  │  └─ If perf: performance-start-trace → performance-analyze-insight
+│  │
+│  └─ IF UNAVAILABLE: FALLBACK to BrowserMCP
+│     └─ browser_snapshot → browser_get_console_logs → browser_screenshot
+│     └─ (No network/performance available in BrowserMCP)
 │
 ├─ Backend/API Error
 │  └─ START: find_error_pattern_logs → query_loki_logs → get_sift_analysis
 │     └─ Then: list_incidents, get_current_oncall_users
 │
 ├─ Performance Issue
-│  └─ Frontend: emulate-cpu + emulate-network + performance traces
+│  └─ Frontend: emulate-cpu + emulate-network + performance traces (Chrome DevTools ONLY)
 │  └─ Backend: find_slow_requests → query_prometheus
 │
 ├─ Deployment Issue
@@ -209,12 +263,12 @@ grafana__query_loki_logs
 
 ## Logging Requirement
 All tool queries and findings must be appended to:
-`.cursor/debug/<topic>/mcp-s-notes.md`
+`.cursor/troubleshoot/<topic>/mcp-s-notes.md`
 
 Format:
 ```markdown
 ## [Evidence/Topic]
-- **Tool**: <tool name>
+- **Tool**: <tool name> (Chrome DevTools / BrowserMCP / Grafana / etc.)
 - **Phase**: Evidence | Profiling | Reproduction | Escalation | Discovery
 - **Query/Arguments**: <exact args>
 - **Findings**: <key insights>
@@ -226,11 +280,24 @@ Format:
 
 ## Mandatory Tool Usage by Bug Type
 
-### Frontend/UI Bugs — MUST use:
+### Frontend/UI Bugs — TRY Chrome DevTools FIRST, FALLBACK to BrowserMCP:
+
+**Step 1: TRY Chrome DevTools (PRIMARY):**
 - [ ] `list-console-messages` — JS errors
 - [ ] `list-network-requests` — failed requests
 - [ ] `take-screenshot` — visual evidence
-- [ ] `code_owners_for_path` — ownership
+
+**Step 2: IF Chrome DevTools FAILS, use BrowserMCP (FALLBACK):**
+- [ ] `browser_get_console_logs` — JS console output
+- [ ] `browser_snapshot` — DOM structure
+- [ ] `browser_screenshot` — visual capture
+- [ ] Log: "Chrome DevTools unavailable, used BrowserMCP fallback"
+
+**Network (Chrome DevTools ONLY — no fallback):**
+- [ ] `list-network-requests` — required if available
+
+**Ownership:**
+- [ ] `code_owners_for_path` — who owns this code
 
 ### Backend/API Errors — MUST use:
 - [ ] `find_error_pattern_logs` — error patterns
@@ -239,7 +306,7 @@ Format:
 - [ ] `code_owners_for_path` — ownership
 
 ### Performance Issues — MUST use:
-- [ ] `find_slow_requests` (backend) OR `performance-start-trace` (frontend)
+- [ ] `find_slow_requests` (backend) OR `performance-start-trace` (frontend, Chrome DevTools ONLY)
 - [ ] `query_prometheus` — metrics
 - [ ] `get_sift_analysis` — automated RCA
 

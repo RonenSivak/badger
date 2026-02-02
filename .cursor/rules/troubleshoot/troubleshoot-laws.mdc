@@ -1,0 +1,78 @@
+---
+description: Laws enforced during /troubleshoot runs
+globs: ".cursor/commands/troubleshoot/**,.cursor/troubleshoot/**"
+alwaysApply: false
+---
+
+# Troubleshoot Laws 🚨
+
+## Core Laws
+- **Evidence-first:** prefer trace/log/request IDs when available; traces provide E2E visibility.
+- **Request ID tracing:** extract `x-wix-request-id` from network requests and trace in Grafana for E2E correlation.
+- **No publish before verify:** `/troubleshoot.publish` requires a passing `/troubleshoot.verify`.
+- **Proof-first:** every claim needs repo/path + lines + snippet (or NOT FOUND + searches + scope).
+- **Connectivity required:** claims must be backed by import/call/route-binding evidence, not naming similarity.
+- **Cross-repo resolver:** any non-local symbol MUST be resolved via `/octocode/research` to (def + impl + boundary).
+- **Verifiable goals required:** fixes must list objective gates (tests/tsc/lint) before claiming success.
+
+## MCP-S Mandate (Chrome DevTools FIRST, BrowserMCP FALLBACK)
+
+### Tool Priority Order
+```
+TRY Chrome DevTools FIRST → FALLBACK to BrowserMCP if unavailable
+```
+
+### Evidence Tools — Use FIRST
+| Bug Type | Primary (Chrome DevTools) | Fallback (BrowserMCP) |
+|----------|---------------------------|----------------------|
+| Frontend/UI | `list-console-messages`, `list-network-requests`, `take-screenshot` | `browser_get_console_logs`, `browser_snapshot`, `browser_screenshot` |
+| Backend/API | `find_error_pattern_logs`, `query_loki_logs`, `get_sift_analysis` | N/A |
+| Performance | `performance-*` (frontend), `find_slow_requests` (backend) | N/A (no fallback) |
+| All bugs | `jira__get-issues`, `code_owners_for_path` | N/A |
+
+### Context Tools — Use for investigation
+- **Jira:** `jira__get-issues` — related bugs, requirements
+- **Slack:** `slack__search-messages` — discussions, decisions
+- **DevEx:** `code_owners_for_path`, `where_is_my_commit`, `get_build`
+- **Grafana:** `list_incidents`, `get_current_oncall_users`, `search_dashboards`
+
+### Chrome DevTools — PRIMARY for frontend bugs
+- **Console:** `list-console-messages` — JS errors (TRY FIRST)
+- **Network:** `list-network-requests`, `get-network-request` — HTTP issues (NO FALLBACK)
+- **Performance:** `performance-start-trace`, `performance-analyze-insight` (NO FALLBACK)
+- **DOM:** `take-snapshot`, `evaluate-script`
+- **Repro:** `click`, `fill`, `navigate-page`, `wait-for`
+
+### BrowserMCP — FALLBACK for frontend bugs (only if Chrome DevTools unavailable)
+- **Console:** `browser_get_console_logs` — JS console output
+- **DOM:** `browser_snapshot` — DOM tree with element refs (uid)
+- **Screenshot:** `browser_screenshot` — visual capture
+- **Repro:** `browser_click`, `browser_type`, `browser_hover` (by ref from snapshot)
+- **Navigation:** `browser_navigate`, `browser_wait`
+
+### Tool Selection Logic
+| Task | Chrome DevTools (PRIMARY) | BrowserMCP (FALLBACK) |
+|------|---------------------------|----------------------|
+| Network requests | ✅ ONLY | ❌ NO FALLBACK |
+| Performance trace | ✅ ONLY | ❌ NO FALLBACK |
+| Evaluate JS | ✅ ONLY | ❌ NO FALLBACK |
+| Console errors | ✅ TRY FIRST | ✅ FALLBACK |
+| DOM structure | ✅ TRY FIRST | ✅ FALLBACK |
+| Screenshot | ✅ TRY FIRST | ✅ FALLBACK |
+
+### Grafana — Use for backend bugs
+- **Logs:** `find_error_pattern_logs`, `query_loki_logs` (MANDATORY for API errors)
+- **Metrics:** `query_prometheus`, `find_slow_requests`
+- **Incidents:** `list_incidents`, `get_incident`
+- **On-call:** `get_current_oncall_users`, `list_oncall_teams`
+- **RCA:** `get_sift_analysis`, `get_sift_investigation`
+
+## NOT FOUND Discipline
+- **Missing evidence:** `NOT FOUND` + exact tool queries + scope searched
+- **Log all attempts:** even failed Grafana/DevTools/BrowserMCP queries in `mcp-s-notes.md`
+
+## Output Requirements
+- **mcp-s-notes.md:** MUST exist with tool queries for each debugging phase
+- **Evidence required:** screenshots, log snippets, trace IDs, metric values
+- **Ownership proven:** `code_owners_for_path` used for affected files
+- **BrowserMCP queries:** log all browser_* tool calls with refs and results

@@ -1,0 +1,249 @@
+---
+description: BrowserMCP as FALLBACK for frontend troubleshootging when Chrome DevTools is unavailable
+globs: ".cursor/commands/troubleshoot/**,.cursor/troubleshoot/**"
+alwaysApply: false
+---
+
+# BrowserMCP Mandate for /troubleshoot 🌐🔧 (FALLBACK Only)
+
+## Purpose
+BrowserMCP is a **FALLBACK** tool for frontend debugging when Chrome DevTools MCP is unavailable.
+
+**PRIORITY ORDER:**
+1. **TRY Chrome DevTools MCP FIRST** — Full debugging capabilities
+2. **FALLBACK to BrowserMCP** — Only if Chrome DevTools unavailable/fails
+
+---
+
+## When to Use BrowserMCP
+
+**USE BrowserMCP ONLY when:**
+- Chrome DevTools MCP tools return errors
+- Chrome DevTools MCP is not connected to browser
+- Browser tab is not accessible via DevTools MCP
+- You explicitly need Playwright-style automation
+
+**DO NOT use BrowserMCP when:**
+- Chrome DevTools MCP is working
+- You need network request inspection (BrowserMCP can't do this)
+- You need performance profiling (BrowserMCP can't do this)
+- You need to evaluate JS expressions (BrowserMCP can't do this)
+
+---
+
+## Tool Capability Comparison
+
+| Task | Chrome DevTools (PRIMARY) | BrowserMCP (FALLBACK) |
+|------|---------------------------|----------------------|
+| Network requests | ✅ ONLY | ❌ NOT AVAILABLE |
+| Performance trace | ✅ ONLY | ❌ NOT AVAILABLE |
+| Evaluate JS | ✅ ONLY | ❌ NOT AVAILABLE |
+| Console errors | ✅ `list-console-messages` | ✅ `browser_get_console_logs` |
+| DOM structure | ✅ `take-snapshot` | ✅ `browser_snapshot` |
+| Click/interact | ✅ `click` | ✅ `browser_click` |
+| Screenshot | ✅ `take-screenshot` | ✅ `browser_screenshot` |
+
+---
+
+## BrowserMCP Tools Reference
+
+### Evidence Gathering (MANDATORY for UI bugs)
+
+| Tool | Purpose | Priority |
+|------|---------|----------|
+| `browser_snapshot` | DOM tree with element refs (uid) | **P0** |
+| `browser_get_console_logs` | JS console output | **P0** |
+| `browser_screenshot` | Visual state capture | **P0** |
+
+### Navigation
+
+| Tool | Purpose | Priority |
+|------|---------|----------|
+| `browser_navigate` | Go to URL | **P1** |
+| `browser_go_back` | Navigate back | **P2** |
+| `browser_go_forward` | Navigate forward | **P2** |
+
+### Interaction (ref-based)
+
+| Tool | Purpose | Priority |
+|------|---------|----------|
+| `browser_click` | Click element by ref | **P1** |
+| `browser_type` | Type text into input | **P1** |
+| `browser_hover` | Trigger hover state | **P2** |
+| `browser_press_key` | Keyboard input | **P2** |
+| `browser_select_option` | Select dropdown option | **P2** |
+
+### Timing
+
+| Tool | Purpose | Priority |
+|------|---------|----------|
+| `browser_wait` | Wait N seconds | **P1** |
+
+---
+
+## Standard Workflow
+
+### 1) Navigate to Bug Location
+```
+server: user-browsermcp
+toolName: browser_navigate
+arguments:
+  url: "https://example.com/page-with-bug"
+```
+
+### 2) Get DOM Snapshot (MANDATORY before interaction)
+```
+server: user-browsermcp
+toolName: browser_snapshot
+arguments: {}
+```
+→ Returns DOM tree with element `ref` (uid) values
+→ Use these refs in subsequent click/type/hover calls
+
+### 3) Check Console Logs
+```
+server: user-browsermcp
+toolName: browser_get_console_logs
+arguments: {}
+```
+→ Captures JS console output (errors, warnings, logs)
+
+### 4) Take Screenshot
+```
+server: user-browsermcp
+toolName: browser_screenshot
+arguments: {}
+```
+→ Visual capture of current state
+
+### 5) Interact to Reproduce Bug
+```
+# Click element (ref from snapshot)
+server: user-browsermcp
+toolName: browser_click
+arguments:
+  ref: "<uid from snapshot>"
+  element: "Submit button"
+
+# Wait for response
+server: user-browsermcp
+toolName: browser_wait
+arguments:
+  time: 2
+
+# Check console after interaction
+server: user-browsermcp
+toolName: browser_get_console_logs
+arguments: {}
+
+# Capture result
+server: user-browsermcp
+toolName: browser_screenshot
+arguments: {}
+```
+
+---
+
+## Critical Rules
+
+### 1) ALWAYS get snapshot before interaction
+```
+# WRONG - clicking without snapshot
+browser_click(ref="some-id")  # Where did this ref come from?
+
+# RIGHT - get refs from snapshot first
+browser_snapshot()            # Get element refs
+browser_click(ref="uid-123")  # Use ref from snapshot
+```
+
+### 2) Element refs come from snapshots
+The `ref` parameter in click/type/hover calls MUST be a `uid` value from the most recent `browser_snapshot` result.
+
+### 3) Log all queries
+Record all BrowserMCP tool calls in `.cursor/troubleshoot/<topic>/mcp-s-notes.md`:
+
+```markdown
+## [BrowserMCP Evidence]
+- **Tool**: browser_snapshot
+- **Phase**: Evidence
+- **Arguments**: {}
+- **Findings**: Found button with ref="uid-abc123"
+- **Follow-up**: browser_click to reproduce bug
+```
+
+---
+
+## Fallback Decision Logic
+
+```
+START Frontend Debug
+│
+├─ TRY: Chrome DevTools MCP
+│  └─ list-console-messages
+│  └─ list-network-requests
+│  └─ take-screenshot
+│
+├─ SUCCESS? → Continue with Chrome DevTools
+│  └─ DO NOT use BrowserMCP
+│
+└─ FAILED/UNAVAILABLE? → FALLBACK to BrowserMCP
+   └─ browser_snapshot
+   └─ browser_get_console_logs
+   └─ browser_screenshot
+   └─ Log: "Chrome DevTools unavailable, using BrowserMCP fallback"
+```
+
+---
+
+## Mandatory Tool Usage for Frontend Bugs
+
+### TRY Chrome DevTools FIRST:
+- [ ] `list-console-messages` — JS errors
+- [ ] `list-network-requests` — failed requests
+- [ ] `take-screenshot` — visual evidence
+
+### IF Chrome DevTools FAILS, use BrowserMCP:
+- [ ] `browser_get_console_logs` — JS console output
+- [ ] `browser_snapshot` — DOM structure
+- [ ] `browser_screenshot` — visual capture
+
+### Reproduction Phase (use appropriate tool based on availability):
+- Chrome DevTools: `click`, `fill`, `navigate-page`, `wait-for`
+- BrowserMCP fallback: `browser_click`, `browser_type`, `browser_navigate`, `browser_wait`
+
+---
+
+## Example: Fallback to BrowserMCP
+
+```
+# 1. TRY Chrome DevTools first
+list-console-messages
+→ ERROR: "Chrome DevTools MCP not connected"
+
+# 2. FALLBACK to BrowserMCP
+browser_navigate(url="https://app.example.com/settings")
+
+# 3. Get DOM snapshot
+browser_snapshot()
+→ Output includes: <button ref="uid-save-btn">Save</button>
+
+# 4. Check console
+browser_get_console_logs()
+→ No errors yet
+
+# 5. Click the problematic button
+browser_click(ref="uid-save-btn", element="Save button")
+
+# 6. Wait for async operation
+browser_wait(time=2)
+
+# 7. Check console for errors
+browser_get_console_logs()
+→ ERROR: "Cannot read property 'id' of undefined"
+
+# 8. Screenshot the result
+browser_screenshot()
+→ Shows error state in UI
+```
+
+**Log in mcp-s-notes.md:** "Chrome DevTools unavailable, used BrowserMCP fallback"

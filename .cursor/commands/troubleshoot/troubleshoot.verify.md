@@ -1,12 +1,12 @@
 ---
-description: Validate that all report claims connect by code + MCP-S evidence + required checks
+description: Deep-debug: Validate that all report claims connect by code + MCP-S/BrowserMCP evidence + required checks
 globs:
 alwaysApply: false
 ---
 
-# /debug.verify — Verify ✅
+# /troubleshoot.verify — Verify ✅
 
-Goal: write `.cursor/debug/<topic>/VALIDATION-REPORT.md`
+Goal: write `.cursor/troubleshoot/<topic>/VALIDATION-REPORT.md`
 
 ---
 
@@ -18,20 +18,32 @@ Goal: write `.cursor/debug/<topic>/VALIDATION-REPORT.md`
 
 ---
 
-## 🔎 MCP-S Validation (MANDATORY)
+## 🔎 MCP-S + BrowserMCP Validation (MANDATORY)
 
 ### 1) Evidence File Check
-Verify `.cursor/debug/<topic>/mcp-s-notes.md`:
+Verify `.cursor/troubleshoot/<topic>/mcp-s-notes.md`:
 - **EXISTS**: file must be present
 - **NOT EMPTY**: must contain tool queries
 - **COVERAGE**: every debug phase should have queries
 
 ### 2) Required Tool Usage by Bug Type
 
-**Frontend/UI Bug — MUST have:**
-- [ ] `list-console-messages` query logged
+**Frontend/UI Bug — MUST have at least one from each category:**
+
+Console logs (pick one or both):
+- [ ] `list-console-messages` (Chrome DevTools) query logged
+- [ ] `browser_get_console_logs` (BrowserMCP) query logged
+
+Network (Chrome DevTools only):
 - [ ] `list-network-requests` query logged
-- [ ] `take-screenshot` in evidence
+
+DOM/Snapshot (pick one or both):
+- [ ] `take-snapshot` (Chrome DevTools) in evidence
+- [ ] `browser_snapshot` (BrowserMCP) in evidence
+
+Screenshot (pick one or both):
+- [ ] `take-screenshot` (Chrome DevTools) in evidence
+- [ ] `browser_screenshot` (BrowserMCP) in evidence
 
 **Backend/API Bug — MUST have:**
 - [ ] `find_error_pattern_logs` query logged
@@ -39,7 +51,7 @@ Verify `.cursor/debug/<topic>/mcp-s-notes.md`:
 - [ ] `list_incidents` checked
 
 **Performance Bug — MUST have:**
-- [ ] `performance-*` traces (frontend) OR `find_slow_requests` (backend)
+- [ ] `performance-*` traces (frontend, Chrome DevTools only) OR `find_slow_requests` (backend)
 - [ ] `query_prometheus` metrics
 
 **All Bugs — MUST have:**
@@ -48,22 +60,23 @@ Verify `.cursor/debug/<topic>/mcp-s-notes.md`:
 
 ### 3) Evidence Quality Check
 For each claim in the debug report:
-- Has supporting MCP-S evidence? (log snippet, screenshot, metric)
+- Has supporting MCP-S/BrowserMCP evidence? (log snippet, screenshot, metric, DOM snapshot)
 - Evidence is reproducible? (query can be re-run)
 
 ---
 
 ## Outcome
 
-Write `.cursor/debug/<topic>/VALIDATION-REPORT.md`:
+Write `.cursor/troubleshoot/<topic>/VALIDATION-REPORT.md`:
 
 ```markdown
 ## Validation Summary
 
-### MCP-S Evidence Coverage
+### MCP-S + BrowserMCP Evidence Coverage
 - mcp-s-notes.md exists: ✅ / ❌
 - Tool queries logged: N
-- Frontend tools used: ✅ / ❌ / N/A
+- Chrome DevTools used: ✅ / ❌ / N/A
+- BrowserMCP used: ✅ / ❌ / N/A
 - Backend tools used: ✅ / ❌ / N/A
 - Ownership verified: ✅ / ❌
 
@@ -115,9 +128,9 @@ Write `.cursor/debug/<topic>/VALIDATION-REPORT.md`:
 If verify fails → do not publish. 
 
 Iterate:
-1. Run more MCP-S queries for evidence
-2. Re-run `/debug.resolve` for missing proofs
-3. Update `/debug.hypothesize` if needed
-4. Re-run `/debug.verify`
+1. Run more MCP-S or BrowserMCP queries for evidence
+2. Re-run `/troubleshoot.resolve` for missing proofs
+3. Update `/troubleshoot.hypothesize` if needed
+4. Re-run `/troubleshoot.verify`
 
 Until verify passes or all items are NOT FOUND-justified.

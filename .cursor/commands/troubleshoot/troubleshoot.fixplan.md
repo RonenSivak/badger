@@ -4,10 +4,10 @@ globs:
 alwaysApply: false
 ---
 
-# /debug.fixplan — Fix Plan 🧩
+# /troubleshoot.fixplan — Fix Plan 🧩
 
 Output:
-- `.cursor/debug/<topic>/FIX-PLAN.md`
+- `.cursor/troubleshoot/<topic>/FIX-PLAN.md`
 
 Rules:
 - Do NOT implement code here.

@@ -1,12 +1,12 @@
 ---
-description: Clarification loop to build DEBUG-SPEC (repeat until complete)
+description: Deep-debug: Clarification loop to build TROUBLESHOOT-SPEC (repeat until complete)
 globs:
 alwaysApply: false
 ---
 
-# /debug.clarify — Clarify Loop 🧠
+# /troubleshoot.clarify — Clarify Loop 🧠
 
-Goal: produce `.cursor/debug/<topic>/DEBUG-SPEC.md`
+Goal: produce `.cursor/troubleshoot/<topic>/TROUBLESHOOT-SPEC.md`
 
 ---
 
@@ -58,12 +58,12 @@ Goal: produce `.cursor/debug/<topic>/DEBUG-SPEC.md`
 
 ---
 
-## Output: DEBUG-SPEC
+## Output: TROUBLESHOOT-SPEC
 
-Write `.cursor/debug/<topic>/DEBUG-SPEC.md` with:
+Write `.cursor/troubleshoot/<topic>/TROUBLESHOOT-SPEC.md` with:
 
 ```markdown
-# DEBUG-SPEC: <topic>
+# TROUBLESHOOT-SPEC: <topic>
 
 ## Problem Statement
 - **Symptom**: <exact error or behavior>
@@ -117,7 +117,7 @@ Write `.cursor/debug/<topic>/DEBUG-SPEC.md` with:
 ---
 
 ## Stop Condition
-DEBUG-SPEC is complete when you have enough to start `/debug.trace`:
+TROUBLESHOOT-SPEC is complete when you have enough to start `/troubleshoot.trace`:
 - Clear symptom description
 - Environment identified
 - At least one evidence anchor OR clear repro steps

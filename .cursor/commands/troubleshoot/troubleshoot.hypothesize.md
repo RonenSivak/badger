@@ -1,19 +1,19 @@
 ---
-description: Turn the proven trace into hypotheses + minimal experiments using MCP-S tools
+description: Deep-debug: Turn the proven trace into hypotheses + minimal experiments using MCP-S and BrowserMCP tools
 globs:
 alwaysApply: false
 ---
 
-# /debug.hypothesize — Hypothesis Tree 🌲
+# /troubleshoot.hypothesize — Hypothesis Tree 🌲
 
 Input:
-- DEBUG-SPEC
+- TROUBLESHOOT-SPEC
 - E2E-TRACE
 - trace-ledger (resolved symbols)
-- mcp-s-notes (evidence from Chrome DevTools/Grafana)
+- mcp-s-notes (evidence from Chrome DevTools/BrowserMCP/Grafana)
 
 Output:
-- `.cursor/debug/<topic>/HYPOTHESES.md`
+- `.cursor/troubleshoot/<topic>/HYPOTHESES.md`
 
 ---
 
@@ -21,7 +21,7 @@ Output:
 - **3–7 hypotheses max**
 - Each hypothesis must include:
   - What proven hop(s) it explains (link to trace-ledger pointers)
-  - What evidence supports it (from MCP-S queries)
+  - What evidence supports it (from MCP-S/BrowserMCP queries)
   - A minimal experiment to falsify it
   - Expected outcome if true/false
 
@@ -64,6 +64,40 @@ chrome-devtools__performance-analyze-insight
 chrome-devtools__resize-page → width: 375, height: 667 (mobile)
 chrome-devtools__take-screenshot
 ```
+
+### Frontend Experiments (BrowserMCP — Playwright-style)
+
+**Test UI behavior:**
+```
+# Navigate to repro URL
+browser_navigate → url
+
+# Get element refs
+browser_snapshot
+
+# Interact by ref (from snapshot)
+browser_click → ref: "<uid from snapshot>", element: "Button description"
+browser_type → ref: "<uid>", text: "input value"
+
+# Observe
+browser_get_console_logs
+browser_screenshot
+```
+
+**BrowserMCP Reproduction Workflow:**
+```
+1. browser_navigate(url) → go to bug location
+2. browser_snapshot() → get element refs (uid)
+3. browser_click(ref=uid) → interact with element
+4. browser_wait(time=2) → wait for async operation
+5. browser_get_console_logs() → check for errors
+6. browser_snapshot() → check updated DOM
+7. browser_screenshot() → capture result
+```
+
+**When to use BrowserMCP vs Chrome DevTools:**
+- **Chrome DevTools**: Network requests, performance profiling, JS evaluation
+- **BrowserMCP**: DOM refs for interaction, simpler Playwright-style automation
 
 ---
 
@@ -141,8 +175,9 @@ devex__search_builds → project
 - Touch fewer repos
 - Validate at boundaries (network/persist/throw/render)
 - Produce objective signals:
-  - Console messages (Chrome DevTools)
+  - Console messages (Chrome DevTools or BrowserMCP)
+  - DOM snapshots (Chrome DevTools or BrowserMCP)
   - Log entries (Grafana Loki)
   - Metric changes (Grafana Prometheus)
   - Test results (tests/tsc/lint)
-- Use MCP-S tools for reproducible evidence
+- Use MCP-S or BrowserMCP tools for reproducible evidence
