@@ -1,315 +1,250 @@
 ---
-description: Force MCP-S + BrowserMCP tools for troubleshootging (Jira, Slack, DevEx, Chrome DevTools, Grafana, BrowserMCP)
+description: Force MCP-S tools for Grafana, DevEx, Jira, Slack during /troubleshoot
 globs: ".cursor/commands/troubleshoot/**,.cursor/troubleshoot/**"
 alwaysApply: false
 ---
 
-# MCP-S + BrowserMCP Mandate for /troubleshoot 🐛🔧 (Non-Negotiable)
+# MCP-S Mandate (Non-Negotiable)
 
 ## Purpose
-MCP-S and BrowserMCP provide access to **runtime evidence and internal knowledge** essential for debugging:
-- **Jira/Slack** — bug reports, related tickets, team discussions
-- **DevEx** — code ownership, builds, commits, releases
-- **Chrome DevTools** — browser console, network, performance, DOM
-- **Grafana** — logs, metrics, alerts, incidents, on-call
-- **BrowserMCP** — Playwright-style DOM inspection, console logs, screenshots, interactions
+
+MCP-S (`user-MCP-S` server) provides access to internal knowledge sources:
+- **Grafana** — Logs, metrics, alerts, incidents, on-call
+- **DevEx** — Code ownership, builds, commits, releases
+- **Jira** — Bug reports, requirements, related tickets
+- **Slack** — Team discussions, decisions, context
 
 ---
 
-## Tool Categories by Debugging Phase
+## Grafana Tools (Backend Debugging)
 
-### 🔴 PHASE 1: Evidence Gathering (use in `/troubleshoot.trace`)
+### 1) Find Error Patterns (START HERE for backend bugs)
 
-#### Grafana — Log & Error Investigation (HIGHEST PRIORITY for backend)
-| Tool | When to Use | Priority |
-|------|-------------|----------|
-| `find_error_pattern_logs` | First tool for backend errors — finds patterns | **P0** |
-| `query_loki_logs` | Search logs by service, trace ID, error message | **P0** |
-| `get_sift_analysis` | Automated root cause analysis | **P0** |
-| `find_slow_requests` | Performance issues — find slow endpoints | **P0** |
-| `list_incidents` | Check for active/recent incidents | **P1** |
-| `get_incident` | Get incident details, timeline | **P1** |
-
-#### Chrome DevTools — Frontend Evidence (HIGHEST PRIORITY for UI bugs)
-| Tool | When to Use | Priority |
-|------|-------------|----------|
-| `list-console-messages` | First tool for JS errors, warnings | **P0** |
-| `list-network-requests` | See all HTTP requests, failures | **P0** |
-| `take-screenshot` | Capture visual state of bug | **P0** |
-| `take-snapshot` | Get DOM structure at failure point | **P1** |
-| `evaluate-script` | Inspect JS state, variables | **P1** |
-| `get-network-request` | Deep dive into specific request | **P1** |
-
-#### BrowserMCP — FALLBACK (Use only if Chrome DevTools unavailable)
-| Tool | When to Use | Priority |
-|------|-------------|----------|
-| `browser_snapshot` | Get DOM with element refs (uid) | **FALLBACK** |
-| `browser_get_console_logs` | JS console output | **FALLBACK** |
-| `browser_screenshot` | Capture visual state | **FALLBACK** |
-| `browser_navigate` | Navigate to bug URL | **FALLBACK** |
-
-**Tool Selection Priority:**
 ```
-TRY Chrome DevTools FIRST → FALLBACK to BrowserMCP if unavailable
+server: user-MCP-S
+toolName: grafana-mcp__find_error_pattern_logs
+arguments:
+  name: "<investigation-name>"
+  labels: { "app": "<service-name>" }
+  start: "<ISO8601 datetime>"  # optional, defaults to 30m ago
+  end: "<ISO8601 datetime>"    # optional, defaults to now
 ```
 
-| Task | Chrome DevTools (PRIMARY) | BrowserMCP (FALLBACK) |
-|------|---------------------------|----------------------|
-| Network requests | ✅ ONLY | ❌ NOT AVAILABLE |
-| Performance trace | ✅ ONLY | ❌ NOT AVAILABLE |
-| Evaluate JS | ✅ ONLY | ❌ NOT AVAILABLE |
-| Console errors | ✅ `list-console-messages` | ✅ `browser_get_console_logs` |
-| DOM structure | ✅ `take-snapshot` | ✅ `browser_snapshot` |
-| Screenshot | ✅ `take-screenshot` | ✅ `browser_screenshot` |
+**Use when:** First tool for backend errors — finds elevated patterns compared to baseline.
 
-#### Jira/Slack — Context & History
-| Tool | When to Use | Priority |
-|------|-------------|----------|
-| `jira__get-issues` | Find related bug reports, requirements | **P1** |
-| `slack__search-messages` | Find discussions about the bug | **P1** |
+### 2) Query Loki Logs
+
+```
+server: user-MCP-S
+toolName: grafana-mcp__query_loki_logs
+arguments:
+  datasourceUid: "<loki-uid>"
+  logql: '{app="<service>"} |= "<error text or request ID>"'
+  limit: 100
+  direction: "backward"  # newest first
+```
+
+**Use when:** Searching logs by service, trace ID, error message.
+
+**Note:** Use `grafana-mcp__list_datasources` with `type: "loki"` to find the UID first.
+
+### 3) List Datasources
+
+```
+server: user-MCP-S
+toolName: grafana-mcp__list_datasources
+arguments:
+  type: "loki"  # or "prometheus"
+```
+
+**Use when:** Finding datasource UIDs for log/metric queries.
+
+### 4) Get SIFT Analysis (AI-powered RCA)
+
+```
+server: user-MCP-S
+toolName: grafana-mcp__get_sift_analysis
+arguments:
+  investigationId: "<uuid>"
+  analysisId: "<uuid>"
+```
+
+**Use when:** Getting automated root cause analysis from Grafana.
+
+### 5) List Incidents
+
+```
+server: user-MCP-S
+toolName: grafana-mcp__list_incidents
+arguments: {}
+```
+
+**Use when:** Checking for active/recent incidents.
+
+### 6) Find Slow Requests
+
+```
+server: user-MCP-S
+toolName: grafana-mcp__find_slow_requests
+arguments:
+  name: "<investigation-name>"
+  labels: { "app": "<service>" }
+```
+
+**Use when:** Diagnosing performance issues.
+
+### 7) Query Prometheus Metrics
+
+```
+server: user-MCP-S
+toolName: grafana-mcp__query_prometheus
+arguments:
+  datasourceUid: "<prometheus-uid>"
+  promql: 'histogram_quantile(0.99, rate(http_request_duration_seconds_bucket{app="<service>"}[5m]))'
+```
+
+**Use when:** Querying latency, throughput, error rate metrics.
+
+### 8) Get Current On-Call
+
+```
+server: user-MCP-S
+toolName: grafana-mcp__get_current_oncall_users
+arguments: {}
+```
+
+**Use when:** Finding who to escalate to.
 
 ---
 
-### 🟡 PHASE 2: Performance Profiling (use when perf issue suspected)
+## DevEx Tools (Ownership & CI/CD)
 
-#### Chrome DevTools — Performance
-| Tool | When to Use | Priority |
-|------|-------------|----------|
-| `performance-start-trace` | Begin profiling session | **P0** |
-| `performance-stop-trace` | End profiling, get results | **P0** |
-| `performance-analyze-insight` | Get actionable insights | **P0** |
-| `emulate-cpu` | Test under CPU throttling | **P1** |
-| `emulate-network` | Test under slow network | **P1** |
+### 1) Code Owners (MANDATORY for affected code)
 
-#### Grafana — Metrics & Performance
-| Tool | When to Use | Priority |
-|------|-------------|----------|
-| `query_prometheus` | Query latency, throughput metrics | **P0** |
-| `list_prometheus_metric_names` | Discover available metrics | **P1** |
-| `get_dashboard_panel_queries` | See what metrics power dashboards | **P2** |
+```
+server: user-MCP-S
+toolName: devex__code_owners_for_path
+arguments:
+  repositoryUrl: "git@github.com:wix-private/<repo>.git"
+  path: "<file or directory path>/"
+```
+
+**Use when:** Finding who owns the buggy code.
+
+### 2) Where Is My Commit
+
+```
+server: user-MCP-S
+toolName: devex__where_is_my_commit
+arguments:
+  commitSha: "<sha>"
+```
+
+**Use when:** Tracking if a fix is deployed.
+
+### 3) Get Build Status
+
+```
+server: user-MCP-S
+toolName: devex__get_build
+arguments:
+  buildId: "<build-id>"
+```
+
+**Use when:** Checking build status after a fix.
+
+### 4) Get Rollout History
+
+```
+server: user-MCP-S
+toolName: devex__get_rollout_history
+arguments:
+  projectName: "<project>"
+```
+
+**Use when:** Checking deployment timeline.
 
 ---
 
-### 🟢 PHASE 3: Reproduction & Interaction (use in `/troubleshoot.hypothesize`)
+## Context Tools (Jira/Slack)
 
-#### Chrome DevTools — User Simulation
-| Tool | When to Use | Priority |
-|------|-------------|----------|
-| `click` | Simulate user clicks | **P1** |
-| `fill` | Fill input fields | **P1** |
-| `fill-form` | Fill entire forms | **P1** |
-| `hover` | Trigger hover states | **P2** |
-| `drag` | Test drag & drop | **P2** |
-| `upload-file` | Test file uploads | **P2** |
-| `handle-dialog` | Handle alerts/confirms | **P2** |
-| `wait-for` | Wait for conditions | **P1** |
+### 1) Get Jira Issues
 
-#### BrowserMCP — User Simulation (Playwright-style)
-| Tool | When to Use | Priority |
-|------|-------------|----------|
-| `browser_click` | Click element by ref (from snapshot) | **P1** |
-| `browser_type` | Type text into input | **P1** |
-| `browser_hover` | Trigger hover states | **P2** |
-| `browser_press_key` | Keyboard input | **P2** |
-| `browser_select_option` | Select dropdown option | **P2** |
-| `browser_wait` | Wait N seconds | **P1** |
-
-**BrowserMCP Workflow:**
 ```
-1. browser_navigate(url) → go to bug location
-2. browser_snapshot() → get element refs (uid)
-3. browser_click(ref=uid) → interact with element
-4. browser_get_console_logs() → check for errors
-5. browser_screenshot() → capture result
+server: user-MCP-S
+toolName: jira__get-issues
+arguments:
+  projectKey: "PROJECT"
+  jql: "text ~ '<error message>'"
+  maxResults: 10
 ```
 
-#### Chrome DevTools — Navigation & Page Control
-| Tool | When to Use | Priority |
-|------|-------------|----------|
-| `navigate-page` | Navigate to URL | **P1** |
-| `navigate-page-history` | Back/forward navigation | **P2** |
-| `list-pages` | See open tabs | **P2** |
-| `select-page` | Switch to tab | **P2** |
-| `new-page` | Open new tab | **P2** |
-| `close-page` | Close tab | **P2** |
-| `resize-page` | Test responsive behavior | **P2** |
+**Use when:** Finding related bug reports, requirements.
 
-#### BrowserMCP — Navigation
-| Tool | When to Use | Priority |
-|------|-------------|----------|
-| `browser_navigate` | Navigate to URL | **P1** |
-| `browser_go_back` | Navigate back | **P2** |
-| `browser_go_forward` | Navigate forward | **P2** |
+### 2) Search Slack Messages
+
+```
+server: user-MCP-S
+toolName: slack__search-messages
+arguments:
+  searchText: "<keywords>"
+  in: "#channel-name"  # optional
+```
+
+**Use when:** Finding team discussions about the bug.
 
 ---
 
-### 🔵 PHASE 4: Ownership & Escalation (use in `/troubleshoot.resolve`)
+## Tool Selection by Bug Type
 
-#### DevEx — Ownership & CI/CD
-| Tool | When to Use | Priority |
-|------|-------------|----------|
-| `code_owners_for_path` | Find who owns the buggy code | **P0** |
-| `where_is_my_commit` | Track if fix is deployed | **P1** |
-| `get_build` | Check build status | **P1** |
-| `search_builds` | Find failed builds | **P1** |
-| `get_commit_information` | Commit that introduced bug | **P1** |
-| `get_rollout_history` | Deployment timeline | **P2** |
-
-#### Grafana — On-Call & Alerts
-| Tool | When to Use | Priority |
-|------|-------------|----------|
-| `get_current_oncall_users` | Who to escalate to | **P0** |
-| `list_oncall_teams` | Find responsible team | **P1** |
-| `list_alert_rules` | What alerts exist | **P1** |
-| `get_alert_rule_by_uid` | Specific alert config | **P2** |
-| `list_contact_points` | Notification channels | **P2** |
+| Bug Type | Required Tools |
+|----------|----------------|
+| Backend Error | `find_error_pattern_logs` → `query_loki_logs` → `get_sift_analysis` |
+| Performance | `find_slow_requests` → `query_prometheus` |
+| Deployment | `where_is_my_commit` → `get_build` → `get_rollout_history` |
+| Ownership | `code_owners_for_path` (ALWAYS required) |
+| Context | `jira__get-issues` + `slack__search-messages` |
 
 ---
 
-### ⚪ PHASE 5: Discovery & Context (use throughout)
+## Mandatory Tool Usage
 
-#### Grafana — Dashboard & Data Discovery
-| Tool | When to Use | Priority |
-|------|-------------|----------|
-| `search_dashboards` | Find relevant dashboards | **P1** |
-| `get_dashboard_by_uid` | Get dashboard details | **P2** |
-| `list_datasources` | Available data sources | **P2** |
-| `get_datasource_by_name` | Specific datasource config | **P2** |
-| `list_loki_label_names` | Discover log labels | **P2** |
-| `list_loki_label_values` | Values for a label | **P2** |
-| `list_prometheus_label_names` | Discover metric labels | **P2** |
-| `list_prometheus_metric_metadata` | Metric descriptions | **P2** |
-| `query_loki_stats` | Log volume statistics | **P2** |
-| `get_sift_investigation` | Detailed RCA | **P1** |
-| `list_sift_investigations` | Past RCAs | **P2** |
-| `get_assertions` | Service assertions | **P2** |
-| `list_teams` | Grafana teams | **P2** |
-| `get_oncall_shift` | Shift details | **P2** |
-| `list_oncall_users` | All on-call users | **P2** |
-| `list_oncall_schedules` | Schedule overview | **P2** |
-| `update_dashboard` | Update dashboard (use carefully) | **P3** |
+### All Bugs — MUST use:
+- [ ] `code_owners_for_path` — who owns affected code
+- [ ] `jira__get-issues` — related tickets
 
----
+### Backend Bugs — MUST use:
+- [ ] `find_error_pattern_logs` — error patterns
+- [ ] `query_loki_logs` — detailed logs
+- [ ] `list_incidents` — check incidents
 
-## Quick Decision Tree
-
-```
-Bug Type?
-│
-├─ Frontend/UI Bug
-│  ├─ TRY: Chrome DevTools FIRST
-│  │  └─ list-console-messages → list-network-requests → take-screenshot
-│  │  └─ If perf: performance-start-trace → performance-analyze-insight
-│  │
-│  └─ IF UNAVAILABLE: FALLBACK to BrowserMCP
-│     └─ browser_snapshot → browser_get_console_logs → browser_screenshot
-│     └─ (No network/performance available in BrowserMCP)
-│
-├─ Backend/API Error
-│  └─ START: find_error_pattern_logs → query_loki_logs → get_sift_analysis
-│     └─ Then: list_incidents, get_current_oncall_users
-│
-├─ Performance Issue
-│  └─ Frontend: emulate-cpu + emulate-network + performance traces (Chrome DevTools ONLY)
-│  └─ Backend: find_slow_requests → query_prometheus
-│
-├─ Deployment Issue
-│  └─ START: where_is_my_commit → get_build → get_rollout_history
-│     └─ Then: list_incidents, get_current_oncall_users
-│
-└─ Unknown Origin
-   └─ START: jira__get-issues + slack__search-messages (context)
-      └─ Then: code_owners_for_path (ownership)
-      └─ Then: list_incidents (check for ongoing issues)
-```
-
----
-
-## 🔗 Request ID Tracing Workflow (Frontend → Backend)
-
-**Key insight:** Network requests contain `x-wix-request-id` in response headers that can be traced in Grafana.
-
-### Step 1: Get Request ID from Chrome DevTools
-```
-# List all network requests
-chrome-devtools__list-network-requests
-
-# Get specific request details (includes headers)
-chrome-devtools__get-network-request
-  url: "https://api.wix.com/..."
-```
-
-Look for `x-wix-request-id` in the response headers.
-
-### Step 2: Trace in Grafana
-Use the request ID in Grafana's Error Analytics dashboard:
-```
-https://grafana.wixpress.com/d/38cCoLymz/error-analytics-traceid?orgId=1&var-request_id={req_id}&from={time}&to={time}
-```
-
-Or query logs directly:
-```
-grafana__query_loki_logs
-  query: '{service="*"} |= "{request_id}"'
-```
-
-### When to Use This Workflow
-- API request returns error but frontend doesn't show details
-- Need to trace a specific user action through the backend
-- Debugging intermittent failures with specific request evidence
-- Correlating frontend timing with backend processing
+### Performance Issues — MUST use:
+- [ ] `find_slow_requests` (backend) OR Chrome DevTools perf (frontend)
+- [ ] `query_prometheus` — metrics
 
 ---
 
 ## Logging Requirement
-All tool queries and findings must be appended to:
+
+All MCP-S queries and findings must be appended to:
 `.cursor/troubleshoot/<topic>/mcp-s-notes.md`
 
 Format:
 ```markdown
 ## [Evidence/Topic]
-- **Tool**: <tool name> (Chrome DevTools / BrowserMCP / Grafana / etc.)
-- **Phase**: Evidence | Profiling | Reproduction | Escalation | Discovery
-- **Query/Arguments**: <exact args>
+- **Tool**: <tool name>
+- **Phase**: Evidence | Profiling | Escalation | Discovery
+- **Arguments**: <exact args>
 - **Findings**: <key insights>
 - **Links/IDs**: <trace IDs, dashboard URLs, incident IDs>
-- **Follow-up**: <next tool to use or code to investigate>
+- **Follow-up**: <next tool or code to investigate>
 ```
 
 ---
 
-## Mandatory Tool Usage by Bug Type
+## NOT FOUND Rule
 
-### Frontend/UI Bugs — TRY Chrome DevTools FIRST, FALLBACK to BrowserMCP:
-
-**Step 1: TRY Chrome DevTools (PRIMARY):**
-- [ ] `list-console-messages` — JS errors
-- [ ] `list-network-requests` — failed requests
-- [ ] `take-screenshot` — visual evidence
-
-**Step 2: IF Chrome DevTools FAILS, use BrowserMCP (FALLBACK):**
-- [ ] `browser_get_console_logs` — JS console output
-- [ ] `browser_snapshot` — DOM structure
-- [ ] `browser_screenshot` — visual capture
-- [ ] Log: "Chrome DevTools unavailable, used BrowserMCP fallback"
-
-**Network (Chrome DevTools ONLY — no fallback):**
-- [ ] `list-network-requests` — required if available
-
-**Ownership:**
-- [ ] `code_owners_for_path` — who owns this code
-
-### Backend/API Errors — MUST use:
-- [ ] `find_error_pattern_logs` — error patterns
-- [ ] `query_loki_logs` — detailed logs
-- [ ] `list_incidents` — check incidents
-- [ ] `code_owners_for_path` — ownership
-
-### Performance Issues — MUST use:
-- [ ] `find_slow_requests` (backend) OR `performance-start-trace` (frontend, Chrome DevTools ONLY)
-- [ ] `query_prometheus` — metrics
-- [ ] `get_sift_analysis` — automated RCA
-
-### All Bugs — MUST use:
-- [ ] `jira__get-issues` — related tickets
-- [ ] `code_owners_for_path` — who to contact
+If MCP-S search yields no results:
+- Mark as "MCP-S: NOT FOUND"
+- List exact queries attempted (tool + arguments)
+- Note which sources were searched

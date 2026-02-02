@@ -6,7 +6,7 @@ alwaysApply: false
 
 # /troubleshoot.verify — Verify ✅
 
-Goal: write `.cursor/troubleshoot/<topic>/VALIDATION-REPORT.md`
+Goal: write `.cursor/troubleshoot/<topic>/VERIFY-RESULT.md`
 
 ---
 
@@ -67,7 +67,7 @@ For each claim in the debug report:
 
 ## Outcome
 
-Write `.cursor/troubleshoot/<topic>/VALIDATION-REPORT.md`:
+Write `.cursor/troubleshoot/<topic>/VERIFY-RESULT.md`:
 
 ```markdown
 ## Validation Summary

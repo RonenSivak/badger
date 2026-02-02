@@ -1,0 +1,264 @@
+---
+description: Force Chrome DevTools tools for frontend debugging during /troubleshoot
+globs: ".cursor/commands/troubleshoot/**,.cursor/troubleshoot/**"
+alwaysApply: false
+---
+
+# Chrome DevTools Mandate (Non-Negotiable)
+
+## Purpose
+
+Chrome DevTools (`user-chrome-devtools` MCP) provides access to browser debugging capabilities:
+- **Network requests** — API calls, headers, responses, timing
+- **Console messages** — JS errors, warnings, logs
+- **Performance traces** — CPU, rendering, scripting metrics
+- **DOM snapshots** — Element structure, accessibility tree
+- **Script evaluation** — Inspect JS state, variables
+
+## MCP Selection (CRITICAL)
+
+| MCP Server | Tools | Filtering |
+|------------|-------|-----------|
+| `user-chrome-devtools` | `list_network_requests`, `get_network_request` | Full params (resourceTypes, pageSize) |
+| `user-MCP-S` | `chrome-devtools__list-network-requests` | NO params (limited) |
+
+**Always use `user-chrome-devtools` for network inspection.**
+
+---
+
+## Available Tools
+
+### 1) List Network Requests
+
+```
+server: user-chrome-devtools
+toolName: list_network_requests
+arguments:
+  resourceTypes: ["fetch", "xhr"]  # Filter to API calls
+  pageSize: 50                     # Limit results
+  pageIdx: 0                       # Pagination (0-based)
+  includePreservedRequests: true   # Include from nav history
+```
+
+**Returns:** List with reqid, url, method, status, resourceType
+
+**Use when:** Finding failed requests, slow requests, CORS issues
+
+---
+
+### 2) Get Network Request Details
+
+```
+server: user-chrome-devtools
+toolName: get_network_request
+arguments:
+  reqid: <number>  # From list_network_requests results
+```
+
+**Returns:** Full request/response with ALL headers (including `x-wix-request-id`)
+
+**Use when:** Extracting request IDs for Grafana tracing, inspecting payloads
+
+---
+
+### 3) List Console Messages
+
+```
+server: user-chrome-devtools
+toolName: list_console_messages
+arguments: {}
+```
+
+**Returns:** JS errors, warnings, logs with timestamps
+
+**Use when:** Finding JS errors, failed assertions, debug logs
+
+---
+
+### 4) Take Screenshot
+
+```
+server: user-chrome-devtools
+toolName: take_screenshot
+arguments: {}
+```
+
+**Returns:** Base64 encoded screenshot
+
+**Use when:** Capturing visual state at failure point
+
+---
+
+### 5) Take DOM Snapshot
+
+```
+server: user-chrome-devtools
+toolName: take_snapshot
+arguments: {}
+```
+
+**Returns:** DOM tree structure
+
+**Use when:** Inspecting element state, accessibility issues
+
+---
+
+### 6) Evaluate Script
+
+```
+server: user-chrome-devtools
+toolName: evaluate_script
+arguments:
+  expression: "window.__DEBUG_STATE__"
+```
+
+**Returns:** JS evaluation result
+
+**Use when:** Inspecting variables, state, calling debug functions
+
+---
+
+### 7) Performance Trace
+
+```
+# Start tracing
+server: user-chrome-devtools
+toolName: performance_start_trace
+arguments: {}
+
+# ... reproduce the slow action ...
+
+# Stop and get results
+server: user-chrome-devtools
+toolName: performance_stop_trace
+arguments: {}
+
+# Get insights
+server: user-chrome-devtools
+toolName: performance_analyze_insight
+arguments: {}
+```
+
+**Use when:** Diagnosing slow renders, CPU spikes, layout thrashing
+
+---
+
+## Request ID Tracing (x-wix-request-id → Grafana)
+
+When a network call fails or behaves unexpectedly, extract the `x-wix-request-id` header and trace in Grafana.
+
+### Step-by-Step Workflow
+
+**Step 1: Find the Failed Request**
+
+```
+server: user-chrome-devtools
+toolName: list_network_requests
+arguments:
+  resourceTypes: ["fetch", "xhr"]
+  pageSize: 50
+```
+
+Look for requests with error status (4xx, 5xx) or suspicious responses.
+
+**Step 2: Get Full Request Details**
+
+```
+server: user-chrome-devtools
+toolName: get_network_request
+arguments:
+  reqid: <number>  # From step 1
+```
+
+Extract `x-wix-request-id` from RESPONSE headers (not request headers).
+
+**Step 3: Find Loki Datasource UID (do once)**
+
+```
+server: user-MCP-S
+toolName: grafana-mcp__list_datasources
+arguments:
+  type: "loki"
+```
+
+Save the `uid` for subsequent queries.
+
+**Step 4: Trace in Grafana**
+
+**Option A — Open Dashboard (visual, fastest):**
+
+```
+https://grafana.wixpress.com/d/38cCoLymz/error-analytics-traceid
+  ?orgId=1
+  &var-request_id={REQUEST_ID}
+```
+
+**Option B — Query Logs via MCP (programmatic):**
+
+```
+server: user-MCP-S
+toolName: grafana-mcp__query_loki_logs
+arguments:
+  datasourceUid: "<uid-from-step-3>"
+  logql: '{app=~".+"} |= "{REQUEST_ID}"'
+  limit: 100
+  direction: "backward"
+```
+
+### What x-wix-request-id Reveals
+
+- Full request trace across all backend services
+- Error stack traces and context
+- Service-to-service call chain
+- Timing breakdown per service hop
+- Which service threw the error
+
+### Use Cases
+
+- API returns unexpected error/status code
+- Request succeeds but response data is wrong
+- Need to trace request flow across microservices
+- Investigating latency spikes
+- Debugging intermittent failures
+- Correlating frontend network error with backend logs
+
+---
+
+## Tool Selection by Task
+
+| Task | Tool | Priority |
+|------|------|----------|
+| JS errors | `list_console_messages` | P0 |
+| Failed API calls | `list_network_requests` | P0 |
+| Request headers/body | `get_network_request` | P0 |
+| Visual bugs | `take_screenshot` | P0 |
+| DOM state | `take_snapshot` | P1 |
+| JS state inspection | `evaluate_script` | P1 |
+| Performance issues | `performance_*` | P0 (when perf) |
+
+---
+
+## Logging Requirement
+
+All Chrome DevTools queries must be recorded in:
+`.cursor/troubleshoot/<topic>/mcp-s-notes.md`
+
+Format:
+```markdown
+## [Evidence/Topic]
+- **Tool**: <tool name> (Chrome DevTools)
+- **Phase**: Evidence
+- **Arguments**: <exact args>
+- **Findings**: <key insights>
+- **Request IDs**: <x-wix-request-id if found>
+- **Follow-up**: <next tool or code to investigate>
+```
+
+---
+
+## Fallback Rule
+
+If Chrome DevTools is unavailable (tools return errors, not connected):
+- Use BrowserMCP as FALLBACK
+- Log: "Chrome DevTools unavailable, used BrowserMCP fallback"
+- Note: Network requests and performance NOT available in BrowserMCP

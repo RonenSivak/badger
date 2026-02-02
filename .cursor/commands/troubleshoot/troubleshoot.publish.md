@@ -7,7 +7,7 @@ alwaysApply: false
 # /troubleshoot.publish — Publish 📣
 
 ## Hard Gates
-- MUST have a passing VALIDATION-REPORT
+- MUST have a passing VERIFY-RESULT
 - MUST have `mcp-s-notes.md` with tool queries
 - MUST have ownership verified via `code_owners_for_path`
 - Frontend bugs MUST have Chrome DevTools evidence
@@ -16,7 +16,7 @@ alwaysApply: false
 ---
 
 ## Write
-- `.cursor/troubleshoot/<topic>/DEBUG-REPORT.md` (final)
+- `.cursor/troubleshoot/<topic>/TROUBLESHOOT-REPORT.md` (final)
 
 Also print the same report in chat.
 

@@ -1,173 +1,59 @@
 ---
-description: Deep-debug: MCP-S + Octocode + BrowserMCP proof loop (unlimited) to resolve all non-local symbols in the trace
+description: Cross-repo proof loop via MCP-S + Octocode to resolve all non-local symbols
 globs:
 alwaysApply: false
 ---
 
-# /troubleshoot.resolve — Proof Loop 🛰️
+# /troubleshoot.resolve — Proof Loop
 
-Goal: produce:
-- `.cursor/troubleshoot/<topic>/mcp-s-notes.md`
-- `.cursor/troubleshoot/<topic>/octocode-queries.md`
-- `.cursor/troubleshoot/<topic>/trace-ledger.md`
+Goal: Resolve all non-local symbols from E2E-TRACE with code proof.
 
----
+## Prerequisites
 
-## MCP-S Tools Quick Reference
+- E2E-TRACE exists at `.cursor/troubleshoot/<topic>/E2E-TRACE.md`
 
-### 🔴 Evidence & Investigation Tools
+## Outputs
 
-| Tool | When to Use |
-|------|-------------|
-| `find_error_pattern_logs` | First tool for backend errors |
-| `query_loki_logs` | Detailed log search |
-| `get_sift_analysis` | Automated root cause |
-| `find_slow_requests` | Performance issues |
-| `list-console-messages` | Frontend JS errors |
-| `list-network-requests` | HTTP request issues |
-| `take-screenshot` | Visual evidence |
-| `evaluate-script` | Inspect JS state |
-
-### 🟡 Performance Tools
-
-| Tool | When to Use |
-|------|-------------|
-| `performance-start-trace` | Begin frontend profiling |
-| `performance-stop-trace` | End profiling |
-| `performance-analyze-insight` | Get insights |
-| `emulate-cpu` | Test CPU throttling |
-| `emulate-network` | Test slow network |
-| `query_prometheus` | Backend metrics |
-
-### 🟢 Ownership & Context Tools
-
-| Tool | When to Use |
-|------|-------------|
-| `code_owners_for_path` | Who owns this code |
-| `where_is_my_commit` | Is fix deployed |
-| `get_build` | Build status |
-| `search_builds` | Find builds |
-| `get_rollout_history` | Deployment timeline |
-| `jira__get-issues` | Related tickets |
-| `slack__search-messages` | Discussions |
-
-### 🔵 Incident & On-Call Tools
-
-| Tool | When to Use |
-|------|-------------|
-| `list_incidents` | Active incidents |
-| `get_incident` | Incident details |
-| `get_current_oncall_users` | Who to escalate to |
-| `list_oncall_teams` | Team schedules |
-| `list_alert_rules` | Alert configs |
-| `search_dashboards` | Find dashboards |
-
-### ⚪ Reproduction Tools (Chrome DevTools)
-
-| Tool | When to Use |
-|------|-------------|
-| `click` | Simulate clicks |
-| `fill` / `fill-form` | Fill inputs |
-| `hover` | Trigger hover |
-| `drag` | Drag & drop |
-| `navigate-page` | Go to URL |
-| `wait-for` | Wait for condition |
-| `handle-dialog` | Handle alerts |
-| `upload-file` | File upload |
-| `resize-page` | Responsive test |
-
-### ⚪ Reproduction Tools (BrowserMCP — Playwright-style)
-
-| Tool | When to Use |
-|------|-------------|
-| `browser_navigate` | Navigate to URL |
-| `browser_snapshot` | Get DOM with element refs (REQUIRED before interaction) |
-| `browser_click` | Click by ref (from snapshot) |
-| `browser_type` | Type text into input |
-| `browser_hover` | Trigger hover states |
-| `browser_press_key` | Keyboard input |
-| `browser_wait` | Wait N seconds |
-| `browser_screenshot` | Capture visual state |
-| `browser_get_console_logs` | Check console after action |
-
-**BrowserMCP Workflow:**
-```
-1. browser_navigate(url) → go to bug location
-2. browser_snapshot() → get element refs (uid)
-3. browser_click(ref=uid) → interact with element
-4. browser_get_console_logs() → check for errors
-5. browser_screenshot() → capture result
-```
+- `.cursor/troubleshoot/<topic>/mcp-s-notes.md` — All MCP queries and findings
+- `.cursor/troubleshoot/<topic>/octocode-queries.md` — All Octocode queries
+- `.cursor/troubleshoot/<topic>/trace-ledger.md` — Symbol resolution table
 
 ---
 
 ## Mandatory Loop (unlimited iterations)
 
-For EVERY unresolved / non-local symbol found in E2E-TRACE:
+For EVERY unresolved / non-local symbol in E2E-TRACE:
 
-### A) Gather Context (MCP-S)
+### Step 1: Gather Context (MCP-S)
 
-**1) Ownership (MANDATORY)**
-```
-server: user-MCP-S
-toolName: code_owners_for_path
-arguments:
-  path: "<file or directory path>"
-```
+See [MCP-S Mandate](../../rules/troubleshoot/mcp-s-mandate.mdc) for tool details.
 
-**2) Related Issues**
-```
-server: user-MCP-S
-toolName: jira__get-issues
-arguments:
-  projectKey: "PROJECT"
-  jql: "text ~ '<error or feature>'"
-  maxResults: 10
-```
+| Query | Tool |
+|-------|------|
+| Who owns this code? | `devex__code_owners_for_path` (MANDATORY) |
+| Related tickets? | `jira__get-issues` |
+| Team discussions? | `slack__search-messages` |
+| Active incidents? | `grafana-mcp__list_incidents` |
+| Who to escalate to? | `grafana-mcp__get_current_oncall_users` |
 
-**3) Team Discussions**
-```
-server: user-MCP-S
-toolName: slack__search-messages
-arguments:
-  searchText: "<error message or feature>"
-```
+### Step 2: Classification
 
-**4) Check Incidents (if production issue)**
-```
-server: user-MCP-S
-toolName: grafana__list_incidents
-arguments:
-  status: "active"
-```
+Record from MCP-S findings:
+- **Layer**: sdk / client / service / facade / runtime
+- **Type**: generated vs runtime
+- **Owner**: team from `code_owners_for_path`
+- **Related**: incidents / tickets / discussions
 
-**5) Find Who to Escalate**
-```
-server: user-MCP-S
-toolName: grafana__get_current_oncall_users
-arguments:
-  team: "<team name>"
-```
+### Step 3: Code Proof (Octocode)
 
-### B) Classification (from MCP-S findings)
-
-Record:
-- Layer: sdk/client/service/facade/runtime
-- Generated vs runtime
-- Owner/team (from `code_owners_for_path`)
-- Related incidents/tickets
-
-### C) Code Proof (Octocode)
+See [Octocode Mandate](../../rules/troubleshoot/octocode-mandate.mdc) for usage.
 
 Run **`/octocode/research`** to fetch:
 - Definition (repo/path + lines + snippet)
 - Implementation (repo/path + lines + snippet)
-- Side-effect boundary snippet (network/persist/render/throw)
+- Side-effect boundary (network/persist/render/throw)
 
-Write queries + results into:
-`.cursor/troubleshoot/<topic>/octocode-queries.md`
-
-### D) Update Trace Ledger
+### Step 4: Update Trace Ledger
 
 Append to `.cursor/troubleshoot/<topic>/trace-ledger.md`:
 
@@ -179,91 +65,31 @@ Append to `.cursor/troubleshoot/<topic>/trace-ledger.md`:
 
 ## Additional Investigation (when needed)
 
-### If you need more logs:
-```
-server: user-MCP-S
-toolName: grafana__query_loki_logs
-arguments:
-  query: '{service="X"} |= "error" | json'
-  limit: 100
-```
-
-### If you need metrics:
-```
-server: user-MCP-S
-toolName: grafana__query_prometheus
-arguments:
-  query: 'rate(http_requests_total{service="X",status="500"}[5m])'
-```
-
-### If you need dashboard context:
-```
-server: user-MCP-S
-toolName: grafana__search_dashboards
-arguments:
-  query: "<service name>"
-```
-
-### If you need to reproduce in browser (Chrome DevTools):
-```
-server: user-MCP-S
-toolName: chrome-devtools__navigate-page
-arguments:
-  url: "<URL to reproduce>"
-  
-# Then interact
-toolName: chrome-devtools__click
-arguments:
-  selector: "<button selector>"
-  
-# Check results
-toolName: chrome-devtools__list-console-messages
-arguments: {}
-```
-
-### If you need to reproduce in browser (BrowserMCP):
-```
-# Navigate to bug location
-server: user-browsermcp
-toolName: browser_navigate
-arguments:
-  url: "<URL to reproduce>"
-
-# Get element refs from DOM
-server: user-browsermcp
-toolName: browser_snapshot
-arguments: {}
-
-# Interact by ref (get ref from snapshot above)
-server: user-browsermcp
-toolName: browser_click
-arguments:
-  ref: "<uid from snapshot>"
-  element: "Button description"
-
-# Check console for errors
-server: user-browsermcp
-toolName: browser_get_console_logs
-arguments: {}
-
-# Capture visual state
-server: user-browsermcp
-toolName: browser_screenshot
-arguments: {}
-```
+| Need | Tool | Mandate |
+|------|------|---------|
+| More backend logs | `grafana-mcp__query_loki_logs` | MCP-S Mandate |
+| Backend metrics | `grafana-mcp__query_prometheus` | MCP-S Mandate |
+| Dashboard context | `grafana-mcp__search_dashboards` | MCP-S Mandate |
+| Reproduce in browser | Chrome DevTools or BrowserMCP | Chrome DevTools / BrowserMCP Mandate |
+| Network request details | `list_network_requests` → `get_network_request` | Chrome DevTools Mandate |
 
 ---
 
 ## Rules
-- **Generated wrappers do NOT count:** find generator source + runtime implementer
-- **Record every Octocode query** in `octocode-queries.md`
-- **Record every MCP-S query** in `mcp-s-notes.md`
-- **Record every BrowserMCP query** in `mcp-s-notes.md`
-- **Add every symbol** to `trace-ledger.md` with proof pointers
+
+- Generated wrappers do NOT count — find generator source + runtime implementer
+- Record every Octocode query in `octocode-queries.md`
+- Record every MCP-S query in `mcp-s-notes.md`
+- Add every symbol to `trace-ledger.md` with proof pointers
+- Use `code_owners_for_path` for EVERY affected file
+
+---
 
 ## Stop Conditions
-- All symbols resolved, OR
-- Marked NOT FOUND with:
-  - Exact Octocode searches + scope
-  - Exact MCP-S tool queries attempted
-  - Chrome DevTools / BrowserMCP / Grafana queries tried
+
+All symbols resolved, OR marked NOT FOUND with:
+- Exact Octocode searches + scope attempted
+- Exact MCP-S tool queries attempted
+- Chrome DevTools / BrowserMCP / Grafana queries tried
+
+When complete, say: "Resolution complete. Run `/troubleshoot.hypothesize`."

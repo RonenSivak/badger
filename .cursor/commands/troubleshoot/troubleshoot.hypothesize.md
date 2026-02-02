@@ -1,140 +1,51 @@
 ---
-description: Deep-debug: Turn the proven trace into hypotheses + minimal experiments using MCP-S and BrowserMCP tools
+description: Build hypothesis tree + design experiments to validate root cause
 globs:
 alwaysApply: false
 ---
 
-# /troubleshoot.hypothesize — Hypothesis Tree 🌲
+# /troubleshoot.hypothesize — Hypothesis Tree
 
-Input:
-- TROUBLESHOOT-SPEC
-- E2E-TRACE
+Goal: Build hypotheses from evidence and design experiments to validate.
+
+## Prerequisites
+
+- TROUBLESHOOT-SPEC exists
+- E2E-TRACE exists
 - trace-ledger (resolved symbols)
-- mcp-s-notes (evidence from Chrome DevTools/BrowserMCP/Grafana)
+- mcp-s-notes (evidence from tools)
 
-Output:
-- `.cursor/troubleshoot/<topic>/HYPOTHESES.md`
+## Output
+
+- `.cursor/troubleshoot/<topic>/HYPOTHESIS-TREE.md`
 
 ---
 
 ## Rules
+
 - **3–7 hypotheses max**
 - Each hypothesis must include:
-  - What proven hop(s) it explains (link to trace-ledger pointers)
-  - What evidence supports it (from MCP-S/BrowserMCP queries)
+  - What proven hop(s) it explains (link to trace-ledger)
+  - What evidence supports it (from mcp-s-notes)
   - A minimal experiment to falsify it
   - Expected outcome if true/false
 
 ---
 
-## Experiments Using MCP-S Tools
+## Experiment Types
 
-### Frontend Experiments (Chrome DevTools)
+| Bug Type | Experiment Tools |
+|----------|------------------|
+| Frontend UI | Chrome DevTools: `navigate-page` → `click/fill` → `list-console-messages` |
+| Frontend Performance | `performance-start-trace` → reproduce → `performance-stop-trace` |
+| Backend Error | `find_error_pattern_logs` → `query_loki_logs` with specific filter |
+| Backend Performance | `find_slow_requests` → `query_prometheus` |
+| Deployment | `where_is_my_commit` → `get_rollout_history` |
 
-**Test UI behavior:**
-```
-# Navigate to repro URL
-chrome-devtools__navigate-page → url
-
-# Interact
-chrome-devtools__click → selector
-chrome-devtools__fill → selector, value
-
-# Observe
-chrome-devtools__list-console-messages
-chrome-devtools__list-network-requests
-chrome-devtools__take-screenshot
-```
-
-**Test performance hypothesis:**
-```
-# With throttling
-chrome-devtools__emulate-cpu → rate: 4 (4x slowdown)
-chrome-devtools__emulate-network → preset: "slow-3g"
-
-# Profile
-chrome-devtools__performance-start-trace
-# ... reproduce action ...
-chrome-devtools__performance-stop-trace
-chrome-devtools__performance-analyze-insight
-```
-
-**Test responsive behavior:**
-```
-chrome-devtools__resize-page → width: 375, height: 667 (mobile)
-chrome-devtools__take-screenshot
-```
-
-### Frontend Experiments (BrowserMCP — Playwright-style)
-
-**Test UI behavior:**
-```
-# Navigate to repro URL
-browser_navigate → url
-
-# Get element refs
-browser_snapshot
-
-# Interact by ref (from snapshot)
-browser_click → ref: "<uid from snapshot>", element: "Button description"
-browser_type → ref: "<uid>", text: "input value"
-
-# Observe
-browser_get_console_logs
-browser_screenshot
-```
-
-**BrowserMCP Reproduction Workflow:**
-```
-1. browser_navigate(url) → go to bug location
-2. browser_snapshot() → get element refs (uid)
-3. browser_click(ref=uid) → interact with element
-4. browser_wait(time=2) → wait for async operation
-5. browser_get_console_logs() → check for errors
-6. browser_snapshot() → check updated DOM
-7. browser_screenshot() → capture result
-```
-
-**When to use BrowserMCP vs Chrome DevTools:**
-- **Chrome DevTools**: Network requests, performance profiling, JS evaluation
-- **BrowserMCP**: DOM refs for interaction, simpler Playwright-style automation
-
----
-
-### Backend Experiments (Grafana)
-
-**Test error hypothesis:**
-```
-# Check if error pattern exists
-grafana__find_error_pattern_logs → service, timeRange
-
-# Query specific logs
-grafana__query_loki_logs → {service="X"} |= "hypothesis keyword"
-
-# Check metrics
-grafana__query_prometheus → rate(errors{service="X"}[5m])
-```
-
-**Test performance hypothesis:**
-```
-# Find slow requests
-grafana__find_slow_requests → service, threshold
-
-# Query latency metrics
-grafana__query_prometheus → histogram_quantile(0.99, ...)
-```
-
-**Test deployment hypothesis:**
-```
-# Check if recent deployment
-devex__get_rollout_history → project
-
-# Check if commit is deployed
-devex__where_is_my_commit → sha
-
-# Check build status
-devex__search_builds → project
-```
+See mandate files for detailed tool usage:
+- [Chrome DevTools Mandate](../../rules/troubleshoot/chrome-devtools-mandate.mdc)
+- [MCP-S Mandate](../../rules/troubleshoot/mcp-s-mandate.mdc)
+- [BrowserMCP Mandate](../../rules/troubleshoot/browsermcp-mandate.mdc)
 
 ---
 
@@ -148,15 +59,12 @@ devex__search_builds → project
 - Links to: trace-ledger entry #X
 
 ### Evidence
-- Console error: "<error message>" (from list-console-messages)
-- Log pattern: "<pattern>" (from find_error_pattern_logs)
-- Metric: <value> (from query_prometheus)
+- Console error: "<error message>"
+- Log pattern: "<pattern>"
+- Metric: <value>
 
 ### Experiment
-**Tool sequence:**
-1. `chrome-devtools__<tool>` with args: ...
-2. `grafana__<tool>` with args: ...
-3. Observe: <what to look for>
+**Tools:** <list of MCP tools to use>
 
 **Expected if TRUE:**
 - <specific observable outcome>
@@ -171,13 +79,22 @@ devex__search_builds → project
 
 ---
 
-## Prefer Experiments That:
+## Prefer Experiments That
+
 - Touch fewer repos
 - Validate at boundaries (network/persist/throw/render)
 - Produce objective signals:
-  - Console messages (Chrome DevTools or BrowserMCP)
-  - DOM snapshots (Chrome DevTools or BrowserMCP)
+  - Console messages
+  - DOM snapshots
   - Log entries (Grafana Loki)
   - Metric changes (Grafana Prometheus)
   - Test results (tests/tsc/lint)
-- Use MCP-S or BrowserMCP tools for reproducible evidence
+- Use MCP tools for reproducible evidence
+
+---
+
+## Output
+
+Write `.cursor/troubleshoot/<topic>/HYPOTHESIS-TREE.md` with all hypotheses.
+
+When complete, say: "Hypotheses complete. Run `/troubleshoot.fixplan`."
