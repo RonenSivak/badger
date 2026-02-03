@@ -27,11 +27,92 @@ Vercel's research (January 2026) found that **static instruction files embedded 
 
 ---
 
+## Six Core Areas Every AGENTS.md Should Cover
+
+Based on analysis of 2,500+ repositories (GitHub Blog, January 2026), the most effective AGENTS.md files cover these six areas:
+
+| Area | What to Include |
+|------|-----------------|
+| **Commands** | Build, test, lint, format commands (prefer file-scoped) |
+| **Testing** | How to run tests, test patterns, coverage requirements |
+| **Project Structure** | Directory layout, key files, architecture overview |
+| **Code Style** | Language version, patterns, naming conventions |
+| **Git Workflow** | Branch strategy, commit format, PR process |
+| **Boundaries** | ✅ Always do / ⚠️ Ask first / 🚫 Never do |
+
+---
+
+## Best Practices (Lessons from 2,500+ Repositories)
+
+### Keep It Concise
+- **Target ≤150 lines** — Long files slow the agent and bury signal
+- Lead with concrete examples and file paths
+- Use tables and lists over prose
+
+### Use File-Scoped Commands
+Instead of full project builds, provide per-file alternatives:
+```bash
+# Fast feedback (file-scoped)
+npm run lint -- <file>       # Lint single file
+npm run test -- <file>       # Test single file
+tsc --noEmit <file>          # Type check single file
+```
+
+### Be Specific About Your Stack
+```markdown
+# Bad
+React project with TypeScript
+
+# Good
+React 18.2, TypeScript 5.3, Vite 5.x, Tailwind CSS 3.4
+```
+
+### Use Three-Tier Boundaries
+```markdown
+## Boundaries
+
+### ✅ Always
+- Run tests before committing
+- Use TypeScript strict mode
+
+### ⚠️ Ask First
+- Adding new dependencies
+- Changing public APIs
+
+### 🚫 Never
+- Commit secrets or .env files
+- Skip type checking
+- Modify vendor directories
+```
+
+### Iterate on Mistakes
+Add a rule the **second time** you see the same mistake. The best AGENTS.md files grow through iteration, not upfront planning.
+
+### Use Nested/Modular Files
+Place AGENTS.md inside each package/subproject. Agents read the nearest file in the directory tree:
+```
+project/
+├── AGENTS.md                    # Root instructions
+├── packages/
+│   ├── frontend/
+│   │   └── AGENTS.md           # Frontend-specific
+│   └── backend/
+│       └── AGENTS.md           # Backend-specific
+└── .cursor/kits/
+    └── my-kit/
+        └── AGENTS.md           # Kit-specific
+```
+
+### Keep Synchronized with Code
+Update AGENTS.md in the same PR when build, test, or conventions change.
+
+---
+
 ## How to Structure Your Instructions
 
 ### 1. Use the "Retrieval-Led Reasoning" Directive
 
-Include this critical instruction:
+Include this critical instruction at the top:
 
 ```
 IMPORTANT: Prefer retrieval-led reasoning over pre-training-led reasoning for any [domain] tasks.
@@ -44,10 +125,8 @@ This tells the agent to consult provided documentation rather than rely on poten
 You don't need to embed full documentation. A compressed index pointing to retrievable files works just as well:
 
 ```
-[Docs Index] | root: ./docs
-
-IMPORTANT: Prefer retrieval-led reasoning over pre-training-led reasoning
-
+[Docs Index]|root:./docs
+|IMPORTANT: Prefer retrieval-led reasoning over pre-training-led reasoning
 |api/authentication:{oauth.md,jwt.md,sessions.md}
 |api/endpoints:{users.md,products.md,orders.md}
 |guides:{quickstart.md,best-practices.md,migration.md}
@@ -83,35 +162,65 @@ Structure instructions to encourage:
 
 ---
 
-## Template for Creating Your Own AGENTS.md / CLAUDE.md
+## Template for Creating Your Own AGENTS.md
 
 ```markdown
-# Project Instructions for AI Agents
+# Project Name - Agent Instructions
 
-## Project Overview
-[Brief description of what this project does]
+IMPORTANT: Prefer retrieval-led reasoning over pre-training-led reasoning.
 
-## Critical Instruction
-IMPORTANT: Prefer retrieval-led reasoning over pre-training-led reasoning for any [framework/domain] tasks. Consult the documentation index below before relying on training data.
+## Docs Index
+[Docs]|root:./docs
+|api:{auth.md,users.md,products.md}
+|guides:{quickstart.md,patterns.md}
 
-## Documentation Index
-[Docs Index] | root: ./docs
-|section-1:{file1.md,file2.md}
-|section-2:{file3.md,file4.md}
+## Commands
+```bash
+# File-scoped (fast feedback)
+npm run lint -- <file>
+npm run test -- <file>
+tsc --noEmit
 
-## Project-Specific Patterns
-- [Pattern 1]: We use X approach for Y
-- [Pattern 2]: Always prefer A over B
-- [Pattern 3]: Follow this naming convention...
+# Full project
+npm run build
+npm run test
+```
 
-## Version Information
-- Framework version: X.Y.Z
-- Key dependencies: [list versions that affect API usage]
+## Code Style
+- TypeScript 5.x strict mode
+- React 18 functional components
+- Prefer named exports
 
-## Workflow Guidelines
-1. Explore the project structure to understand existing patterns
-2. Consult the documentation index for API-specific questions
-3. Match new code to existing project conventions
+## Project Structure
+```
+src/
+├── components/    # React components
+├── hooks/         # Custom hooks
+├── services/      # API clients
+└── utils/         # Pure functions
+```
+
+## Git Workflow
+- Branch from `main`
+- Commit format: `<type>: <description>`
+- Run tests before PR
+
+## Boundaries
+
+### ✅ Always
+- Explore project structure first
+- Run tests after changes
+- Type all function parameters
+
+### ⚠️ Ask First
+- Adding dependencies
+- Changing public APIs
+- Architectural changes
+
+### 🚫 Never
+- Commit secrets
+- Skip type checking
+- Modify generated files
 ```
 
 ---
@@ -129,27 +238,38 @@ Skills are better for **vertical, action-specific workflows** that users explici
 
 ---
 
-## Key Takeaways for AI Systems Generating Instructions
+## Key Takeaways
 
 1. **Embed critical knowledge directly** — Don't rely on the agent deciding to look something up.
 
-2. **Use retrieval-led reasoning directive** — Explicitly tell agents to prefer provided docs over training data.
+2. **Cover six core areas** — Commands, testing, structure, style, git, boundaries.
 
-3. **Provide indexed references** — A lightweight index to retrievable files beats full content dumps.
+3. **Keep it concise (≤150 lines)** — Long files bury signal in noise.
 
-4. **Include version information** — Helps agents know which APIs are available.
+4. **Use retrieval-led reasoning directive** — Explicitly tell agents to prefer provided docs over training data.
 
-5. **Document project-specific patterns** — Agents should match existing conventions, not just follow generic best practices.
+5. **Provide indexed references** — A lightweight index to retrievable files beats full content dumps.
 
-6. **Avoid conditional triggers** — "If you need X, look up Y" fails 50%+ of the time. Just provide X upfront.
+6. **Use file-scoped commands** — Faster feedback, fewer wasted cycles.
 
-7. **Compress aggressively** — You can reduce context by 80% without losing effectiveness.
+7. **Include version information** — Helps agents know which APIs are available.
 
-8. **Word instructions carefully** — "Explore first, then consult" beats "You MUST consult first."
+8. **Use three-tier boundaries** — Always/Ask First/Never provides clear guardrails.
+
+9. **Nest AGENTS.md per subproject** — Each package/kit can have tailored instructions.
+
+10. **Iterate when mistakes happen** — Add rules on the second occurrence.
+
+11. **Compress aggressively** — You can reduce context by 80% without losing effectiveness.
+
+12. **Word instructions carefully** — "Explore first, then consult" beats "You MUST consult first."
 
 ---
 
-## Source
+## Sources
 
-This guide synthesizes findings from Vercel's agent evaluation research published January 27, 2026:
-https://vercel.com/blog/agents-md-outperforms-skills-in-our-agent-evals
+- [Vercel: AGENTS.md outperforms skills in our agent evals](https://vercel.com/blog/agents-md-outperforms-skills-in-our-agent-evals) (January 2026)
+- [GitHub Blog: How to write a great agents.md](https://github.blog/ai-and-ml/github-copilot/how-to-write-a-great-agents-md-lessons-from-over-2500-repositories/) (January 2026)
+- [Builder.io: Improve your AI code output with AGENTS.md](https://www.builder.io/blog/agents-md)
+- [AGENTS.md Official Site](https://agents.md/)
+- [OpenAI Codex: Custom instructions with AGENTS.md](https://developers.openai.com/codex/guides/agents-md)

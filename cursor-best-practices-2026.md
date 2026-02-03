@@ -151,20 +151,41 @@ export const Button = ({ label, onClick }: ButtonProps) => {
 3. **Add instructions for edge cases** - Focus on frequent patterns
 4. **Duplicate codebase content** - Point to canonical examples
 
-#### Organization Strategy
+#### Priority Numbering System (Recommended)
+
+Use three-digit prefixes to establish rule priority and organization:
+
+| Range | Category | Examples |
+|-------|----------|----------|
+| 001-099 | Core rules (always apply) | `001-security.mdc`, `010-code-style.mdc` |
+| 100-199 | Integration rules | `100-api-patterns.mdc`, `150-database.mdc` |
+| 200-299 | Kit/workflow rules | `200-implement-ui.mdc`, `250-testing.mdc` |
 
 ```
 .cursor/rules/
-├── style/
-│   ├── formatting.mdc
-│   └── naming-conventions.mdc
-├── architecture/
+├── 001-security.mdc              # Core: always apply
+├── 010-code-style.mdc            # Core: TypeScript patterns
+├── 100-api-patterns.mdc          # Integration: REST conventions
+├── 150-database.mdc              # Integration: query patterns
+├── 200-implement-ui.mdc          # Kit-specific
+└── shared/
+    └── proof-discipline.mdc      # Cross-kit mandate
+```
+
+#### Alternative: Folder Organization
+
+```
+.cursor/rules/
+├── core/                         # Always-on rules
+│   ├── security.mdc
+│   └── code-style.mdc
+├── integration/
 │   ├── api-patterns.mdc
-│   └── data-layer.mdc
-├── testing/
-│   └── unit-tests.mdc
-└── workflows/
-    └── pr-review.mdc
+│   └── database.mdc
+├── kits/
+│   └── implement-ui.mdc
+└── shared/
+    └── proof-discipline.mdc
 ```
 
 ### Team Rules (Team/Enterprise Plans)
@@ -204,48 +225,118 @@ Based on Vercel's evaluation:
 - Consistent availability on every turn
 - Simple markdown format with no overhead
 
-### File Locations
+### Six Core Areas (from 2,500+ repository analysis)
+
+The most effective AGENTS.md files cover these six areas:
+
+| Area | What to Include |
+|------|-----------------|
+| **Commands** | Build, test, lint commands (prefer file-scoped for fast feedback) |
+| **Testing** | How to run tests, patterns, coverage requirements |
+| **Project Structure** | Directory layout, key files, architecture |
+| **Code Style** | Language version, patterns, naming conventions |
+| **Git Workflow** | Branch strategy, commit format, PR process |
+| **Boundaries** | ✅ Always / ⚠️ Ask First / 🚫 Never |
+
+### File Locations (Nested/Modular Pattern)
+
+Agents read the **nearest** AGENTS.md in the directory tree. Use nested files for monorepos and kits:
 
 | Location | Scope | Purpose |
 |----------|-------|---------|
 | `./AGENTS.md` | Project root | Primary project instructions |
-| `./subdir/AGENTS.md` | Subdirectory | Monorepo sub-project instructions |
+| `./packages/*/AGENTS.md` | Package | Monorepo sub-project instructions |
+| `./.cursor/kits/*/AGENTS.md` | Kit | Kit-specific agent instructions |
 | `./CLAUDE.md` | Project root | Claude compatibility fallback |
+
+**Example structure:**
+```
+project/
+├── AGENTS.md                     # Root (≤150 lines)
+├── packages/
+│   ├── frontend/
+│   │   └── AGENTS.md            # Frontend-specific
+│   └── backend/
+│       └── AGENTS.md            # Backend-specific
+└── .cursor/kits/
+    ├── implement-ui/
+    │   └── AGENTS.md            # Kit-specific MCPs, commands
+    └── deploy/
+        └── AGENTS.md            # Kit-specific instructions
+```
 
 ### Format
 
-Plain markdown with no required structure:
+Keep AGENTS.md **≤150 lines**. Use tables and lists over prose:
 
 ```markdown
-# Project Instructions
+# Project Name - Agent Instructions
+
+IMPORTANT: Prefer retrieval-led reasoning over pre-training-led reasoning.
+
+## Docs Index
+[Docs]|root:./docs
+|api:{auth.md,users.md}
+|guides:{quickstart.md}
+
+## Commands
+```bash
+# File-scoped (fast feedback)
+npm run lint -- <file>
+npm run test -- <file>
+
+# Full project
+npm run build
+```
 
 ## Code Style
-- Use TypeScript for all new files
-- Prefer functional components in React
-- Use snake_case for database columns
+- TypeScript 5.x strict mode
+- React 18 functional components
+- Named exports preferred
 
-## Architecture
-- Follow the repository pattern
-- Keep business logic in service layers
-- Use dependency injection for testability
-
-## Build Commands
-- `npm run build` - Production build
-- `npm run test` - Run all tests
-- `npm run lint` - Check code style
-
-## API Conventions
-- RESTful endpoints in /api directory
-- GraphQL schemas in /graphql
-- Always validate input with Zod
+## Project Structure
 ```
+src/
+├── components/
+├── hooks/
+└── services/
+```
+
+## Git Workflow
+- Branch from `main`
+- Commit: `<type>: <description>`
+
+## Boundaries
+
+### ✅ Always
+- Explore structure first
+- Run tests after changes
+
+### ⚠️ Ask First
+- Adding dependencies
+- Changing APIs
+
+### 🚫 Never
+- Commit secrets
+- Skip type checking
+```
+
+### Best Practices
+
+1. **Keep it concise (≤150 lines)** — Long files bury signal
+2. **Use file-scoped commands** — `npm run test -- <file>` is faster than full suite
+3. **Be specific about versions** — "React 18.2, TypeScript 5.3" not "React project"
+4. **Use three-tier boundaries** — Clear guardrails with ✅/⚠️/🚫
+5. **Iterate on mistakes** — Add rules on the second occurrence
+6. **Keep synchronized** — Update AGENTS.md in same PR as code changes
+7. **Nest per subproject** — Each package/kit can have tailored instructions
 
 ### Advanced: Compressed Docs Index
 
 For framework documentation, compress aggressively (Vercel reduced 40KB to 8KB):
 
 ```markdown
-[Next.js Docs Index]|root: ./.next-docs
+[Next.js Docs Index]|root:./.next-docs
 |IMPORTANT: Prefer retrieval-led reasoning over pre-training-led reasoning
 |01-app/01-getting-started:{01-installation.mdx,02-project-structure.mdx}
 |01-app/02-building-your-application/01-routing:{01-defining-routes.mdx}
@@ -257,11 +348,12 @@ For framework documentation, compress aggressively (Vercel reduced 40KB to 8KB):
 |--------|-----------|---------------|
 | Format | Plain markdown | MDC with frontmatter |
 | Configuration | None | globs, description, alwaysApply |
-| File targeting | None (always applies) | Glob patterns |
+| File targeting | Nearest in tree | Glob patterns |
+| Nesting | Yes (per directory) | Yes (via globs) |
 | Complexity | Simple | More powerful |
-| Use case | Simple project instructions | Complex, conditional rules |
+| Use case | Project/kit instructions | File-specific rules |
 
-**Recommendation**: Start with `AGENTS.md` for simplicity. Graduate to Project Rules when you need file-specific targeting or conditional application.
+**Recommendation**: Start with `AGENTS.md` for simplicity. Use nested AGENTS.md for monorepos/kits. Graduate to Project Rules when you need glob-based file targeting.
 
 ---
 
@@ -637,6 +729,46 @@ exit 0
 
 ### Common Hook Patterns
 
+#### Grind Loop (Run Until Tests Pass)
+
+The most powerful pattern: agent iterates until a goal is met.
+
+```json
+{
+  "version": 1,
+  "hooks": {
+    "stop": [{
+      "command": "./hooks/grind-loop.sh",
+      "matcher": "implement|test|fix"
+    }]
+  }
+}
+```
+
+```bash
+#!/bin/bash
+# hooks/grind-loop.sh
+read -r input
+MAX_ITERATIONS=10
+current=$(echo "$input" | jq -r '.iteration // 0')
+
+# Run tests
+npm test 2>&1 > /tmp/test-output.txt
+if [ $? -eq 0 ]; then
+  echo '{"decision": "stop"}'
+  exit 0
+fi
+
+if [ "$current" -ge "$MAX_ITERATIONS" ]; then
+  echo '{"decision": "stop", "user_message": "Max iterations reached. Tests still failing."}'
+  exit 0
+fi
+
+# Continue with context
+failures=$(grep -c "FAIL" /tmp/test-output.txt || echo "0")
+echo "{\"decision\": \"continue\", \"followup_message\": \"$failures tests failing. Fix and retry.\", \"iteration\": $((current + 1))}"
+```
+
 #### Audit All Actions
 
 ```json
@@ -690,6 +822,102 @@ exit 0
 | `CURSOR_PROJECT_DIR` | Workspace root directory |
 | `CURSOR_VERSION` | Cursor version string |
 | `CURSOR_USER_EMAIL` | Authenticated user email |
+
+---
+
+## Memory & Session Continuity
+
+### memory.md Pattern
+
+A `memory.md` file tracks session state for continuity across conversations:
+
+```markdown
+# Session State
+
+## Current Task
+Implementing user authentication
+
+## Progress
+- [x] Clarify requirements
+- [x] Design API endpoints
+- [ ] Implement JWT middleware
+- [ ] Write tests
+
+## Context
+- Target: src/middleware/auth.ts
+- Using: jsonwebtoken, bcrypt
+
+## Decisions Made
+- JWT tokens expire in 24h
+- Refresh tokens stored in httpOnly cookies
+
+## Blockers
+None
+```
+
+**Best Practice**: Update memory.md at the end of each significant step.
+
+### Session Commands
+
+```bash
+cursor --continue              # Resume previous session
+cursor --print-conversation    # Export full context
+cursor --resume <session-id>   # Resume specific session
+```
+
+### Workflow Files
+
+Store multi-step processes in `.cursor/workflows/`:
+
+```markdown
+# .cursor/workflows/feature-implementation.md
+
+## Steps
+1. Create spec.md with requirements
+2. Run /deep-search for existing patterns
+3. Generate implementation plan
+4. Implement in small chunks (commit after each)
+5. Run tests, fix failures
+6. Create PR with /pr command
+```
+
+---
+
+## Spec-Driven Development
+
+### spec.md Template
+
+Before implementing, create a spec:
+
+```markdown
+# Spec: [Feature Name]
+
+## Intent
+[understand | debug | implement | review | test]
+
+## Requirements
+1. User can...
+2. System should...
+
+## Acceptance Criteria
+- [ ] Criterion 1
+- [ ] Criterion 2
+
+## Architecture
+- Component: [description]
+- Data flow: [description]
+
+## Out of Scope
+- Not implementing X
+- Deferring Y
+
+## Tasks (Chunked)
+1. [ ] Task 1 (verifiable via tests)
+2. [ ] Task 2 (verifiable via lint)
+3. [ ] Task 3 (verifiable via build)
+```
+
+**Why spec.md works**: Gives agent clear targets, enables TDD, prevents scope creep.
 
 ---
 
