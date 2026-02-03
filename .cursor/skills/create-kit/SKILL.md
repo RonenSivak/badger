@@ -1,39 +1,25 @@
 ---
 name: create-kit
-description: "Help generate repeatable Cursor workflow kits (commands + rules + skills) with a KIT-SPEC, FILE-MAP, and verification gates. Use when creating a new workflow kit or standardizing an existing one."
+description: "Generate new Cursor workflow kit. Trigger: /create-kit <kit-name>"
+disable-model-invocation: true
 ---
 
 # Create-Kit Skill
 
-Purpose: help the agent generate **repeatable Cursor workflows** (commands + rules + skills) without bloating context.
+Generate repeatable Cursor workflow kits (commands + rules + AGENTS.md).
 
-## Principles
-- Start with a plan (KIT SPEC + FILE-MAP).
-- Keep commands procedural, rules enforceable, skills instructional.
-- Prefer modular subcommands over one long command to reduce drift.
-- Add verification gates before publishing.
+## Quick Start
 
-## KIT SPEC template
-- Kit name:
-- Orchestrator command:
-- Subcommands:
-- Rules:
-- Skills:
-- Required tools/MCPs:
-- Outputs generated:
-- Quality gates:
-- Example prompt:
+```bash
+/create-kit my-workflow
+```
 
-## FILE-MAP template
-For each file:
-- Path:
-- Type: command | rule | skill | docs
-- Referenced by:
-- Purpose:
+## Key Rules
 
-## Verify checklist
-- Frontmatter present on all `.mdc`
-- Delegates exist
-- Rule/skill references exist
-- Naming consistent
-- README created
+1. **Spec first** — KIT-SPEC + FILE-MAP before scaffolding
+2. **Verify gates** — All files must pass verification
+3. **Include AGENTS.md** — Kit-specific agent instructions
+
+## Full Documentation
+
+See `.cursor/commands/create-kit.md` for templates and workflow.

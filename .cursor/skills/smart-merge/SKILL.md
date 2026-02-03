@@ -1,35 +1,26 @@
 ---
 name: smart-merge
-description: "Safely merge branches by simulating merge, resolving conflicts using existing patterns and ownership context, verifying with real checks, and scanning blast radius. Use when performing non-trivial merges with conflicts."
+description: "Safely merge branches with conflict resolution. Trigger: /smart-merge"
+disable-model-invocation: true
 ---
 
-# Smart Merge Skill 🔀
+# Smart Merge Skill
 
-## What "smart" means
-1) simulate merge in scratch branch (no commit)
-2) resolve conflicts by matching existing patterns + ownership context
-3) verify with real commands (lint/tsc/tests)
-4) scan blast radius (find consumers of changed surfaces)
+Safely merge branches by simulating, resolving conflicts, and verifying.
 
----
+## Quick Start
 
-## Passive context references (preferred)
-Ownership/context tools and logging discipline are defined as passive context:
-- `@.cursor/rules/shared/011-mcp-s-mandate.mdc`
-- `@.cursor/rules/shared/001-proof-discipline.mdc`
+```bash
+/smart-merge
+```
 
-Minimum expectation for conflicts:
-- **Always** use `code_owners_for_path` for conflicting paths before deciding.
+## What "Smart" Means
 
----
+1. **Simulate** — `git merge --no-commit` in scratch branch
+2. **Resolve** — Use patterns + code ownership context
+3. **Verify** — lint/tsc/tests must pass
+4. **Scan blast radius** — Find consumers of changed surfaces
 
-## Evidence artifacts
-Write everything to `.cursor/smart-merge/<name>/...` so the chat context stays small:
-- `MERGE-SPEC.md` — branches, strategy, constraints
-- `MERGE-PLAN.md` — commands, checkpoints
-- `CONFLICT-RESOLUTION.md` — decisions + proof
-- `mcp-s-notes.md` — ownership & context findings
+## Full Documentation
 
-## Git mechanics you should use
-- Use `git merge --no-commit` to test merging without committing; reset/abort if needed.
-- Follow standard conflict-resolution flow (identify, resolve, stage, continue).
+See `.cursor/commands/smart-merge.md` for workflow and artifact paths.
