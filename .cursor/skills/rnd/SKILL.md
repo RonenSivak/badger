@@ -1,49 +1,31 @@
 ---
 name: rnd
-description: "Meta-orchestrator for Badger: run MCP preflight, route intent to the right command, and delegate to the canonical workflow. Use when the user starts with /rnd or wants 'the right workflow' without knowing which command."
+description: "Meta-orchestrator: MCP preflight + intent routing. Trigger: /rnd"
+disable-model-invocation: true
 ---
 
 # RnD Skill
 
-Purpose: select the right Badger workflow command and enforce MCP gating before execution.
+Meta-orchestrator that runs MCP preflight and routes to the right Badger workflow.
 
-## Default flow
+## Quick Start
 
-1) Run `/rnd.context-budget` when near limit (~90%)
-2) Run `/rnd.preflight`
-3) If any MCP is missing: prompt user with clickable options and WAIT
-4) Run `/rnd.route`
-5) Delegate to the selected command’s orchestrator
+```bash
+/rnd                    # Auto-detect intent and route
+/rnd.preflight          # Check MCP availability
+/rnd.route              # Route after preflight
+```
 
-## Command selection cheat sheet
+## Intent → Command
 
-| User goal | Use | Why |
-|----------|-----|-----|
-| “How does X work end-to-end?” | `/deep-search` | produces provable architecture report (cross-repo proof) |
-| “Implement this change safely” | `/implement` | uses deep-search artifacts as the map + verification gates |
-| “Build this UI from Figma/requirements” | `/implement-ui` | WDS-first mapping + verification |
-| “This is broken / regression / performance issue” | `/troubleshoot` | runtime evidence first, then code proof |
-| “Review this change/PR” | `/review` | conformance + impact sweep |
-| “Generate tests for this behavior” | `/testkit` | BDD specs + drivers/builders + ALWAYS GREEN gates |
-| “Rename this symbol everywhere” | `/better-names` | LSP + string sweep + verification |
-| “Simplify/refactor this code” | `/optimize-code` | staged refactors + verification |
-| “Split this giant branch” | `/smart-branch-split` | strategy + git techniques + verification |
-| “Merge/forward-port these branches” | `/smart-merge` | simulate/resolve/verify with blast-radius scan |
-| “Address PR review comments” | `/address-pr` | fetch/triage/analyze/plan/verify (git read-only) |
-| “Create a new kit” | `/create-kit` | KIT-SPEC + FILE-MAP + scaffold + verify + publish |
-| “Bootstrap agent scaffolding” | `/create-agent` | creates baseline `.cursor/` + AGENTS.md structure |
+| User says | Routes to |
+|-----------|-----------|
+| "how does X work" | `/deep-search` |
+| "debug/fix/broken" | `/troubleshoot` |
+| "build UI/Figma" | `/implement-ui` |
+| "implement/create" | `/implement` |
+| "review/PR" | `/review` |
 
-## Passive context references (preferred)
-Critical “always relevant” knowledge is passive context:
-- `AGENTS.md` (docs index + quick references)
-- `@.cursor/rules/shared/011-mcp-s-mandate.mdc`
-- `@.cursor/rules/shared/010-octocode-mandate.mdc`
-- `@.cursor/rules/shared/001-proof-discipline.mdc`
-- `@.cursor/guides/*` (tool selection, request ID tracing, verify checklist)
+## Full Documentation
 
-Rule: if an MCP is missing/not active, **ask the user what to do** (added / skip / other) and WAIT.
-
-Rule: if context is near-full (~90%), **ask the user what to do next**:
-- dump session memory to `.cursor/session-memory/session-memory-<flow-summary>-<date>.md`, then stop for a new agent, OR
-- continue as usual.
-
+See `.cursor/kits/rnd/AGENTS.md` for MCP preflight matrix, boundaries, and output format.

@@ -7,7 +7,9 @@ IMPORTANT: Prefer retrieval-led reasoning over pre-training-led reasoning. Read 
 |commands:{deep-search.md,implement.md,review.md,testkit.md,troubleshoot.md,create-kit.md,update-kit.md,smart-merge.md,implement-ui.md,optimize-code.md,continue.md,rnd.md}
 |rules/shared:{001-proof-discipline.mdc,002-workflow-primitives.mdc,010-octocode-mandate.mdc,011-mcp-s-mandate.mdc}
 |guides:{clarify-patterns.md,resolve-workflow.md,verify-checklist.md,tool-selection.md,request-id-tracing.md}
-|kits:{*/AGENTS.md — kit-specific agent instructions}
+|kits:{*/AGENTS.md — kit-specific instructions}
+|workflows:{feature-implementation.md,bug-fix.md,code-review.md}
+|memory.md — session state (read at start, update at end)
 
 ## Commands
 ```bash
@@ -35,11 +37,12 @@ npm run test -- <file>     # Test single file
 ```
 .cursor/
 ├── commands/       # Workflow orchestrators + subcommands
-├── rules/shared/   # Always-on guardrails
+├── rules/shared/   # Always-on guardrails (001-xxx priority numbered)
 ├── guides/         # How-to references
-├── skills/         # User-triggered vertical workflows
 ├── kits/           # Reusable workflow packages (each has AGENTS.md)
-└── agents/         # Subagent definitions
+├── workflows/      # Multi-step process templates
+├── memory.md       # Session state — read at start, update at end
+└── hooks.json      # Grind loops, formatters, safety gates
 ```
 
 ## Workflow Pattern
