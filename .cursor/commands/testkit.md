@@ -17,7 +17,8 @@ Workflow:
 
 Enforces:
 - `.cursor/rules/testkit/testkit-laws.mdc`
-- `.cursor/rules/testkit/octocode-mandate-testkit.mdc`
+- `.cursor/rules/shared/octocode-mandate.mdc`
+- `.cursor/rules/shared/proof-discipline.mdc`
 
 Delegates to:
 - `/testkit.clarify`  → `.cursor/commands/testkit/testkit.clarify.md`

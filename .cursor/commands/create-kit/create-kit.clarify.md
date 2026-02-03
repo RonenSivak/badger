@@ -10,7 +10,7 @@ Ask questions until you can fill a **KIT SPEC**.
 
 Start with:
 1) “What kit do you want to create?”
-2) “What is the main orchestrator command name?” (example: `/review`, `/debug`)
+2) “What is the main orchestrator command name?” (example: `/review`, `/troubleshoot`)
 3) “What subcommands should it delegate to?” (names + 1-line purpose each)
 4) “What hard laws must always be enforced?” (verify before publish, proof rules, etc.)
 5) “What tools/MCPs are required?” (and when they’re mandatory)

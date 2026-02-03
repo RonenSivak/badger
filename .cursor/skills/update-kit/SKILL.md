@@ -40,6 +40,9 @@ Example:
 - Orchestrator at `.cursor/commands/<kit>.md`
 - Subcommands in `.cursor/commands/<kit>/`
 - Rules in `.cursor/rules/<kit>/`
+- Shared passive context (repo-wide):
+  - `.cursor/rules/shared/`
+  - `.cursor/guides/`
 - Skill at `.cursor/skills/<kit>/SKILL.md`
 
 ### Frontmatter (all .md/.mdc)
@@ -55,7 +58,7 @@ Example:
 
 ### Rules
 - `<kit>-laws.mdc` with workflow gates
-- Reuse common rules where applicable
+- Reuse common rules where applicable (prefer `.cursor/rules/shared/*` over duplicated mandates)
 
 ### Skill
 - Quick Start section

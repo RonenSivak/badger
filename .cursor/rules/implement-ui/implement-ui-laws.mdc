@@ -6,6 +6,12 @@ alwaysApply: false
 
 # Implement-UI Laws
 
+## Shared references (passive context)
+- `@.cursor/rules/shared/workflow-primitives.mdc`
+- `@.cursor/rules/shared/proof-discipline.mdc`
+- `@.cursor/rules/shared/octocode-mandate.mdc`
+- `@.cursor/rules/shared/mcp-s-mandate.mdc`
+
 ## Workflow Gates
 
 1. **Clarify before analyze**: UI-SPEC must exist before running analyze.
@@ -35,6 +41,6 @@ alwaysApply: false
 ## MCP Selection
 
 15. **wix-design-system-mcp**: ALWAYS use for WDS components.
-16. **octocode**: Use when component NOT in WDS — search wix-private/wix-playground.
-17. **MCP-S**: Optional — use for Figma data extraction (`figma__get-file-nodes`) or Wix docs (`docs-schema__search_docs`).
+16. **octocode**: Use when component NOT in WDS (see shared Octocode mandate for proof requirements).
+17. **MCP-S**: Optional — use for Figma data extraction (`figma__get-file-nodes`) or Wix docs (`docs-schema__search_docs`) (see shared MCP-S mandate).
 18. **cursor-ide-browser**: Use for visual verification in Figma mode.

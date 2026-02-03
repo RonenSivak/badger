@@ -30,8 +30,9 @@ Cross-ecosystem debugging workflow with proof-driven root cause analysis.
 ## Enforces (rules)
 
 - [Troubleshoot Laws](../rules/troubleshoot/troubleshoot-laws.mdc)
-- [Octocode Mandate](../rules/troubleshoot/octocode-mandate.mdc)
-- [MCP-S Mandate](../rules/troubleshoot/mcp-s-mandate.mdc) — Grafana, DevEx, Jira, Slack
+- [Octocode Mandate (shared)](../rules/shared/octocode-mandate.mdc)
+- [MCP-S Mandate (shared)](../rules/shared/mcp-s-mandate.mdc)
+- [Proof Discipline (shared)](../rules/shared/proof-discipline.mdc)
 - [Chrome DevTools Mandate](../rules/troubleshoot/chrome-devtools-mandate.mdc) — Network, Console, Request ID Tracing
 - [BrowserMCP Mandate](../rules/troubleshoot/browsermcp-mandate.mdc) — Fallback browser automation
 

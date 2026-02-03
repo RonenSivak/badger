@@ -6,8 +6,13 @@ alwaysApply: false
 
 # Smart Merge Laws 🚨
 
+## Shared references (passive context)
+- `@.cursor/rules/shared/workflow-primitives.mdc`
+- `@.cursor/rules/shared/proof-discipline.mdc`
+- `@.cursor/rules/shared/octocode-mandate.mdc`
+- `@.cursor/rules/shared/mcp-s-mandate.mdc`
+
 - **Plan-first:** no simulate without `MERGE-SPEC.md` + `MERGE-PLAN.md`.
 - **Simulate-first:** do not “real merge” until simulation is done.
 - **No publish before verify:** `/smart-merge.publish` requires PASS in `/smart-merge.verify`.
-- **Proof over vibes:** any “this should work” claim must point to code.
-- **NOT FOUND discipline:** missing info must include searches + scope.
+- Shared proof/NOT FOUND discipline applies (see `proof-discipline.mdc`).

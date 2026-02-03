@@ -13,25 +13,13 @@ description: "Safely merge branches by simulating merge, resolving conflicts usi
 
 ---
 
-## MCP-S Tools for Smart Merge
+## Passive context references (preferred)
+Ownership/context tools and logging discipline are defined as passive context:
+- `@.cursor/rules/shared/mcp-s-mandate.mdc`
+- `@.cursor/rules/shared/proof-discipline.mdc`
 
-Use MCP-S to gather **ownership and context** before resolving conflicts:
-
-| Tool | When to Use | Priority |
-|------|-------------|----------|
-| `code_owners_for_path` | Every conflicting file — know who owns each side | **P0** |
-| `search_builds` | Before merge — check branch build status | **P1** |
-| `slack__search-messages` | Semantic conflict — why was this built? | **P1** |
-| `jira__get-issues` | Requirements unclear — feature/bug context | **P2** |
-| `get_commit_information` | Conflict resolution — commit intent | **P2** |
-
-### Quick Workflow
-```
-1. Conflict detected in file.ts
-   └── code_owners_for_path("path/to/file.ts") → know owners
-   └── slack__search-messages("file.ts refactor") → context
-   └── Resolve with ownership + context in mind
-```
+Minimum expectation for conflicts:
+- **Always** use `code_owners_for_path` for conflicting paths before deciding.
 
 ---
 

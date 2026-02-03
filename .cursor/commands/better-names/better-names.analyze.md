@@ -11,7 +11,7 @@ Find ALL locations affected by the rename.
 ## Rules Reference
 
 See `.cursor/rules/better-names/impact-checklist.mdc` for complete checklist.
-See `.cursor/rules/better-names/octocode-mandate.mdc` for cross-package symbols.
+See `.cursor/rules/shared/octocode-mandate.mdc` for cross-package symbols.
 
 ## Analysis Phases
 

@@ -12,8 +12,10 @@ alwaysApply: false
 
 ## Enforces (rules)
 - [Deep-Search Laws](../rules/deep-search/deep-search-laws.mdc)
-- [Octocode Mandate](../rules/deep-search/octocode-mandate.mdc)
-- [MCP-S Mandate](../rules/deep-search/mcp-s-mandate.mdc)
+- [Octocode Mandate (shared)](../rules/shared/octocode-mandate.mdc)
+- [MCP-S Mandate (shared)](../rules/shared/mcp-s-mandate.mdc)
+- [Proof Discipline (shared)](../rules/shared/proof-discipline.mdc)
+- [Workflow Primitives (shared)](../rules/shared/workflow-primitives.mdc)
 
 ## Delegates to (sub-commands)
 - `/deep-search.clarify`  → `.cursor/commands/deep-search/deep-search.clarify.md`

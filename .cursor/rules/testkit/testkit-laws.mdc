@@ -6,6 +6,12 @@ alwaysApply: false
 
 # Testkit Laws 🚨🧪
 
+## Shared references (passive context)
+- `@.cursor/rules/shared/workflow-primitives.mdc`
+- `@.cursor/rules/shared/proof-discipline.mdc`
+- `@.cursor/rules/shared/octocode-mandate.mdc`
+- `@.cursor/rules/shared/mcp-s-mandate.mdc`
+
 ## ALWAYS GREEN gates (hard)
 - Never implement before Preflight:
   - `/testkit.implement` requires PASS `PREFLIGHT.md`
@@ -22,4 +28,4 @@ alwaysApply: false
 - specs are plain-English (driver-only)
 - no comments
 - builders in dedicated folder
-- MCP-S + Octocode mandatory for non-local symbols
+- MCP-S + Octocode mandatory for non-local symbols (see shared mandates)

@@ -32,7 +32,7 @@ Goal: produce `.cursor/troubleshoot/<topic>/E2E-TRACE.md`
 
 ### For Backend/API Bugs
 
-**Use Grafana (MCP-S)** — see [MCP-S Mandate](../../rules/troubleshoot/mcp-s-mandate.mdc)
+**Use Grafana (MCP-S)** — see [MCP-S Mandate (shared)](../../rules/shared/mcp-s-mandate.mdc)
 
 | Step | Tool | Purpose |
 |------|------|---------|

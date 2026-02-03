@@ -49,8 +49,9 @@ A summary table listing ALL comments:
 ## Enforces (rules)
 
 - [Address-PR Laws](../rules/address-pr/address-pr-laws.mdc)
-- [Octocode Mandate](../rules/address-pr/octocode-mandate.mdc)
-- [MCP-S Mandate](../rules/address-pr/mcp-s-mandate.mdc)
+- [Octocode Mandate (shared)](../rules/shared/octocode-mandate.mdc)
+- [MCP-S Mandate (shared)](../rules/shared/mcp-s-mandate.mdc)
+- [Proof Discipline (shared)](../rules/shared/proof-discipline.mdc)
 
 ## Hard-fail conditions
 

@@ -73,7 +73,7 @@ Copy to your project:
 |------|---------|
 | `implement-ui-laws.mdc` | Workflow gates |
 | `wds-mandate.mdc` | WDS usage rules |
-| `octocode-mandate.mdc` | Pattern search rules |
+| `shared/octocode-mandate.mdc` | Octocode proof + pattern search rules |
 
 ### Skills
 

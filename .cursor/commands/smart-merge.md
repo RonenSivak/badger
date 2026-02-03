@@ -17,8 +17,9 @@ Workflow:
 
 Enforces:
 - `.cursor/rules/smart-merge/smart-merge-laws.mdc`
-- `.cursor/rules/smart-merge/octocode-mandate.mdc`
-- `.cursor/rules/smart-merge/mcp-s-mandate.mdc`
+- `.cursor/rules/shared/octocode-mandate.mdc`
+- `.cursor/rules/shared/mcp-s-mandate.mdc`
+- `.cursor/rules/shared/proof-discipline.mdc`
 
 Delegates to:
 - `/smart-merge.clarify`

@@ -33,14 +33,13 @@ Purpose: select the right Badger workflow command and enforce MCP gating before 
 | “Create a new kit” | `/create-kit` | KIT-SPEC + FILE-MAP + scaffold + verify + publish |
 | “Bootstrap agent scaffolding” | `/create-agent` | creates baseline `.cursor/` + AGENTS.md structure |
 
-## MCP quick reference
-
-| MCP | Why it matters |
-|-----|----------------|
-| `user-octocode` | mandatory cross-repo proof (def + impl + boundary) |
-| `user-MCP-S` | internal context + ownership + observability |
-| `user-chrome-devtools` | runtime evidence for frontend/perf troubleshooting |
-| `cursor-ide-browser` | browser automation fallback + visual verification |
+## Passive context references (preferred)
+Critical “always relevant” knowledge is passive context:
+- `AGENTS.md` (docs index + quick references)
+- `@.cursor/rules/shared/mcp-s-mandate.mdc`
+- `@.cursor/rules/shared/octocode-mandate.mdc`
+- `@.cursor/rules/shared/proof-discipline.mdc`
+- `@.cursor/guides/*` (tool selection, request ID tracing, verify checklist)
 
 Rule: if an MCP is missing/not active, **ask the user what to do** (added / skip / other) and WAIT.
 

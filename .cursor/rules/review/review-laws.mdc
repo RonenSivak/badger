@@ -9,9 +9,10 @@ alwaysApply: false
 - Code health + consistency matter (follow existing patterns).
 - Conformance is mandatory: `/review.conform` must produce CONFORMANCE.md before publish.
 - Impact Sweep is mandatory for contract-shaped changes: CONSUMER-MATRIX.md required.
-- Proof-first: every claim has repo/path + lines + snippet.
-- Cross-repo: Octocode is mandatory for non-local symbols (def + impl + boundary).
-- MCP-S is mandatory for classification + internal docs hints (then prove in code).
+- Shared discipline applies:
+  - `@.cursor/rules/shared/proof-discipline.mdc`
+  - `@.cursor/rules/shared/octocode-mandate.mdc`
+  - `@.cursor/rules/shared/mcp-s-mandate.mdc`
 - Never publish before verify: `/review.publish` requires PASS `/review.verify`.
 - Publish output must be SIMPLE:
   1) HIGH / MODERATE / LOW issues

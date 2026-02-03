@@ -6,6 +6,11 @@ alwaysApply: false
 
 # Update-Kit Laws
 
+## Shared structure (2026)
+Badger kits may reuse shared passive context:
+- `.cursor/rules/shared/` (mandates + proof discipline + workflow primitives)
+- `.cursor/guides/` (how-to knowledge)
+
 ## Workflow Gates
 
 1. **Clarify before analyze**: UPDATE-SPEC must exist before analyzing.

@@ -20,5 +20,5 @@ Required content:
   - abort/reset instructions
 
 Default mechanics:
-- Use `git merge --no-commit` to test the merge without finalizing it. :contentReference[oaicite:2]{index=2}
+- Use `git merge --no-commit` to test the merge without finalizing it.
 - If conflicts exist, stop and hand off to `/smart-merge.resolve`.

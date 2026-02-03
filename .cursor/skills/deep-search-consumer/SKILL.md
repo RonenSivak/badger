@@ -5,27 +5,11 @@ description: "Use deep-search artifacts as portable context to implement changes
 
 # Skill: deep-search-consumer
 
-Goal:
-Help a fresh agent use deep-search outputs as “portable context” to implement changes safely.
+This skill is intentionally minimal. “Consume deep-search artifacts” guidance is **passive context**:
+- `@.cursor/guides/resolve-workflow.md`
+- `@.cursor/guides/verify-checklist.md`
 
-Inputs (expected artifacts):
-- `.cursor/deep-search/<feature>/ARCHITECTURE-REPORT.md`
-- `.cursor/deep-search/<feature>/trace-ledger.md`
-- `.cursor/deep-search/<feature>/VALIDATION-REPORT.md` (optional)
-- change surface checklist (file or section)
-
-How to use:
-1) Treat the E2E flow + change surface checklist as the implementation map.
-2) Do NOT re-invent discovery: only re-search if:
-   - the report has NOT FOUND
-   - you need updated info after code moved
-3) When deep-search references non-local repos/packages:
-   - use `/octocode/research` to re-pin definition + implementation + boundary.
-4) Always carry forward:
-   - risky couplings/pitfalls
-   - contracts/IDL sources and generated SDK chain
-
-Outputs this skill supports:
-- IMPLEMENTATION-SPEC.md
-- SCOPE.md
-- PLAN.md
+Use a prior deep-search run as canonical portable context:
+- treat `ARCHITECTURE-REPORT.md` as the E2E map
+- only re-search when stale or **NOT FOUND**
+- re-pin non-local hops via Octocode (definition + implementation + boundary)

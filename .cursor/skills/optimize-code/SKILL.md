@@ -37,50 +37,12 @@ Example:
 5. **Verify** — Tests, types, lint all pass
 6. **Publish** — Summary with before/after metrics
 
-## 12 Core TypeScript Principles
-
-1. Single Responsibility
-2. Clear Naming
-3. Immutability
-4. Reduce Nesting (guard clauses)
-5. No Flag Parameters
-6. Leverage Types
-7. Use Built-in Methods
-8. DRY Carefully
-9. Composition Over Inheritance
-10. Separation of Concerns
-11. Strategic Error Handling
-12. Simple Tests
-
-## 10 React-Specific Principles
-
-1. Single-Responsibility Components
-2. State Colocation
-3. Limit Prop Drilling
-4. Composition Over Conditionals
-5. Custom Hooks for Reusable Logic
-6. Minimal Props Interface
-7. TypeScript Safety at Boundaries
-8. YAGNI and KISS
-9. Readability Over Cleverness
-10. Design for Testing
-
-## TanStack Query (React Query) Best Practices
-
-- Use for server state, not UI state
-- Array-based query keys: `['users', userId]`
-- Use `enabled` option for conditional fetching
-- Always invalidate/setQueryData after mutations
-- Match existing project version and patterns
-
-## React Hook Form Best Practices
-
-- Use `register()` for plain inputs, `Controller` only for UI libraries
-- Use `useWatch` not `watch()` (performance)
-- Use `useFieldArray` for dynamic fields
-- Always provide `defaultValues`
-- Schema validation (Zod/Yup) for complex forms
-- `FormProvider` + `useFormContext` to avoid prop drilling
+## Principles (passive context)
+The detailed principles live in rules so they’re always available without requiring skill invocation:
+- TypeScript: `.cursor/rules/optimize-code/ts-core-principles.mdc`
+- React: `.cursor/rules/optimize-code/react-principles.mdc`
+- React Query: `.cursor/rules/optimize-code/react-query-principles.mdc`
+- React Hook Form: `.cursor/rules/optimize-code/react-hook-form-principles.mdc`
 
 ## Key Rules
 

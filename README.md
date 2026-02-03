@@ -11,7 +11,7 @@ A drop-in **`.cursor/` kit** with proof-driven workflows for code understanding,
 | Command | Purpose |
 |---------|---------|
 | `/deep-search` | E2E architecture forensics with cross-repo resolution |
-| `/debug` | Cross-ecosystem debugging with hypothesis trees |
+| `/troubleshoot` | Cross-ecosystem debugging with evidence and traceability |
 | `/implement` | Implementation driven by deep-search outputs |
 | `/review` | Code review with impact sweep + pattern conformance |
 | `/testkit` | BDD test generation using proven patterns |
@@ -75,10 +75,10 @@ Use when you want E2E architecture understanding with proof. Outputs:
 
 ---
 
-### `/debug` — Cross-Ecosystem Debugging 🐛
+### `/troubleshoot` — Cross-Ecosystem Debugging 🐛
 
 ```
-/debug
+/troubleshoot
 ```
 
 Flow: **Clarify → Trace → Resolve → Hypothesize → Fix Plan → Verify → Publish**
@@ -149,8 +149,8 @@ Use to create new reusable Cursor workflow kits.
 ├── commands/
 │   ├── deep-search.md      # Main orchestrator
 │   ├── deep-search/        # Sub-commands (clarify, resolve, verify, etc.)
-│   ├── debug.md
-│   ├── debug/
+│   ├── troubleshoot.md
+│   ├── troubleshoot/
 │   ├── implement.md
 │   ├── implement/
 │   ├── review.md
@@ -160,16 +160,19 @@ Use to create new reusable Cursor workflow kits.
 │   ├── create-kit.md
 │   └── create-kit/
 ├── rules/
-│   ├── deep-search/        # deep-search-laws + octocode-mandate
-│   ├── debug/              # debug-laws + octocode-mandate
+│   ├── shared/             # shared mandates + proof discipline + workflow primitives
+│   ├── deep-search/        # deep-search-laws (kit-specific)
+│   ├── troubleshoot/       # troubleshoot-laws + tool mandates (kit-specific)
 │   ├── implement/          # implement-laws
-│   ├── review/             # review-laws + octocode-mandate
-│   ├── testkit/            # testkit-laws + octocode-mandate
+│   ├── review/             # review-laws
+│   ├── testkit/            # testkit-laws
 │   └── create-kit/         # create-kit-laws + frontmatter-guard
+├── guides/                 # shared how-to (passive context)
+│   ├── clarify-patterns.md
+│   ├── resolve-workflow.md
+│   └── verify-checklist.md
 └── skills/
-    ├── octocode-research/  # Cross-repo resolution
-    ├── mcp-s/              # Classification + docs hints
-    └── ...
+    └── ...                 # mostly user-triggered workflows; critical rules live in AGENTS.md + rules/shared + guides
 ```
 
 **Command paths are now clean:**

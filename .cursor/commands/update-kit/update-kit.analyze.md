@@ -21,6 +21,8 @@ Verify existence of:
 - [ ] `.cursor/rules/<kit>/<kit>-laws.mdc` — Laws file
 - [ ] `.cursor/skills/<kit>/SKILL.md` — Skill file
 - [ ] `.cursor/kits/<kit>/` — Kit docs folder
+- [ ] `.cursor/rules/shared/` — Shared mandates + proof discipline (repo-wide)
+- [ ] `.cursor/guides/` — Shared how-to docs (repo-wide)
 
 ### 2. Frontmatter Check
 For each `.md` and `.mdc` file in the kit:
@@ -46,6 +48,7 @@ For each subcommand:
 - [ ] `<kit>-laws.mdc` exists
 - [ ] Laws include workflow gates
 - [ ] References to common rules are valid
+- [ ] No duplicated mandate rules (`octocode-mandate*`, `mcp-s-mandate`) when shared rules exist
 
 ### 6. Skill Check
 - [ ] Has Quick Start section

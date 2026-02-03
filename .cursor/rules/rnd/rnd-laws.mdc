@@ -6,6 +6,13 @@ alwaysApply: false
 
 # /rnd Laws
 
+## Shared references (passive context)
+- `AGENTS.md` (docs index + quick references)
+- `@.cursor/rules/shared/workflow-primitives.mdc`
+- `@.cursor/rules/shared/mcp-s-mandate.mdc`
+- `@.cursor/rules/shared/octocode-mandate.mdc`
+- `@.cursor/rules/shared/proof-discipline.mdc`
+
 ## Purpose
 
 `/rnd` is an orchestrator-of-orchestrators. It must:

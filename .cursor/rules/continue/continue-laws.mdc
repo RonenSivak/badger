@@ -6,6 +6,10 @@ alwaysApply: false
 
 # /continue Laws
 
+## Shared references (passive context)
+- `@.cursor/rules/shared/proof-discipline.mdc`
+- `@.cursor/rules/shared/workflow-primitives.mdc`
+
 ## Purpose
 
 `/continue` resumes work from a session memory dump. The memory dump is the source of truth for what happened previously.

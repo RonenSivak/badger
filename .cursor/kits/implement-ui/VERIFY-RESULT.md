@@ -8,7 +8,7 @@
 |------|-------------|-------|-------------|
 | `implement-ui-laws.mdc` | ✅ | ✅ | ✅ |
 | `wds-mandate.mdc` | ✅ | ✅ | ✅ |
-| `octocode-mandate.mdc` | ✅ | ✅ | ✅ |
+| `shared/octocode-mandate.mdc` | ✅ | ✅ | ✅ |
 
 ## Reference Integrity
 
@@ -27,7 +27,7 @@
 |------|-------------|
 | `implement-ui-laws.mdc` | ✅ |
 | `wds-mandate.mdc` | ✅ |
-| `octocode-mandate.mdc` | ✅ |
+| `shared/octocode-mandate.mdc` | ✅ |
 
 ### Skills Referenced
 | Skill | File Exists |

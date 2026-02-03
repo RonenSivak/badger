@@ -18,7 +18,8 @@ Workflow:
 
 Enforces:
 - `.cursor/rules/review/review-laws.mdc`
-- `.cursor/rules/review/octocode-mandate.mdc`
+- `.cursor/rules/shared/octocode-mandate.mdc`
+- `.cursor/rules/shared/proof-discipline.mdc`
 
 Delegates to:
 - `/review.clarify`

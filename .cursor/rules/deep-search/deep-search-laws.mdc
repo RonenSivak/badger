@@ -6,46 +6,25 @@ alwaysApply: false
 
 # Deep-Search Laws (Workflow + Proof Gates)
 
+## Shared references (passive context)
+- `@.cursor/rules/shared/workflow-primitives.mdc`
+- `@.cursor/rules/shared/proof-discipline.mdc`
+- `@.cursor/rules/shared/octocode-mandate.mdc`
+- `@.cursor/rules/shared/mcp-s-mandate.mdc`
+
 ## Workflow Gates
 - **Clarify-first:** do not start research until the Search Spec is unambiguous (feature + intent + breadcrumbs + required consumers/boundaries).
 - **Plan-first:** write a short plan to `.cursor/plans/deep-search.<feature>.md` before deep execution.
 - **Draft-first:** `/deep-search.report` writes **DRAFT only** (file-only).
 - **Never publish before validation:** `/deep-search.publish` requires a passing `/deep-search.verify`.
 
-## Proof Requirements
-- **Proof-first:** every claim needs `repo/path + lines + snippet`.
-- **No dead ends:** any "X reads from Y" must immediately include proof (+ next hop).
-- **Connectivity required:** claims must be backed by import/call/route-binding evidence, not naming similarity.
-
-## Cross-Repo Research (MANDATORY)
-- **Octocode for code proof:** all non-local symbols must be resolved via `/octocode/research` (def + impl + side-effect boundary).
-- **MCP-S for internal knowledge:** all features/services must be researched via MCP-S tools (internal docs, Slack, Jira, DevEx) for context, ownership, requirements.
-
-## MCP-S Mandate (MANDATORY)
-- **Internal Docs:** search `docs-schema__search_docs` for architecture, design specs, ownership.
-- **Slack:** search `slack__search-messages` for team discussions, decisions, debugging context.
-- **Jira:** search `jira__get-issues` for requirements, tickets, acceptance criteria.
-- **DevEx (MANDATORY for ownership/builds/releases):**
-  - `code_owners_for_path` — who owns a file/path
-  - `get_project` / `search_projects` — project metadata
-  - `get_build` / `search_builds` — CI/CD build status
-  - `get_commit_information` / `where_is_my_commit` — commit tracking
-  - `release_notes` / `get_rollout_history` — release info
-  - `get_devex_fqdn` — service endpoints
-- **Log all queries:** append to `.cursor/deep-search/<feature>/mcp-s-notes.md`.
-- **MCP-S is context, not proof:** findings are hints — verify with code via Octocode.
-
-## DevEx Triggers (MANDATORY when applicable)
-- **Ownership questions:** MUST use `code_owners_for_path` instead of guessing
-- **Build/CI questions:** MUST use DevEx build tools (`get_build`, `search_builds`)
-- **Commit tracking:** MUST use DevEx commit tools (`where_is_my_commit`, `get_commit_information`)
-- **Release/deployment questions:** MUST use DevEx release tools (`release_notes`, `get_rollout_history`)
-- **Service endpoint discovery:** MUST use `get_devex_fqdn`
-
-## NOT FOUND Discipline
-- **Missing items:** `NOT FOUND` + exact searches + scope (repos/packages/sources).
-- **MCP-S NOT FOUND:** must list queries attempted (docs/Slack/Jira/DevEx) + scope searched.
-- **Unlimited iteration:** repeat MCP-S + Octocode until everything is resolved or NOT FOUND.
+## Deep-search specifics (artifacts + logging)
+- Search spec: `.cursor/deep-search/<feature>/SEARCH-SPEC.md`
+- Evidence artifacts:
+  - `.cursor/deep-search/<feature>/trace-ledger.md`
+  - `.cursor/deep-search/<feature>/octocode-queries.md`
+  - `.cursor/deep-search/<feature>/mcp-s-notes.md`
+- Unlimited iteration: repeat MCP-S + Octocode until everything is resolved or **NOT FOUND** (with searches + scope).
 
 ## Output Requirements
 - **Dual output:** FINAL report must be printed in chat **and** written to `ARCHITECTURE-REPORT.md`.

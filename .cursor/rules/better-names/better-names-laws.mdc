@@ -6,6 +6,10 @@ alwaysApply: false
 
 # Better-Names Laws
 
+## Shared references (passive context)
+- `@.cursor/rules/shared/proof-discipline.mdc`
+- `@.cursor/rules/shared/octocode-mandate.mdc`
+
 ## Law 1: Analyze Before Execute
 
 **NEVER** execute a rename without completing the analyze step.
