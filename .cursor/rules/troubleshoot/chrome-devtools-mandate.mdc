@@ -143,9 +143,9 @@ arguments: {}
 
 ---
 
-## Request ID Tracing (x-wix-request-id → Grafana)
+## Request ID Tracing (x-wix-request-id → AI Root Cause Analysis)
 
-When a network call fails or behaves unexpectedly, extract the `x-wix-request-id` header and trace in Grafana.
+When a network call fails or behaves unexpectedly, extract the `x-wix-request-id` header and use AI-powered root cause analysis.
 
 ### Step-by-Step Workflow
 
@@ -172,7 +172,37 @@ arguments:
 
 Extract `x-wix-request-id` from RESPONSE headers (not request headers).
 
-**Step 3: Find Loki Datasource UID (do once)**
+**Step 3: Start AI Root Cause Analysis (PRIMARY — MANDATORY)**
+
+```
+server: user-MCP-S-root-cause
+toolName: start_root_cause_analysis
+arguments:
+  requestId: "<x-wix-request-id>"           # REQUIRED
+  artifactIds: ["<service-name>"]           # OPTIONAL: filter to services
+  hint: "<context about the issue>"         # OPTIONAL: guide analysis
+```
+
+Returns `analysisId` and `pollingUrl` immediately. Analysis runs async (4-5 min typical).
+
+**Step 4: Poll for Results**
+
+```
+server: user-MCP-S-root-cause
+toolName: await_root_cause_analysis
+arguments:
+  analysisId: "<from step 3>"
+  timeoutSeconds: 25                        # Repeat if RUNNING
+```
+
+Status responses:
+- `RUNNING`: Analysis in progress — call again with same analysisId
+- `COMPLETED`: Contains markdown report with findings + `analysisUrl` for sharing
+- `FAILED`: Contains reason — proceed to fallback
+
+**Step 5 (FALLBACK ONLY): Query Grafana Logs**
+
+Use ONLY when RCA returns non-informative results:
 
 ```
 server: user-MCP-S
@@ -181,31 +211,34 @@ arguments:
   type: "loki"
 ```
 
-Save the `uid` for subsequent queries.
+Then query logs:
 
-**Step 4: Trace in Grafana**
+```
+server: user-MCP-S
+toolName: grafana-mcp__query_loki_logs
+arguments:
+  datasourceUid: "<uid>"
+  logql: '{app=~".+"} |= "{REQUEST_ID}"'
+  limit: 100
+  direction: "backward"
+```
 
-**Option A — Open Dashboard (visual, fastest):**
-
+**Grafana Dashboard URL (FALLBACK):**
 ```
 https://grafana.wixpress.com/d/38cCoLymz/error-analytics-traceid
   ?orgId=1
   &var-request_id={REQUEST_ID}
 ```
 
-**Option B — Query Logs via MCP (programmatic):**
+### What AI Root Cause Analysis Reveals
 
-```
-server: user-MCP-S
-toolName: grafana-mcp__query_loki_logs
-arguments:
-  datasourceUid: "<uid-from-step-3>"
-  logql: '{app=~".+"} |= "{REQUEST_ID}"'
-  limit: 100
-  direction: "backward"
-```
+- Automated root cause identification
+- Correlated logs across all services in the request chain
+- Error patterns and anomaly detection
+- Suggested fixes based on similar past issues
+- Full trace analysis in markdown format
 
-### What x-wix-request-id Reveals
+### What x-wix-request-id + Grafana Fallback Reveals
 
 - Full request trace across all backend services
 - Error stack traces and context
@@ -221,6 +254,18 @@ arguments:
 - Investigating latency spikes
 - Debugging intermittent failures
 - Correlating frontend network error with backend logs
+
+### CRITICAL: Tool Selection Rule
+
+```
+ALWAYS: start_root_cause_analysis FIRST
+        ↓
+     COMPLETED with findings? → USE IT
+        ↓
+     FAILED or non-informative? → FALLBACK to Grafana logs
+        ↓
+     MUST LOG: Why fallback was needed in mcp-s-notes.md
+```
 
 ---
 

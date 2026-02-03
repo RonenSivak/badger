@@ -16,7 +16,56 @@ MCP-S (`user-MCP-S` server) provides access to internal knowledge sources:
 
 ---
 
-## Grafana Tools (Backend Debugging)
+## Root Cause Analysis Tools (PRIMARY for Request ID Tracing)
+
+### 1) Start Root Cause Analysis (MANDATORY for request IDs)
+
+```
+server: user-MCP-S-root-cause
+toolName: start_root_cause_analysis
+arguments:
+  requestId: "<x-wix-request-id>"           # REQUIRED: from network response headers
+  artifactIds: ["<service-name>"]           # OPTIONAL: filter to specific services
+  hint: "<context about the issue>"         # OPTIONAL: guide the analysis
+  fromDate: "<ISO8601>"                     # OPTIONAL: defaults to 2 min before request
+  toDate: "<ISO8601>"                       # OPTIONAL: defaults to 11 min after request
+```
+
+**Use when:** ALWAYS when you have an `x-wix-request-id` from a failed/suspicious network request.
+
+**Returns:** `analysisId` and `pollingUrl` — analysis runs async (4-5 minutes typical).
+
+### 2) Await Root Cause Analysis
+
+```
+server: user-MCP-S-root-cause
+toolName: await_root_cause_analysis
+arguments:
+  analysisId: "<from start response>"       # REQUIRED
+  timeoutSeconds: 25                        # OPTIONAL: defaults to 25s, max 600s
+```
+
+**Use when:** After `start_root_cause_analysis` to poll for results.
+
+**Returns:**
+- `RUNNING`: Analysis in progress — call again with same `analysisId`
+- `COMPLETED`: Markdown report with root cause findings + `analysisUrl`
+- `FAILED`: Reason for failure — proceed to Grafana fallback
+
+**Polling pattern:**
+```
+start_root_cause_analysis → get analysisId
+  ↓
+await_root_cause_analysis(analysisId)
+  ↓
+RUNNING? → wait, call again
+COMPLETED? → use findings
+FAILED? → fallback to Grafana logs
+```
+
+---
+
+## Grafana Tools (Backend Debugging / FALLBACK for Request ID)
 
 ### 1) Find Error Patterns (START HERE for backend bugs)
 
@@ -199,6 +248,8 @@ arguments:
 
 | Bug Type | Required Tools |
 |----------|----------------|
+| **Request ID Tracing** | `start_root_cause_analysis` → `await_root_cause_analysis` (PRIMARY) |
+| Request ID Fallback | `query_loki_logs` (ONLY if RCA non-informative) |
 | Backend Error | `find_error_pattern_logs` → `query_loki_logs` → `get_sift_analysis` |
 | Performance | `find_slow_requests` → `query_prometheus` |
 | Deployment | `where_is_my_commit` → `get_build` → `get_rollout_history` |
@@ -212,6 +263,11 @@ arguments:
 ### All Bugs — MUST use:
 - [ ] `code_owners_for_path` — who owns affected code
 - [ ] `jira__get-issues` — related tickets
+
+### Request ID Found — MUST use:
+- [ ] `start_root_cause_analysis` — AI-powered RCA (PRIMARY, MANDATORY)
+- [ ] `await_root_cause_analysis` — poll until complete
+- [ ] `query_loki_logs` — ONLY as fallback if RCA non-informative
 
 ### Backend Bugs — MUST use:
 - [ ] `find_error_pattern_logs` — error patterns

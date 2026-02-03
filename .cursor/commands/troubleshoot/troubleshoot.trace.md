@@ -52,20 +52,65 @@ Goal: produce `.cursor/troubleshoot/<topic>/E2E-TRACE.md`
 
 ## Step 2: Request ID Tracing (if network call failed)
 
-When you find a failed network request, extract the `x-wix-request-id` and trace in Grafana.
+When you find a failed network request, extract the `x-wix-request-id` and use AI-powered root cause analysis.
 
 See [Chrome DevTools Mandate](../../rules/troubleshoot/chrome-devtools-mandate.mdc) for detailed workflow.
 
-**Quick reference:**
-1. `list_network_requests` (user-chrome-devtools) → find failed request
-2. `get_network_request` (user-chrome-devtools) → extract x-wix-request-id from response headers
-3. `list_datasources` (user-MCP-S) → get Loki datasource UID
-4. Trace: Open Grafana dashboard OR `query_loki_logs`
+### PRIMARY: AI Root Cause Analysis (MANDATORY)
 
-**Grafana Dashboard URL:**
+```
+1. list_network_requests (user-chrome-devtools) → find failed request
+2. get_network_request (user-chrome-devtools) → extract x-wix-request-id from response headers
+3. start_root_cause_analysis (user-MCP-S-root-cause) → start AI analysis with request ID
+4. await_root_cause_analysis (user-MCP-S-root-cause) → poll until complete
+```
+
+**start_root_cause_analysis arguments:**
+```
+server: user-MCP-S-root-cause
+toolName: start_root_cause_analysis
+arguments:
+  requestId: "<x-wix-request-id>"           # REQUIRED: from network response headers
+  artifactIds: ["<service-name>"]           # OPTIONAL: filter to specific services
+  hint: "<context about the issue>"         # OPTIONAL: guide the analysis
+  fromDate: "<ISO8601>"                     # OPTIONAL: defaults to 2 min before request
+  toDate: "<ISO8601>"                       # OPTIONAL: defaults to 11 min after request
+```
+
+**await_root_cause_analysis arguments:**
+```
+server: user-MCP-S-root-cause
+toolName: await_root_cause_analysis
+arguments:
+  analysisId: "<from start response>"       # REQUIRED: from start_root_cause_analysis
+  timeoutSeconds: 25                        # OPTIONAL: defaults to 25s, max 600s
+```
+
+**Polling workflow:**
+- Call `await_root_cause_analysis` repeatedly until status is `COMPLETED` or `FAILED`
+- `RUNNING` status means analysis in progress — call again with same `analysisId`
+- `COMPLETED` returns markdown report with root cause findings
+- `FAILED` returns reason — proceed to fallback
+
+### FALLBACK: Grafana Logs (ONLY if RCA non-informative)
+
+Use this ONLY when:
+- `start_root_cause_analysis` fails to start
+- `await_root_cause_analysis` returns `FAILED`
+- Analysis completes but findings are not actionable (e.g., "no issues found" but error clearly exists)
+
+**Fallback steps:**
+1. `list_datasources` (user-MCP-S) → get Loki datasource UID
+2. `query_loki_logs` OR open Grafana dashboard
+
+**Grafana Dashboard URL (FALLBACK):**
 ```
 https://grafana.wixpress.com/d/38cCoLymz/error-analytics-traceid?orgId=1&var-request_id={REQUEST_ID}
 ```
+
+**MUST log in mcp-s-notes.md:**
+- RCA tool call with arguments and response
+- If using fallback: reason why RCA was insufficient
 
 ---
 

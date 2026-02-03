@@ -128,25 +128,65 @@ TRY Chrome DevTools → SUCCESS? → Continue with Chrome DevTools
 ## Strong Signals to Prefer
 - Trace IDs / span linkage (best for E2E)
 - **`x-wix-request-id`** from network requests (links frontend to backend)
-- Logs correlated to trace/span IDs (from Grafana)
+- **AI Root Cause Analysis** from request ID (PRIMARY for request ID tracing)
+- Logs correlated to trace/span IDs (from Grafana — FALLBACK)
 - Console errors (from Chrome DevTools or BrowserMCP)
 - Error codes + exact strings
 - Explicit route/RPC bindings
 
 ## 🔗 Request ID Tracing (Critical Workflow)
 
-Extract `x-wix-request-id` from failed network requests and trace in Grafana:
+Extract `x-wix-request-id` from failed network requests and use AI-powered root cause analysis:
+
+### PRIMARY: AI Root Cause Analysis (MANDATORY)
 
 ```
 1. list-network-requests → find failed request
-2. get-network-request(url) → get headers
-3. Extract: x-wix-request-id
-4. Trace: grafana.wixpress.com/d/38cCoLymz/error-analytics-traceid
-         ?var-request_id={id}&from={time}&to={time}
-   Or: query_loki_logs with |= "{request_id}"
+2. get-network-request(url) → get headers, extract x-wix-request-id
+3. start_root_cause_analysis(requestId) → get analysisId
+4. await_root_cause_analysis(analysisId) → poll until COMPLETED/FAILED
+5. Use findings from markdown report
 ```
 
-This bridges frontend evidence to backend logs.
+**start_root_cause_analysis:**
+```
+server: user-MCP-S-root-cause
+arguments:
+  requestId: "<x-wix-request-id>"     # REQUIRED
+  artifactIds: ["<service>"]         # OPTIONAL: filter services
+  hint: "<context>"                  # OPTIONAL: guide analysis
+```
+
+**await_root_cause_analysis:**
+```
+server: user-MCP-S-root-cause
+arguments:
+  analysisId: "<from start>"         # REQUIRED
+  timeoutSeconds: 25                 # Repeat if RUNNING
+```
+
+**Status responses:**
+- `RUNNING` → call again with same analysisId
+- `COMPLETED` → use markdown report
+- `FAILED` → proceed to fallback
+
+### FALLBACK: Grafana Logs (ONLY if RCA non-informative)
+
+Use ONLY when:
+- `start_root_cause_analysis` fails
+- `await_root_cause_analysis` returns FAILED
+- Analysis completes but findings are not actionable
+
+```
+1. list_datasources(type: "loki") → get UID
+2. query_loki_logs with |= "{request_id}"
+   Or: grafana.wixpress.com/d/38cCoLymz/error-analytics-traceid
+       ?var-request_id={id}&from={time}&to={time}
+```
+
+**MUST log:** Why fallback was needed in mcp-s-notes.md
+
+This bridges frontend evidence to backend root cause.
 
 ---
 
@@ -172,6 +212,13 @@ browser_snapshot → browser_get_console_logs → browser_screenshot
 **Backend bug:**
 ```
 find_error_pattern_logs → query_loki_logs → get_sift_analysis
+```
+
+**Request ID found:**
+```
+start_root_cause_analysis(requestId) → await_root_cause_analysis(analysisId)
+  → COMPLETED? Use findings
+  → FAILED/non-informative? Fallback to query_loki_logs
 ```
 
 ### 3) Build E2E Trace Map
@@ -216,10 +263,21 @@ Bug Type?
 │  ├─ TRY: Chrome DevTools FIRST
 │  │  └─ list-console-messages → list-network-requests → take-screenshot
 │  │  └─ If perf: performance-* tools
+│  │  └─ If request ID found: start_root_cause_analysis (see below)
 │  │
 │  └─ IF UNAVAILABLE: FALLBACK to BrowserMCP
 │     └─ browser_snapshot → browser_get_console_logs → browser_screenshot
 │     └─ (No network/performance in BrowserMCP)
+│
+├─ Request ID Found (from any network request)
+│  ├─ PRIMARY (MANDATORY): AI Root Cause Analysis
+│  │  └─ start_root_cause_analysis(requestId)
+│  │  └─ await_root_cause_analysis(analysisId) → poll until done
+│  │  └─ Use findings from markdown report
+│  │
+│  └─ FALLBACK (only if RCA non-informative):
+│     └─ query_loki_logs OR Grafana dashboard
+│     └─ MUST LOG: Why fallback was needed
 │
 ├─ Backend/API
 │  └─ find_error_pattern_logs → query_loki_logs → get_sift_analysis

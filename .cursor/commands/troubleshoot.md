@@ -23,6 +23,7 @@ Cross-ecosystem debugging workflow with proof-driven root cause analysis.
 |-----|---------|
 | `user-chrome-devtools` | Network requests, console, performance (PRIMARY for frontend) |
 | `user-MCP-S` | Grafana logs, DevEx ownership, Jira/Slack context |
+| `user-MCP-S-root-cause` | AI-powered root cause analysis from request ID (PRIMARY for request ID tracing) |
 | `user-browsermcp` | DOM interaction, screenshots (FALLBACK for frontend) |
 | `user-octocode` | Cross-repo code proof |
 
@@ -70,8 +71,11 @@ Run `/troubleshoot.trace` to gather runtime evidence.
 | Frontend/UI | `list_network_requests` → `get_network_request` → `list_console_messages` |
 | Backend/API | `find_error_pattern_logs` → `query_loki_logs` → `get_sift_analysis` |
 | Performance | `performance_start_trace` (frontend) OR `find_slow_requests` (backend) |
+| Request ID Analysis | `start_root_cause_analysis` → `await_root_cause_analysis` (PRIMARY) |
 
-**Request ID Tracing:** If network call fails, extract `x-wix-request-id` and trace in Grafana.
+**Request ID Tracing (CRITICAL):** If network call fails, extract `x-wix-request-id` and:
+1. **PRIMARY**: Use `start_root_cause_analysis` → `await_root_cause_analysis` for AI-powered RCA
+2. **FALLBACK ONLY**: If RCA returns non-informative results, use Grafana logs/dashboards
 See [Chrome DevTools Mandate](../rules/troubleshoot/chrome-devtools-mandate.mdc) for details.
 
 Outputs:
@@ -160,6 +164,8 @@ Run `/troubleshoot.publish`:
 - Backend bug without `find_error_pattern_logs` or `query_loki_logs`
 - No `code_owners_for_path` query for affected code
 - `mcp-s-notes.md` missing or empty
+- **Request ID found but `start_root_cause_analysis` NOT called** (MANDATORY for request ID tracing)
+- Using Grafana logs/dashboard for request ID WITHOUT first trying RCA tools
 
 ---
 
