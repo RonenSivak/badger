@@ -24,7 +24,7 @@ Badger kits are built from the same primitives. Each kit may add domain-specific
 - Avoid drive-by refactors unless explicitly required by the spec.
 
 ## Verify
-- Prove connectivity for every asserted hop (see `proof-discipline.mdc`).
+- Prove connectivity for every asserted hop (see `001-proof-discipline.mdc`).
 - Run the kit’s required checks (lint/typecheck/tests) and capture results.
 - If verification fails: fix → re-verify (repeat).
 

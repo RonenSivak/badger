@@ -30,7 +30,7 @@ Agents generate and run code, but humans review each step. Interrupt with Escape
 │   ├── 001-core.mdc               # Priority-numbered rules
 │   ├── 100-<kit>.mdc              # Kit-specific rules
 │   └── shared/
-│       └── proof-discipline.mdc
+│       └── 001-proof-discipline.mdc
 ├── skills/
 │   └── <kit>/
 │       └── SKILL.md               # Only for user-triggered workflows

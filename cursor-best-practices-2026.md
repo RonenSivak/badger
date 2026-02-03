@@ -169,7 +169,7 @@ Use three-digit prefixes to establish rule priority and organization:
 ├── 150-database.mdc              # Integration: query patterns
 ├── 200-implement-ui.mdc          # Kit-specific
 └── shared/
-    └── proof-discipline.mdc      # Cross-kit mandate
+    └── 001-proof-discipline.mdc  # Cross-kit mandate
 ```
 
 #### Alternative: Folder Organization
@@ -185,7 +185,7 @@ Use three-digit prefixes to establish rule priority and organization:
 ├── kits/
 │   └── implement-ui.mdc
 └── shared/
-    └── proof-discipline.mdc
+    └── 001-proof-discipline.mdc
 ```
 
 ### Team Rules (Team/Enterprise Plans)

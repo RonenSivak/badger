@@ -15,4 +15,4 @@ alwaysApply: false
 - **Plan-first:** no simulate without `MERGE-SPEC.md` + `MERGE-PLAN.md`.
 - **Simulate-first:** do not “real merge” until simulation is done.
 - **No publish before verify:** `/smart-merge.publish` requires PASS in `/smart-merge.verify`.
-- Shared proof/NOT FOUND discipline applies (see `proof-discipline.mdc`).
+- Shared proof/NOT FOUND discipline applies (see `001-proof-discipline.mdc`).
