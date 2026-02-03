@@ -23,4 +23,4 @@ Systematically simplify TypeScript code with verification.
 
 ## Full Documentation
 
-See `.cursor/kits/optimize-code/AGENTS.md` for patterns and boundaries.
+See `.cursor/commands/optimize-code.md` for patterns and boundaries.

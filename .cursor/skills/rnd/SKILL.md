@@ -28,4 +28,4 @@ Meta-orchestrator that runs MCP preflight and routes to the right Badger workflo
 
 ## Full Documentation
 
-See `.cursor/kits/rnd/AGENTS.md` for MCP preflight matrix, boundaries, and output format.
+See `.cursor/commands/rnd.md` for MCP preflight matrix, boundaries, and output format.

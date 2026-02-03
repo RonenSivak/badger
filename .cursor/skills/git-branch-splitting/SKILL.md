@@ -26,7 +26,7 @@ Split a large branch into smaller, reviewable branches.
 
 ## Full Documentation
 
-See `.cursor/kits/smart-branch-split/AGENTS.md` for:
+See `.cursor/commands/smart-branch-split.md` for:
 - Decision tree
 - Git command examples
 - Split strategies

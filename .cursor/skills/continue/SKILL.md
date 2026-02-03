@@ -23,4 +23,4 @@ Resume work from a session-memory dump.
 
 ## Full Documentation
 
-See `.cursor/kits/continue/AGENTS.md` for memory dump format and boundaries.
+See `.cursor/commands/continue.md` for memory dump format and boundaries.

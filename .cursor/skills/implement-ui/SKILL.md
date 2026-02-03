@@ -25,4 +25,4 @@ Build React+TS components using Wix Design System.
 
 ## Full Documentation
 
-See `.cursor/kits/implement-ui/AGENTS.md` for complete MCP reference and boundaries.
+See `.cursor/commands/implement-ui.md` for complete MCP reference and boundaries.

@@ -246,7 +246,7 @@ Agents read the **nearest** AGENTS.md in the directory tree. Use nested files fo
 |----------|-------|---------|
 | `./AGENTS.md` | Project root | Primary project instructions |
 | `./packages/*/AGENTS.md` | Package | Monorepo sub-project instructions |
-| `./.cursor/kits/*/AGENTS.md` | Kit | Kit-specific agent instructions |
+| `./src/*/AGENTS.md` | Code directory | Directory-specific instructions |
 | `./CLAUDE.md` | Project root | Claude compatibility fallback |
 
 **Example structure:**
@@ -258,12 +258,14 @@ project/
 │   │   └── AGENTS.md            # Frontend-specific
 │   └── backend/
 │       └── AGENTS.md            # Backend-specific
-└── .cursor/kits/
-    ├── implement-ui/
-    │   └── AGENTS.md            # Kit-specific MCPs, commands
-    └── deploy/
-        └── AGENTS.md            # Kit-specific instructions
+└── src/
+    ├── components/
+    │   └── AGENTS.md            # Component patterns
+    └── api/
+        └── AGENTS.md            # API conventions
 ```
+
+**Note:** Nested AGENTS.md files should be placed in **actual code directories** where editing happens, not in config directories like `.cursor/`. This enables auto-loading when working in those directories. For workflow-specific rules, use `.cursor/rules/*.mdc` files with glob patterns instead.
 
 ### Format
 

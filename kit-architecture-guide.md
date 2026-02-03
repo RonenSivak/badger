@@ -33,16 +33,18 @@ Agents generate and run code, but humans review each step. Interrupt with Escape
 │       └── 001-proof-discipline.mdc
 ├── skills/
 │   └── <kit>/
-│       └── SKILL.md               # Only for user-triggered workflows
+│       └── SKILL.md               # Minimal trigger → points to command
 ├── kits/
 │   └── <kit>/
-│       ├── AGENTS.md              # Kit-specific agent instructions
+│       ├── README.md              # Human documentation
 │       └── spec-template.md       # Planning template
 ├── workflows/                      # Multi-step workflow definitions
 │   └── <workflow>.md
 ├── hooks.json                      # Iteration loops, formatters, gates
 └── memory.md                       # Session state (auto-updated)
 ```
+
+**Note:** Don't put AGENTS.md in `.cursor/kits/`. Nested AGENTS.md files only auto-load when placed in actual code directories (e.g., `src/components/`). For kit-specific rules, use `.cursor/rules/<kit>/*.mdc` with glob patterns.
 
 ### Why Single Orchestrator (Not Split Files)
 

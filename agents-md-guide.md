@@ -89,7 +89,7 @@ React 18.2, TypeScript 5.3, Vite 5.x, Tailwind CSS 3.4
 Add a rule the **second time** you see the same mistake. The best AGENTS.md files grow through iteration, not upfront planning.
 
 ### Use Nested/Modular Files
-Place AGENTS.md inside each package/subproject. Agents read the nearest file in the directory tree:
+Place AGENTS.md inside **actual code directories** (not config directories). Agents read the nearest file when editing in that directory:
 ```
 project/
 ├── AGENTS.md                    # Root instructions
@@ -98,10 +98,14 @@ project/
 │   │   └── AGENTS.md           # Frontend-specific
 │   └── backend/
 │       └── AGENTS.md           # Backend-specific
-└── .cursor/kits/
-    └── my-kit/
-        └── AGENTS.md           # Kit-specific
+└── src/
+    ├── components/
+    │   └── AGENTS.md           # Component patterns
+    └── api/
+        └── AGENTS.md           # API conventions
 ```
+
+**Important:** Don't put AGENTS.md in `.cursor/` or config directories—they won't auto-load. Use `.cursor/rules/*.mdc` files for workflow-specific rules instead.
 
 ### Keep Synchronized with Code
 Update AGENTS.md in the same PR when build, test, or conventions change.
