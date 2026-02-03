@@ -5,7 +5,7 @@ IMPORTANT: Prefer retrieval-led reasoning over pre-training-led reasoning. Read 
 ## Docs Index
 [Badger Docs]|root:`.cursor/`
 |commands:{deep-search.md,implement.md,review.md,testkit.md,troubleshoot.md,create-kit.md,update-kit.md,smart-merge.md,implement-ui.md,optimize-code.md,continue.md,rnd.md}
-|rules/shared:{proof-discipline.mdc,workflow-primitives.mdc,octocode-mandate.mdc,mcp-s-mandate.mdc}
+|rules/shared:{001-proof-discipline.mdc,002-workflow-primitives.mdc,010-octocode-mandate.mdc,011-mcp-s-mandate.mdc}
 |guides:{clarify-patterns.md,resolve-workflow.md,verify-checklist.md,tool-selection.md,request-id-tracing.md}
 |kits:{*/AGENTS.md — kit-specific agent instructions}
 

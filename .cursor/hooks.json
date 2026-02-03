@@ -1,11 +1,25 @@
 {
   "version": 1,
   "hooks": {
+    "stop": [
+      {
+        "command": "./hooks/grind-loop.sh",
+        "matcher": "implement|test|fix|verify",
+        "timeout": 60
+      }
+    ],
+    "afterFileEdit": [
+      {
+        "command": "./hooks/format.sh",
+        "timeout": 10
+      }
+    ],
     "beforeShellExecution": [
       {
-        "command": "./hooks/block-dangerous.sh"
+        "command": "./hooks/block-dangerous.sh",
+        "matcher": "rm -rf|DROP TABLE|DELETE FROM|git push --force|git reset --hard",
+        "timeout": 5
       }
     ]
   }
 }
-
