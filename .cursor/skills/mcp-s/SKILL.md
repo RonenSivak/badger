@@ -6,8 +6,8 @@ description: "Use MCP-S internal knowledge tools (docs, Slack, Jira, DevEx) to a
 # Skill: MCP-S (minimal)
 
 This skill is intentionally minimal. Critical MCP-S rules are **passive context**:
-- `@.cursor/rules/shared/mcp-s-mandate.mdc`
-- `@.cursor/rules/shared/proof-discipline.mdc`
+- `@.cursor/rules/shared/011-mcp-s-mandate.mdc`
+- `@.cursor/rules/shared/001-proof-discipline.mdc`
 
 Use MCP-S to gather **internal context** (docs/Slack/Jira/DevEx/observability), then treat it as **hints** and prove code edges separately (Octocode when non-local).
 

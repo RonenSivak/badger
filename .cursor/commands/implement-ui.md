@@ -25,8 +25,8 @@ Create UI components from Figma designs or semantic descriptions using Wix Desig
 
 - `.cursor/rules/implement-ui/implement-ui-laws.mdc`
 - `.cursor/rules/implement-ui/wds-mandate.mdc`
-- `.cursor/rules/shared/octocode-mandate.mdc`
-- `.cursor/rules/shared/proof-discipline.mdc`
+- `.cursor/rules/shared/010-octocode-mandate.mdc`
+- `.cursor/rules/shared/001-proof-discipline.mdc`
 
 ## Delegates To
 

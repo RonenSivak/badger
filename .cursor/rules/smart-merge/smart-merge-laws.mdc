@@ -7,10 +7,10 @@ alwaysApply: false
 # Smart Merge Laws 🚨
 
 ## Shared references (passive context)
-- `@.cursor/rules/shared/workflow-primitives.mdc`
-- `@.cursor/rules/shared/proof-discipline.mdc`
-- `@.cursor/rules/shared/octocode-mandate.mdc`
-- `@.cursor/rules/shared/mcp-s-mandate.mdc`
+- `@.cursor/rules/shared/002-workflow-primitives.mdc`
+- `@.cursor/rules/shared/001-proof-discipline.mdc`
+- `@.cursor/rules/shared/010-octocode-mandate.mdc`
+- `@.cursor/rules/shared/011-mcp-s-mandate.mdc`
 
 - **Plan-first:** no simulate without `MERGE-SPEC.md` + `MERGE-PLAN.md`.
 - **Simulate-first:** do not “real merge” until simulation is done.

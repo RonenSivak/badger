@@ -9,9 +9,9 @@ alwaysApply: false
 Resolve is where you turn uncertainty into **provable edges**.
 
 ## Mandatory references
-- `@.cursor/rules/shared/mcp-s-mandate.mdc`
-- `@.cursor/rules/shared/octocode-mandate.mdc`
-- `@.cursor/rules/shared/proof-discipline.mdc`
+- `@.cursor/rules/shared/011-mcp-s-mandate.mdc`
+- `@.cursor/rules/shared/010-octocode-mandate.mdc`
+- `@.cursor/rules/shared/001-proof-discipline.mdc`
 
 ## Resolve loop (repeat until no unknowns)
 

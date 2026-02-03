@@ -33,8 +33,8 @@ Safely rename TypeScript identifiers following industry-standard naming conventi
 - `.cursor/rules/better-names/better-names-laws.mdc`
 - `.cursor/rules/better-names/naming-conventions.mdc`
 - `.cursor/rules/better-names/impact-checklist.mdc`
-- `.cursor/rules/shared/octocode-mandate.mdc`
-- `.cursor/rules/shared/proof-discipline.mdc`
+- `.cursor/rules/shared/010-octocode-mandate.mdc`
+- `.cursor/rules/shared/001-proof-discipline.mdc`
 
 ## Step 1 — Clarify (MANDATORY)
 Run `/better-names.clarify` to gather:

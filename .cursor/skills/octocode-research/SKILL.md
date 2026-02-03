@@ -6,8 +6,8 @@ description: "Resolve non-local symbols with authoritative cross-repo proof: def
 # Octocode Research Skill 🛰️
 
 This skill is intentionally minimal. Critical Octocode rules are **passive context**:
-- `@.cursor/rules/shared/octocode-mandate.mdc`
-- `@.cursor/rules/shared/proof-discipline.mdc`
+- `@.cursor/rules/shared/010-octocode-mandate.mdc`
+- `@.cursor/rules/shared/001-proof-discipline.mdc`
 
 Use `/octocode/research` to resolve any non-local symbol with:
 - **definition + implementation + boundary** (repo/path + line range + snippet)

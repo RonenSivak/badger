@@ -36,9 +36,9 @@ Purpose: select the right Badger workflow command and enforce MCP gating before 
 ## Passive context references (preferred)
 Critical “always relevant” knowledge is passive context:
 - `AGENTS.md` (docs index + quick references)
-- `@.cursor/rules/shared/mcp-s-mandate.mdc`
-- `@.cursor/rules/shared/octocode-mandate.mdc`
-- `@.cursor/rules/shared/proof-discipline.mdc`
+- `@.cursor/rules/shared/011-mcp-s-mandate.mdc`
+- `@.cursor/rules/shared/010-octocode-mandate.mdc`
+- `@.cursor/rules/shared/001-proof-discipline.mdc`
 - `@.cursor/guides/*` (tool selection, request ID tracing, verify checklist)
 
 Rule: if an MCP is missing/not active, **ask the user what to do** (added / skip / other) and WAIT.

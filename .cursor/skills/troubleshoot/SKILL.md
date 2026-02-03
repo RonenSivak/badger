@@ -8,7 +8,7 @@ description: "Turn a symptom into a proven end-to-end root cause and fix plan ac
 This skill is intentionally minimal. Troubleshooting guidance is **passive context**:
 - `@.cursor/guides/tool-selection.md`
 - `@.cursor/guides/request-id-tracing.md`
-- `@.cursor/rules/shared/mcp-s-mandate.mdc`
-- `@.cursor/rules/shared/octocode-mandate.mdc`
+- `@.cursor/rules/shared/011-mcp-s-mandate.mdc`
+- `@.cursor/rules/shared/010-octocode-mandate.mdc`
 
 Use it as a pointer: gather runtime evidence (DevTools first, BrowserMCP fallback), trace request IDs via root cause analysis, use MCP-S for context/observability, and Octocode for cross-repo proof.

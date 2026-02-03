@@ -7,8 +7,8 @@ alwaysApply: false
 # Better-Names Laws
 
 ## Shared references (passive context)
-- `@.cursor/rules/shared/proof-discipline.mdc`
-- `@.cursor/rules/shared/octocode-mandate.mdc`
+- `@.cursor/rules/shared/001-proof-discipline.mdc`
+- `@.cursor/rules/shared/010-octocode-mandate.mdc`
 
 ## Law 1: Analyze Before Execute
 

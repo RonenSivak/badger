@@ -9,8 +9,8 @@ alwaysApply: false
 Goal: verify correctness **and** prove the story connects in code.
 
 ## Mandatory references
-- `@.cursor/rules/shared/proof-discipline.mdc`
-- `@.cursor/rules/shared/octocode-mandate.mdc`
+- `@.cursor/rules/shared/001-proof-discipline.mdc`
+- `@.cursor/rules/shared/010-octocode-mandate.mdc`
 
 ## Edge connectivity checks (required)
 For every new/edited hop, show evidence:

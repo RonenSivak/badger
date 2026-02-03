@@ -44,7 +44,7 @@ Goal: Build hypotheses from evidence and design experiments to validate.
 
 See mandate files for detailed tool usage:
 - [Chrome DevTools Mandate](../../rules/troubleshoot/chrome-devtools-mandate.mdc)
-- [MCP-S Mandate (shared)](../../rules/shared/mcp-s-mandate.mdc)
+- [MCP-S Mandate (shared)](../../rules/shared/011-mcp-s-mandate.mdc)
 - [BrowserMCP Mandate](../../rules/troubleshoot/browsermcp-mandate.mdc)
 
 ---

@@ -15,8 +15,8 @@ description: "Safely merge branches by simulating merge, resolving conflicts usi
 
 ## Passive context references (preferred)
 Ownership/context tools and logging discipline are defined as passive context:
-- `@.cursor/rules/shared/mcp-s-mandate.mdc`
-- `@.cursor/rules/shared/proof-discipline.mdc`
+- `@.cursor/rules/shared/011-mcp-s-mandate.mdc`
+- `@.cursor/rules/shared/001-proof-discipline.mdc`
 
 Minimum expectation for conflicts:
 - **Always** use `code_owners_for_path` for conflicting paths before deciding.

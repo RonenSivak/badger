@@ -26,7 +26,7 @@ For EVERY unresolved / non-local symbol in E2E-TRACE:
 
 ### Step 1: Gather Context (MCP-S)
 
-See [MCP-S Mandate (shared)](../../rules/shared/mcp-s-mandate.mdc) for tool details.
+See [MCP-S Mandate (shared)](../../rules/shared/011-mcp-s-mandate.mdc) for tool details.
 
 | Query | Tool |
 |-------|------|
@@ -46,7 +46,7 @@ Record from MCP-S findings:
 
 ### Step 3: Code Proof (Octocode)
 
-See [Octocode Mandate (shared)](../../rules/shared/octocode-mandate.mdc) for usage.
+See [Octocode Mandate (shared)](../../rules/shared/010-octocode-mandate.mdc) for usage.
 
 Run **`/octocode/research`** to fetch:
 - Definition (repo/path + lines + snippet)

@@ -7,8 +7,8 @@ alwaysApply: false
 # /continue Laws
 
 ## Shared references (passive context)
-- `@.cursor/rules/shared/proof-discipline.mdc`
-- `@.cursor/rules/shared/workflow-primitives.mdc`
+- `@.cursor/rules/shared/001-proof-discipline.mdc`
+- `@.cursor/rules/shared/002-workflow-primitives.mdc`
 
 ## Purpose
 

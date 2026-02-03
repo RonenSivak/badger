@@ -20,7 +20,7 @@ All files to be created during scaffolding.
 |------|------|---------------|
 | `.cursor/rules/implement-ui/implement-ui-laws.mdc` | Workflow gates + hard constraints | Orchestrator, all subcommands |
 | `.cursor/rules/implement-ui/wds-mandate.mdc` | WDS usage rules (must check list first, NOT FOUND flow) | analyze, plan, implement |
-| `.cursor/rules/shared/octocode-mandate.mdc` | When to use Octocode for non-local symbols + pattern search | plan, implement |
+| `.cursor/rules/shared/010-octocode-mandate.mdc` | When to use Octocode for non-local symbols + pattern search | plan, implement |
 
 ## Skills
 
