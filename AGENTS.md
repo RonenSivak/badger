@@ -154,7 +154,7 @@ Skills provide workflow-specific guidance. Invoke via `/skill-name` or by asking
 | [deep-searching](.cursor/skills/deep-searching/SKILL.md) | E2E architecture forensics with cross-repo resolution |
 | [implementing](.cursor/skills/implementing/SKILL.md) | Safe implementation using deep-search artifacts |
 | [reviewing](.cursor/skills/reviewing/SKILL.md) | Code review with impact sweep + pattern conformance |
-| [testing](.cursor/skills/testing/SKILL.md) | BDD test generation using proven patterns |
+| [testing](.cursor/skills/testing/SKILL.md) | BDD test generation — discovers repo patterns first, then imitates |
 | [troubleshooting](.cursor/skills/troubleshooting/SKILL.md) | Cross-ecosystem debugging with evidence |
 | [creating-kits](.cursor/skills/creating-kits/SKILL.md) | Generate new repeatable workflow kits |
 | [merging-branches](.cursor/skills/merging-branches/SKILL.md) | Safe branch merging with conflict resolution |
