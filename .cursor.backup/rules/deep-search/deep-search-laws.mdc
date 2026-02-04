@@ -1,0 +1,132 @@
+---
+description: Laws enforced during /deep-search runs (single source of truth)
+globs: ".cursor/commands/deep-search/**,.cursor/deep-search/**,.cursor/plans/deep-search.*.md"
+alwaysApply: false
+---
+
+# Deep-Search Laws (Workflow + Proof Gates)
+
+## Shared references (passive context)
+- `@.cursor/rules/shared/workflow-primitives.mdc`
+- `@.cursor/rules/shared/proof-discipline.mdc`
+- `@.cursor/rules/shared/octocode-mandate.mdc`
+- `@.cursor/rules/shared/mcp-s-mandate.mdc`
+
+## Workflow Gates
+- **Clarify-first:** do not start research until the Search Spec is unambiguous (feature + intent + breadcrumbs + required consumers/boundaries).
+- **Plan-first:** write a short plan to `.cursor/plans/deep-search.<feature>.md` before deep execution.
+- **Draft-first:** `/deep-search.report` writes **DRAFT only** (file-only).
+- **Never publish before validation:** `/deep-search.publish` requires a passing `/deep-search.verify`.
+
+## Debug Intent = MCP-S First (CRITICAL)
+When intent is **debug** (something doesn't work, user reports issue):
+1. **IMMEDIATELY search Slack** for existing discussions about the issue/feature
+2. **Search Jira** for related tickets
+3. **Use DevEx to verify deployment state** (see DevEx Verification Gate below)
+4. **THEN** analyze code
+5. **NEVER** state root cause from code pattern-matching alone
+
+> **Why**: People discuss issues before/during/after fixing them. Slack often has the answer already.
+
+## DevEx Verification Gate (for Debug Intent)
+After finding Slack/Jira context, **attempt to verify deployment reality with DevEx**:
+
+### Step 1: Detect if DevEx applies
+Try to find the project in DevEx:
+```
+toolName: search_projects
+arguments:
+  search:
+    filter: { "name": { "$contains": "<project-name>" } }
+    cursorPaging: { limit: 5 }
+```
+Or if you know the exact name:
+```
+toolName: get_project
+arguments:
+  projectName: "<groupId>.<artifactId>"
+```
+
+### Step 2: If DevEx returns data → use it
+| Tool | Verify |
+|------|--------|
+| `get_project` | Project metadata, current GA/RC versions |
+| `search_builds` | Recent build status (passed/failed) |
+| `get_rollout_history` | Actual deployment timeline |
+| `where_is_my_commit` | Is the fix actually deployed? |
+| `available_rcs` | What RCs exist between versions |
+| `release_notes` | What changed in each release |
+
+### Step 3: If DevEx returns empty/error → User Confirmation Gate
+Not all projects are DevEx-tracked (e.g., external repos, non-Wix projects). If DevEx doesn't apply, proceed to User Confirmation Gate.
+
+**Anti-pattern (WRONG):**
+1. Find Slack saying "fixed by deploy preview"
+2. Conclude "issue is solved" without checking deployment state
+
+**Correct pattern:**
+1. Find Slack saying "fixed by deploy preview"
+2. Try `get_project` / `search_projects` to check if DevEx applies
+3. If DevEx applies → use `get_rollout_history` to verify deploy
+4. If DevEx doesn't apply → trigger User Confirmation Gate
+5. THEN conclude based on verified state
+
+> **Rule**: Slack/Jira provide *context*, DevEx provides *deployment truth* (when available), User confirms (when DevEx unavailable).
+
+## User Confirmation Gate (MANDATORY when DevEx unavailable or findings incomplete)
+If DevEx tools don't apply to this project, fail, or return insufficient data:
+
+**ALWAYS present findings + clickable questions BEFORE concluding:**
+
+```
+Use AskQuestion tool:
+title: "Verify findings before proceeding"
+questions:
+  - id: "deploy_state"
+    prompt: "The Slack thread suggests X. Did you already deploy-preview/GA this change?"
+    options:
+      - { id: "yes_deployed", label: "Yes - deployed and still broken" }
+      - { id: "not_deployed", label: "No - haven't deployed yet" }
+      - { id: "unsure", label: "Unsure - need to check" }
+  - id: "matches_issue"
+    prompt: "Does this match what you're experiencing?"
+    options:
+      - { id: "yes", label: "Yes - this is exactly my issue" }
+      - { id: "partial", label: "Partially - but there's more" }
+      - { id: "no", label: "No - different issue" }
+```
+
+**When to trigger User Confirmation Gate:**
+- Project not found in DevEx (`search_projects` / `get_project` returned empty)
+- DevEx tools returned error (not a Wix-tracked project)
+- Slack thread found but deployment state unclear
+- Multiple possible root causes identified
+- Hypothesis formed but not proven
+- Any conclusion that would be presented without deployment verification
+
+> **Rule**: When in doubt, ASK. A wrong conclusion costs more than a clarifying question.
+
+## Hypothesis Discipline (CRITICAL)
+- **NEVER** state a conclusion without MCP-S or code proof
+- **MARK** unverified ideas as `⚠️ HYPOTHESIS (unverified)`
+- **VERIFY** before presenting as root cause
+- **Pattern matching is NOT proof** (e.g., "this component doesn't have X, so that's the issue" is a hypothesis)
+
+## Deep-search specifics (artifacts + logging)
+- Search spec: `.cursor/deep-search/<feature>/SEARCH-SPEC.md`
+- Evidence artifacts:
+  - `.cursor/deep-search/<feature>/trace-ledger.md`
+  - `.cursor/deep-search/<feature>/octocode-queries.md`
+  - `.cursor/deep-search/<feature>/mcp-s-notes.md`
+- Unlimited iteration: repeat MCP-S + Octocode until everything is resolved or **NOT FOUND** (with searches + scope).
+
+## Output Requirements
+- **Dual output:** FINAL report must be printed in chat **and** written to `ARCHITECTURE-REPORT.md`.
+- **MCP-S notes required:** `mcp-s-notes.md` must exist and contain at least one query per major topic.
+- **DevEx ownership required:** if ownership is mentioned, must have DevEx `code_owners_for_path` query.
+- **DevEx attempted (debug intent):** if debugging, must attempt `search_projects`/`get_project` to check if DevEx applies.
+- **DevEx deployment verified (if available):** if DevEx applies, must use `get_rollout_history` to verify deployment state.
+- **User confirmation required (if DevEx unavailable):** if DevEx doesn't apply or returns empty, must use `AskQuestion` tool before concluding.
+
+## SDK Generation Chain (MANDATORY when SDK mentioned)
+- IDL source → generator trigger/config → generated `/rpc` + `/types` → runtime transport boundary (+ auth/baseUrl/retries).

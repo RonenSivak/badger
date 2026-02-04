@@ -1,0 +1,20 @@
+---
+description: Laws enforced during /review runs
+globs:
+alwaysApply: false
+---
+
+# Deep-Review Laws
+
+- Code health + consistency matter (follow existing patterns).
+- Conformance is mandatory: `/review.conform` must produce CONFORMANCE.md before publish.
+- Impact Sweep is mandatory for contract-shaped changes: CONSUMER-MATRIX.md required.
+- Shared discipline applies:
+  - `@.cursor/rules/shared/proof-discipline.mdc`
+  - `@.cursor/rules/shared/octocode-mandate.mdc`
+  - `@.cursor/rules/shared/mcp-s-mandate.mdc`
+- Never publish before verify: `/review.publish` requires PASS `/review.verify`.
+- Publish output must be SIMPLE:
+  1) HIGH / MODERATE / LOW issues
+  2) short summary of what was done
+  3) user options: Fix now / Ignore with rationale / Escalate owner / Add tests / Add rollout/guardrails

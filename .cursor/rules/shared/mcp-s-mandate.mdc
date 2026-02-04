@@ -6,6 +6,23 @@ alwaysApply: false
 
 # MCP-S Mandate 📚💬🎫🔧 (Shared, Non-Negotiable)
 
+## The 4 Mandatory Sources (ALWAYS Search ALL)
+
+When searching for internal Wix knowledge, **ALWAYS search ALL 4**:
+
+| # | Source | Tool |
+|---|--------|------|
+| 1 | **Slack** | `slack__search-messages` |
+| 2 | **Jira** | `jira__get-issues` |
+| 3 | **Internal Docs** | `docs-schema__search_docs` |
+| 4 | **wix-private/* repos** | Octocode (`githubSearchCode`) |
+
+**Rules:**
+- Do NOT skip any source — even if you think you found the answer
+- If not found → expand search (synonyms, date ranges) before marking NOT FOUND
+- Take time to deeply search — try 3-5 query variations per source
+- Cross-reference: follow links between sources
+
 ## Purpose
 MCP-S provides access to **internal knowledge sources** that code alone cannot reveal:
 - **Internal Docs** — architecture specs, design docs, ownership, onboarding

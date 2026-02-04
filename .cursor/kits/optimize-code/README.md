@@ -1,6 +1,6 @@
-# /optimize-code Kit
+# Optimizing Code Kit
 
-Systematically simplify TypeScript and React code following best practices from comprehensive guides.
+Systematically simplify TypeScript and React code following best practices.
 
 ## What It Does
 
@@ -15,27 +15,12 @@ Systematically simplify TypeScript and React code following best practices from 
 - TypeScript/React project
 - Tests that can verify behavior preservation
 
-## Install
-
-Copy to your project:
-```
-.cursor/commands/optimize-code.md
-.cursor/commands/optimize-code/
-.cursor/rules/optimize-code/
-.cursor/skills/optimize-code/
-```
-
 ## Quick Start
 
 ```
-/optimize-code <file-or-directory>
-```
-
-Examples:
-```
-/optimize-code src/components/MyComponent.tsx
-/optimize-code src/hooks/
-/optimize-code packages/my-app/src/
+Help me optimize src/components/MyComponent.tsx
+Simplify and refactor src/hooks/
+Clean up packages/my-app/src/
 ```
 
 ## Workflow
@@ -47,31 +32,12 @@ Examples:
 5. **Verify** — Confirm all tests/types/lint pass
 6. **Publish** — Summary with before/after metrics
 
-## Files
+## Structure
 
-### Commands
-| File | Purpose |
-|------|---------|
-| `optimize-code.md` | Orchestrator |
-| `optimize-code.clarify.md` | Scope definition |
-| `optimize-code.analyze.md` | Violation detection |
-| `optimize-code.plan.md` | Refactor ordering |
-| `optimize-code.execute.md` | Apply changes |
-| `optimize-code.verify.md` | Final verification |
-| `optimize-code.publish.md` | Summary report |
-
-### Rules
-| File | Purpose |
-|------|---------|
-| `optimize-code-laws.mdc` | Workflow gates |
-| `ts-core-principles.mdc` | 12 TypeScript principles |
-| `react-principles.mdc` | 10 React principles |
-| `react-query-principles.mdc` | TanStack Query patterns |
-
-### Skills
-| File | Purpose |
-|------|---------|
-| `SKILL.md` | Quick reference |
+| Type | Location | Purpose |
+|------|----------|---------|
+| Skill | `.cursor/skills/optimizing-code/SKILL.md` | Main entry point |
+| Guide | `.cursor/guides/optimization-principles.md` | Detailed principles |
 
 ## Generated During Runs
 
@@ -112,13 +78,9 @@ Examples:
 ### React Query
 - Only suggests when patterns would benefit
 - Checks React version FIRST to determine compatibility
-- React 16/17 → installs v4, React 18+ → installs v5
 - Asks permission before installing
-- Checks lockfile for existing transitive deps to avoid conflicts
 
 ### React Hook Form
-- Detects manual form state (multiple useState + onChange patterns)
+- Detects manual form state
 - Suggests when forms have 3+ fields with manual state
 - Asks permission before installing
-- Works with React 16.8+ (no version conflicts)
-- Includes schema validation integration (Zod/Yup)

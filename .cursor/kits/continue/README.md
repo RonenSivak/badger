@@ -1,73 +1,42 @@
-# /continue Kit
+# Continuing Sessions Kit
 
-`/continue` resumes a previously interrupted session using a session-memory dump file (typically created by `/rnd.context-budget` when context was getting too large).
+Resume a previously interrupted session using a session-memory dump file.
 
-## What it does
+## What It Does
 
 - Selects a `session-memory-*.md` dump from `.cursor/session-memory/`
-- Loads the dump + reads any referenced artifacts (paths listed inside)
-- Verifies the “next steps” are actionable
-- Resumes work by delegating to the correct Badger workflow when appropriate
+- Loads the dump + reads any referenced artifacts
+- Verifies the "next steps" are actionable
+- Resumes work by delegating to the correct workflow skill
 
-## Install
-
-Copy to your project:
-
-```
-.cursor/commands/continue.md
-.cursor/commands/continue/
-.cursor/rules/continue/
-.cursor/skills/continue/
-```
-
-## Quick start
+## Quick Start
 
 Continue from a specific dump:
-
 ```
-/continue .cursor/session-memory/session-memory-deep-search-auth-flow-2026-02-02T15-30.md
+Resume from .cursor/session-memory/session-memory-deep-search-auth-flow-2026-02-02T15-30.md
 ```
 
 Or pick from recent dumps:
-
 ```
-/continue
+I need to continue where I left off
 ```
 
 ## Workflow
 
-1. **Clarify** — choose memory file + set current objective
-2. **Load** — read dump + referenced artifacts
-3. **Verify** — produce an actionable resume plan
-4. **Resume** — execute next steps or delegate to a canonical workflow
-5. **Publish** — concise summary of what’s loaded and what happens next
+1. **Clarify** — Choose memory file + set current objective
+2. **Load** — Read dump + referenced artifacts
+3. **Verify** — Produce an actionable resume plan
+4. **Resume** — Execute next steps or delegate to a workflow skill
+5. **Publish** — Summary of what's loaded and what happens next
 
-## Files
+## Structure
 
-### Commands
+| Type | Location | Purpose |
+|------|----------|---------|
+| Skill | `.cursor/skills/continuing-sessions/SKILL.md` | Main entry point |
+| Guides | `.cursor/guides/` | Progressive disclosure |
 
-| File | Purpose |
-|------|---------|
-| `continue.md` | orchestrator |
-| `continue.clarify.md` | choose dump + objective |
-| `continue.load.md` | load dump + pointers |
-| `continue.verify.md` | validate coherence + plan |
-| `continue.resume.md` | resume or delegate |
-| `continue.publish.md` | summary |
-
-### Rules
-
-| File | Purpose |
-|------|---------|
-| `continue-laws.mdc` | guardrails: no assumptions, verify pointers, preserve constraints |
-
-### Skill
-
-| File | Purpose |
-|------|---------|
-| `SKILL.md` | quick reference |
-
-## Generated during runs
+## Generated During Runs
 
 | File | Created By |
 |------|------------|
@@ -75,3 +44,12 @@ Or pick from recent dumps:
 | `.cursor/continue/<topic>/LOADED-MEMORY.md` | load |
 | `.cursor/continue/<topic>/RESUME-PLAN.md` | verify |
 
+## Session Memory Format
+
+Session dumps in `.cursor/session-memory/` contain:
+- Flow type (which workflow was running)
+- Last completed step
+- Pending steps
+- Key artifacts created
+- Important context/decisions
+- Next action to take

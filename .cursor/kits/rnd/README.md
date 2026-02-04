@@ -1,96 +1,59 @@
-# /rnd Kit
+# Routing Workflows Kit (RnD)
 
-`/rnd` is a meta-orchestrator for Badger: it checks MCP availability, routes user intent to the right workflow, then delegates to the canonical command.
+Meta-orchestrator for Badger: checks MCP availability, routes user intent to the right workflow skill.
 
-## What it does
+## What It Does
 
 - **Preflight MCPs** and block on missing tools until the user decides what to do
-- **Route** to the best Badger command based on intent signals
-- **Delegate** to the selected workflow (no duplicated orchestration)
+- **Route** to the best Badger skill based on intent signals
+- **Delegate** to the selected workflow
 
-## Install
-
-Copy to your project:
+## Quick Start
 
 ```
-.cursor/commands/rnd.md
-.cursor/commands/rnd/
-.cursor/rules/rnd/
-.cursor/skills/rnd/
+I'm seeing a crash when saving. Here's the console error: ...
 ```
 
-## Quick start
+The routing skill will:
+1. Check context budget (if near limit: offer to dump session)
+2. Run MCP preflight (if missing MCPs: ask what to do)
+3. Route to the appropriate skill (e.g., `troubleshooting`)
 
-```
-/rnd I’m seeing a crash when saving. Here’s the console error: ...
-```
+## Context Budget Gate
 
-Then follow the prompts:
-1) Context budget gate (if near context limit: clickable options + wait)
-2) MCP preflight (if missing MCPs: clickable options + wait)
-3) Routing confirmation (if ambiguous)
-4) Delegation to the chosen workflow (e.g. `/troubleshoot`)
+When context usage is near-full (~90%), the skill asks:
+- "Dump session memory (write file, then create a new agent)"
+- "Continue as usual"
 
-## Context Budget Gate (critical behavior)
+If dumping, it writes to `.cursor/session-memory/`.
 
-When the agent estimates context usage is near-full (~90%), `/rnd.context-budget` MUST ask with clickable options:
-- “Dump session memory (write file, then I’ll create a new agent)”
-- “Continue as usual”
+## MCP Gate
 
-If you choose dump, it writes:
-- `.cursor/session-memory/session-memory-<flow-summary>-<date>.md`
-  - `<flow-summary>`: 3–4 words, kebab-cased
-  - `<date>`: full timestamp
+If any MCP is missing, the skill asks:
+- "I enabled/added it now (recheck)"
+- "Proceed without it (degraded mode)"
+- "Other / help me set it up"
 
-## MCP Gate (critical behavior)
+## Routing Targets
 
-If any MCP is missing/not active, `/rnd.preflight` MUST ask with clickable options:
-- “I enabled/added it now (recheck)”
-- “Proceed without it (degraded mode)”
-- “Other / help me set it up”
+| User Goal | Skill |
+|-----------|-------|
+| Understand system / trace E2E | `deep-searching` |
+| Debug a bug/perf issue | `troubleshooting` |
+| Implement change safely | `implementing` |
+| UI from Figma/requirements | `implement-ui` |
+| Review a change/PR | `reviewing` |
+| Generate BDD tests | `testing` |
+| Rename symbols safely | `renaming-symbols` |
+| Simplify/refactor code | `optimizing-code` |
+| Split a large branch | `splitting-branches` |
+| Merge/forward-port branches | `merging-branches` |
+| Address PR comments | `addressing-prs` |
+| Create a new kit | `creating-kits` |
 
-If the user chooses “Proceed without it”, the run becomes **degraded**:
-- cross-repo proof requirements become **NOT FOUND** (with searches + scope), or
-- a documented fallback is used.
+## Structure
 
-## Routing targets
-
-| User goal | Routed command |
-|----------|----------------|
-| Understand system / trace E2E | `/deep-search` |
-| Debug a bug/perf issue | `/troubleshoot` |
-| Implement change safely | `/implement` |
-| UI from Figma/requirements | `/implement-ui` |
-| Review a change/PR | `/review` |
-| Generate BDD tests | `/testkit` |
-| Rename symbols safely | `/better-names` |
-| Simplify/refactor code | `/optimize-code` |
-| Split a large branch | `/smart-branch-split` |
-| Merge/forward-port branches | `/smart-merge` |
-| Address PR comments | `/address-pr` |
-| Create a new kit | `/create-kit` |
-| Bootstrap agent scaffolding | `/create-agent` |
-
-## Files
-
-### Commands
-
-| File | Purpose |
-|------|---------|
-| `rnd.md` | orchestrator |
-| `rnd.preflight.md` | MCP availability gate |
-| `rnd.route.md` | intent routing + delegation |
-
-### Rules
-
-| File | Purpose |
-|------|---------|
-| `rnd-laws.mdc` | orchestrator laws |
-| `mcp-gate.mdc` | missing MCP interactive gate |
-
-### Skill
-
-| File | Purpose |
-|------|---------|
-| `SKILL.md` | quick reference and routing cheat sheet |
-
+| Type | Location | Purpose |
+|------|----------|---------|
+| Skill | `.cursor/skills/routing-workflows/SKILL.md` | Main entry point |
+| Guides | `.cursor/guides/` | Progressive disclosure |

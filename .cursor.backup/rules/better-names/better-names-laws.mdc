@@ -1,0 +1,59 @@
+---
+description: Core laws for /better-names workflow
+globs: ".cursor/commands/better-names/**, .cursor/better-names/**"
+alwaysApply: false
+---
+
+# Better-Names Laws
+
+## Shared references (passive context)
+- `@.cursor/rules/shared/proof-discipline.mdc`
+- `@.cursor/rules/shared/octocode-mandate.mdc`
+
+## Law 1: Analyze Before Execute
+
+**NEVER** execute a rename without completing the analyze step.
+- LSP analysis must complete
+- String reference search must complete
+- Cross-package check must complete (if exported)
+
+## Law 2: Verify Before Commit
+
+**NEVER** commit rename changes without verification passing:
+- `tsc --noEmit` must pass
+- Tests must pass
+- ESLint must pass
+- No orphaned string references
+
+## Law 3: Convention Compliance
+
+All new names MUST follow TypeScript naming conventions:
+- Variables/functions: camelCase
+- Classes/interfaces/types/enums: PascalCase
+- Module constants: UPPER_SNAKE_CASE
+- No `I` prefix on interfaces
+- No `Type` suffix on type aliases
+
+## Law 4: Semantic Validation
+
+Before execute, verify:
+- No name collision in scope
+- No shadowing of outer scope
+- Not a reserved keyword
+
+## Law 5: NOT FOUND Discipline
+
+If a symbol cannot be located:
+- Record as `NOT_FOUND: <symbol>`
+- Do NOT proceed with rename for that symbol
+- Report in publish step
+
+## Law 6: String Reference Integrity
+
+All string references must be updated:
+- dataHooks type parameters
+- Test descriptions (describe/it blocks)
+- Comments and JSDoc
+- Config file references
+
+Verify with grep after execute.

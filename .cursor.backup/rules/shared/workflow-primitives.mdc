@@ -1,0 +1,34 @@
+---
+description: Shared workflow primitives (clarify → plan → execute → verify → publish) used across kits
+globs:
+alwaysApply: false
+---
+
+# Workflow Primitives (Shared)
+
+Badger kits are built from the same primitives. Each kit may add domain-specific steps, but the primitives are stable:
+
+## Clarify
+- Run a clarification loop until an explicit **Spec** exists (intent + inputs + boundaries + expected outputs).
+- Persist the spec to the kit’s artifact folder.
+
+## Plan
+- Create a short, actionable plan that names:
+  - the **contract chain** (if relevant)
+  - the **write path** and **read path** (if relevant)
+  - the **verification gates** you will run
+- Persist the plan to the kit’s artifact folder.
+
+## Execute
+- Implement the smallest safe change-set that satisfies the plan.
+- Avoid drive-by refactors unless explicitly required by the spec.
+
+## Verify
+- Prove connectivity for every asserted hop (see `proof-discipline.mdc`).
+- Run the kit’s required checks (lint/typecheck/tests) and capture results.
+- If verification fails: fix → re-verify (repeat).
+
+## Publish
+- Publish only after verification passes.
+- Dual output: **write final artifacts to files** and **print a concise summary to chat**.
+

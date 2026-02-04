@@ -1,17 +1,11 @@
-# update-kit
+# Updating Kits
 
 Update existing Cursor workflow kits to align with current best practices and structure.
-
-## Quick Start
-
-```
-/update-kit <kit-name>
-```
 
 ## What It Does
 
 1. **Analyzes** an existing kit's structure
-2. **Compares** against best practices from other kits
+2. **Compares** against best practices
 3. **Plans** specific updates (add/modify files)
 4. **Executes** changes with automatic backup
 5. **Verifies** the updated kit passes all checks
@@ -19,22 +13,25 @@ Update existing Cursor workflow kits to align with current best practices and st
 
 ## When to Use
 
-- Kit is missing frontmatter on files
-- Kit lacks a `<kit>-laws.mdc` rules file
-- Kit has no SKILL.md
+- Kit is missing SKILL.md
+- Kit structure doesn't match handbook-compliant patterns
 - References are broken or orphaned
-- Kit structure doesn't match current patterns
+- Kit needs modernization
+
+## Quick Start
+
+```
+Update the implement-ui kit to follow current best practices
+```
 
 ## Workflow
 
-```
-/update-kit.clarify  → Identify kit + goals
-/update-kit.analyze  → Scan structure, find gaps
-/update-kit.plan     → Create update actions
-/update-kit.execute  → Apply changes (with backup)
-/update-kit.verify   → Check all gates pass
-/update-kit.publish  → Summary + changelog
-```
+1. **Clarify** — Identify kit + update goals
+2. **Analyze** — Scan structure, find gaps
+3. **Plan** — Create update actions
+4. **Execute** — Apply changes (with backup)
+5. **Verify** — Check all gates pass
+6. **Publish** — Summary + changelog
 
 ## Safety
 
@@ -42,36 +39,24 @@ Update existing Cursor workflow kits to align with current best practices and st
 - **Fail-fast** on critical errors
 - **Verify before publish** ensures consistency
 
-## Best Practices Enforced
+## Best Practices Enforced (Handbook-Compliant)
 
 ### Structure
-- Orchestrator at `.cursor/commands/<kit>.md`
-- Subcommands in `.cursor/commands/<kit>/`
-- Rules in `.cursor/rules/<kit>/`
-- Skill at `.cursor/skills/<kit>/SKILL.md`
+- Skill at `.cursor/skills/<kit>/SKILL.md` (main entry point)
+- Guides in `.cursor/guides/` for progressive disclosure
+- Kit docs in `.cursor/kits/<kit>/`
 
-### Frontmatter
-- All `.md`/`.mdc` files have `description`, `globs`, `alwaysApply`
+### Skill Requirements
+- `name` field (gerund form: `processing-data`)
+- `description` includes "when to use"
+- Body under 500 lines
+- Progressive disclosure to guides
 
 ### Content
-- Orchestrator lists subcommands with paths
-- Orchestrator references enforced rules
-- Laws file has workflow gates
-- Skill has Quick Start, Workflow, Key Rules sections
-
-## Examples
-
-```bash
-# Full update
-/update-kit review
-
-# Focus on frontmatter only
-/update-kit testkit --focus frontmatter
-
-# Add missing rules
-/update-kit continue --add-missing-rules
-```
+- Workflow checklist included
+- Hard-fail conditions documented
+- No orphan references
 
 ## Related
 
-- `/create-kit` — Create a new kit from scratch
+- `creating-kits` skill — Create a new kit from scratch

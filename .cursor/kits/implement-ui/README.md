@@ -1,4 +1,4 @@
-# /implement-ui Kit
+# Implement UI Kit
 
 Create UI components from Figma designs or semantic descriptions using Wix Design System (WDS).
 
@@ -18,27 +18,16 @@ Create UI components from Figma designs or semantic descriptions using Wix Desig
   - `cursor-ide-browser` (for Figma visual verification)
   - `octocode` (for pattern search)
 
-## Install
-
-Copy to your project:
-
-```
-.cursor/commands/implement-ui.md
-.cursor/commands/implement-ui/
-.cursor/rules/implement-ui/
-.cursor/skills/implement-ui/
-```
-
 ## Quick Start
 
 **From Figma:**
 ```
-/implement-ui https://www.figma.com/design/abc123?node-id=1234
+Use the implement-ui skill with: https://www.figma.com/design/abc123?node-id=1234
 ```
 
 **From description:**
 ```
-/implement-ui Create a settings panel with:
+Use the implement-ui skill to create a settings panel with:
 - Toggle switches for notifications
 - Language dropdown
 - Save button
@@ -53,33 +42,12 @@ Copy to your project:
 5. **Verify** — Visual comparison OR requirements checklist
 6. **Publish** — Summary with usage instructions
 
-## Files
+## Structure
 
-### Commands
-
-| File | Purpose |
-|------|---------|
-| `implement-ui.md` | Orchestrator |
-| `implement-ui.clarify.md` | Gather requirements |
-| `implement-ui.analyze.md` | Extract/parse specs |
-| `implement-ui.plan.md` | Map to WDS components |
-| `implement-ui.implement.md` | Generate code |
-| `implement-ui.verify.md` | Verification gate |
-| `implement-ui.publish.md` | Summary output |
-
-### Rules
-
-| File | Purpose |
-|------|---------|
-| `implement-ui-laws.mdc` | Workflow gates |
-| `wds-mandate.mdc` | WDS usage rules |
-| `shared/octocode-mandate.mdc` | Octocode proof + pattern search rules |
-
-### Skills
-
-| File | Purpose |
-|------|---------|
-| `SKILL.md` | Quick reference |
+| Type | Location | Purpose |
+|------|----------|---------|
+| Skill | `.cursor/skills/implementing-ui/SKILL.md` | Main entry point |
+| Guides | `.cursor/guides/` | Progressive disclosure |
 
 ## Generated During Runs
 
@@ -116,47 +84,16 @@ Copy to your project:
 | `getIconsList` | List available icons |
 | `verify` | Type-check JSX against tsconfig before applying |
 
-**Prompt:** `figma-to-code` — Convert Figma URL to React code using WDS
-
 ### 2. `octocode` — GitHub Code Search (when component NOT FOUND)
 
 | Tool | Purpose |
 |------|---------|
-| `githubSearchCode` | Search code with `owner="wix-private"` or `owner="wix-playground"` |
+| `githubSearchCode` | Search code with `owner="wix-private"` |
 | `githubGetFileContent` | Read file content from a repo |
-| `githubViewRepoStructure` | Explore repo folder structure |
-| `githubSearchRepositories` | Find repos by name/description |
-| `packageSearch` | Find npm packages and their source repos |
 
-### 3. `MCP-S` — Wix Internal Services (optional extras)
-
-| Tool | Purpose |
-|------|---------|
-| `figma__get-file-nodes` | Extract Figma design data directly |
-| `figma__get-image` | Get images from Figma |
-| `docs-schema__search_docs` | Search Wix internal documentation |
-| `chrome-devtools__take-screenshot` | Browser screenshot (alternative to cursor-ide-browser) |
-| `chrome-devtools__navigate-page` | Navigate browser |
-
-### 4. `cursor-ide-browser` — Visual Verification (Figma mode)
+### 3. `cursor-ide-browser` — Visual Verification (Figma mode)
 
 | Tool | Purpose |
 |------|---------|
 | `browser_navigate` | Open component URL |
-| `browser_lock` / `browser_unlock` | Lock browser for interactions |
 | `browser_snapshot` | Capture screenshot for comparison |
-
-### MCP Decision Matrix
-
-| Need | MCP | Tool |
-|------|-----|------|
-| List WDS components | `wix-design-system-mcp` | `getComponentsList` |
-| Get component props | `wix-design-system-mcp` | `getComponentProps` |
-| Get code examples | `wix-design-system-mcp` | `getComponentExamples` |
-| Verify JSX types | `wix-design-system-mcp` | `verify` |
-| Convert Figma to code | `wix-design-system-mcp` | `figma-to-code` prompt |
-| Component NOT in WDS | `octocode` | `githubSearchCode` with `owner="wix-private"` |
-| Find npm package source | `octocode` | `packageSearch` |
-| Read Figma file data | `MCP-S` | `figma__get-file-nodes` |
-| Search Wix docs | `MCP-S` | `docs-schema__search_docs` |
-| Take browser screenshot | `cursor-ide-browser` | `browser_snapshot` |

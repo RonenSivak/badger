@@ -1,0 +1,55 @@
+---
+description: Laws for /rnd meta-orchestrator: always preflight MCPs, route correctly, and delegate to the canonical workflow
+globs: ".cursor/commands/rnd/**,.cursor/rnd/**"
+alwaysApply: false
+---
+
+# /rnd Laws
+
+## Shared references (passive context)
+- `AGENTS.md` (docs index + quick references)
+- `@.cursor/rules/shared/workflow-primitives.mdc`
+- `@.cursor/rules/shared/mcp-s-mandate.mdc`
+- `@.cursor/rules/shared/octocode-mandate.mdc`
+- `@.cursor/rules/shared/proof-discipline.mdc`
+
+## Purpose
+
+`/rnd` is an orchestrator-of-orchestrators. It must:
+- pick the correct Badger workflow for the user’s intent
+- enforce MCP preflight gating
+- delegate to the canonical command (do not re-implement the workflow inside `/rnd`)
+
+## Laws (MANDATORY)
+
+### 1) Preflight first
+You MUST run `/rnd.preflight` before routing or executing any downstream workflow.
+
+### 1.5) Context budget gate when near limit
+If you estimate the context window is near-full (≈ 90%), you MUST run `/rnd.context-budget` and WAIT for the user’s decision before continuing.
+
+### 2) Route with evidence, not vibes
+Routing must be justified by explicit signals from the user request (keywords, artifacts, constraints).
+If the intent is ambiguous, you MUST ask the user to choose via clickable options.
+
+### 3) Delegate, don’t duplicate
+After choosing a command, you MUST proceed by running that command’s orchestrator (e.g. `/deep-search`).
+`/rnd` must not clone subcommand logic from other kits.
+
+### 4) MCP constraints must be explicit
+If an MCP is missing and the user chooses to proceed:
+- record the MCP as SKIPPED
+- propagate the constraint to downstream work (NOT FOUND discipline / fallback tooling)
+
+### 5) Default to least disruptive workflow
+When multiple workflows could apply, prefer the least disruptive, most evidence-driven option:
+- debug symptoms → `/troubleshoot`
+- understand system → `/deep-search`
+- implement change → `/implement` (only if deep-search artifacts exist or will exist)
+
+## Outputs
+
+`/rnd` runs must write:
+- `.cursor/rnd/<topic>/MCP-PREFLIGHT.md`
+- `.cursor/rnd/<topic>/ROUTE.md`
+

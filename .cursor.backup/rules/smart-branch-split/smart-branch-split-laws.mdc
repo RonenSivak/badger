@@ -1,0 +1,102 @@
+---
+description: Laws enforced during /smart-branch-split runs (backup mandate, verification gates, isolation discipline)
+globs: ".cursor/commands/smart-branch-split/**,.cursor/smart-branch-split/**"
+alwaysApply: false
+---
+
+# Smart Branch Split — Laws 🚨
+
+## Shared references (passive context)
+- `@.cursor/rules/shared/workflow-primitives.mdc`
+- `@.cursor/rules/shared/proof-discipline.mdc`
+
+## Backup Mandate (Non-Negotiable)
+
+- **Create backup BEFORE any rewrites**: `git branch backup-<source>-$(date +%Y%m%d) <source>`
+- **Never proceed without backup**: If backup doesn't exist, STOP and create it
+- **Keep backup until confident**: Only delete after all PRs merged and verified
+
+## Verification Gates (Non-Negotiable)
+
+- **No publish before verify**: `/smart-branch-split.publish` requires ALL checks passing
+- **TypeScript MUST pass**: Every split branch must pass `tsc --noEmit`
+- **Lint MUST pass**: Every split branch must pass lint checks
+- **Tests MUST pass**: Tests must pass (or be explicitly marked SKIP with documented reason)
+- **Build MUST pass**: If a build script exists, it must succeed
+- **git cherry MUST pass**: All commits from source must be accounted for
+
+## Isolation Discipline
+
+- **Base-first**: Every split branch starts from `<remote>/<base-branch>`, NOT from the source branch
+- **Scope enforcement**: Each branch must only touch files in its declared bucket scope
+- **No cross-contamination**: Split branches must not depend on each other unless explicitly stacked
+- **Cross-dependencies documented**: If branch A imports from branch B's scope, document as stacking requirement
+
+## Commit Handling
+
+- **Mixed commits must be handled explicitly**: Use cherry-pick -n + selective staging, patch+stash, or interactive rebase
+- **Clean history**: Each split branch should have clean, logical commits
+- **No lost commits**: git cherry verification ensures nothing dropped accidentally
+
+## Evidence Requirements
+
+- **Command log mandatory**: All commands must be recorded in `COMMAND-LOG.md`
+- **Branch map mandatory**: All branches must be recorded in `BRANCH-MAP.md`
+- **Validation report mandatory**: `VALIDATION-REPORT.md` must include per-branch status for all checks
+- **Failure documentation**: If something can't be done safely, STOP and record WHY
+
+## Verification Command Discovery
+
+Before running checks, discover available commands:
+1. Check `package.json` scripts for: `tsc`, `typecheck`, `lint`, `test`, `build`
+2. Use workspace tooling: `yarn workspace <pkg> <script>` or `npm run -w <pkg> <script>`
+3. Record discovered commands in verification artifacts
+
+## rerere Recommendation
+
+Enable rerere for repeated conflict resolution:
+```bash
+git config rerere.enabled true
+```
+
+Benefits:
+- Records conflict resolutions
+- Auto-applies same resolution if conflict recurs
+- Useful when rebasing multiple stacked branches
+
+## Feature Flag Guidance
+
+When using feature flags:
+- Document flag name in SPLIT-PLAN.md
+- Note which buckets are behind flag
+- Plan cleanup task: remove flag after full feature ships
+- Don't leave flags indefinitely — schedule cleanup
+
+## PR Flow Laws
+
+### Independent PRs
+- No ordering required
+- Each PR standalone
+
+### Stacked PRs
+- Merge in strict order
+- Retarget after each merge
+- Label PRs with order (1/N, 2/N, etc.)
+
+### Feature Branch
+- All PRs to feature branch first
+- Final PR merges feature → main
+- Test integration before final merge
+
+## Hard-Fail Conditions
+
+- ❌ Splitting without backup branch
+- ❌ Publishing without ALL verification checks passing
+- ❌ TypeScript errors in any split branch
+- ❌ Lint errors in any split branch
+- ❌ Test failures (unless explicitly CI-only with reason)
+- ❌ Build failures
+- ❌ Branches with files outside declared scope (unless allowed)
+- ❌ git cherry shows unaccounted commits
+- ❌ Missing VALIDATION-REPORT.md
+- ❌ Missing COMMAND-LOG.md

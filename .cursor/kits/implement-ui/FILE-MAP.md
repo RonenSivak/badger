@@ -26,7 +26,7 @@ All files to be created during scaffolding.
 
 | Path | Role | Referenced By |
 |------|------|---------------|
-| `.cursor/skills/implement-ui/SKILL.md` | Quick reference for the kit | User, other agents |
+| `.cursor/skills/implementing-ui/SKILL.md` | Quick reference for the kit | User, other agents |
 
 ## Summary
 

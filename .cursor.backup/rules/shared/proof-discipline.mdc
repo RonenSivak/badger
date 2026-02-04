@@ -1,0 +1,46 @@
+---
+description: Proof-first discipline shared across all kits (connectivity evidence + NOT FOUND rules)
+globs:
+alwaysApply: false
+---
+
+# Proof Discipline ✅ (Shared)
+
+## Proof-first (non-negotiable)
+Every **non-trivial** claim must be backed by evidence, not naming similarity.
+
+Minimum proof format:
+- **repo/path + line range + snippet**
+
+## Hypothesis Discipline (CRITICAL)
+**NEVER state a conclusion without proof.** If you haven't verified via MCP-S or code proof:
+
+1. **Mark as HYPOTHESIS**: `⚠️ HYPOTHESIS (unverified): <your theory>`
+2. **State verification needed**: "Requires: [Slack search | code proof | runtime test]"
+3. **Do NOT present hypotheses as root causes or solutions**
+
+### Anti-pattern (WRONG)
+> "The issue is X" → states conclusion without proof
+
+### Correct pattern
+> "⚠️ HYPOTHESIS: The issue might be X. Verifying via Slack/code..."
+> → runs verification
+> "✅ CONFIRMED: The issue is X (proof: Slack thread from @user, code at path:line)"
+
+## Connectivity requirement
+When you assert an E2E hop, you must prove the edge connects via code, e.g.:
+- import → usage
+- call site → implementation
+- route/RPC binding → handler
+- cross-repo hop → Octocode proof (definition + implementation + boundary)
+
+## NOT FOUND discipline
+If you cannot prove something:
+- mark it **NOT FOUND**
+- include **exact searches** tried (patterns/keywords)
+- include **scope searched** (repos/packages/paths)
+
+## "Exists" is not enough
+- "File exists" ≠ "Edge is connected"
+- "Name matches" ≠ "Same symbol/contract"
+- "Pattern similar" ≠ "Same root cause"
