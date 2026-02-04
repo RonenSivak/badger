@@ -113,7 +113,7 @@ description: "Use when you need tests."
 - Examples: `deep-searching`, `implementing`, `troubleshooting`
 
 **Minimal/Pointer Skills** — Intentionally small, point to passive context:
-- Reference rules in `.cursor/rules/shared/`
+- Reference AGENTS.md sections or guides
 - Examples: `querying-mcp-s`, `researching-octocode`
 
 Both are valid per the "concise is key" principle.
@@ -141,7 +141,7 @@ Use this when creating or auditing skills:
 - [ ] Body under 500 lines
 
 ### Body Structure (Minimal Skills)
-- [ ] Clear pointer to passive context rules/guides
+- [ ] Clear pointer to AGENTS.md sections or guides
 - [ ] Explains when to use
 - [ ] Under 50 lines total
 

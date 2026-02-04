@@ -5,9 +5,11 @@ description: "Use MCP-S internal knowledge tools (docs, Slack, Jira, DevEx) to a
 
 # Querying MCP-S
 
-This skill is intentionally minimal. Critical rules are **passive context**:
-- `@.cursor/rules/shared/mcp-s-mandate.mdc`
-- `@.cursor/rules/shared/proof-discipline.mdc`
+This skill is intentionally minimal. Critical rules are in **AGENTS.md** (passive context):
+- Internal Knowledge Search Protocol
+- Proof Discipline
+
+See also: [mcp-s-patterns.md](../../guides/mcp-s-patterns.md)
 
 ## 4 Mandatory Sources (ALWAYS Search ALL)
 

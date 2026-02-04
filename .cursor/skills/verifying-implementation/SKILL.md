@@ -6,8 +6,8 @@ description: "Verify an implementation is correct and that the story connects in
 # Verifying Implementation
 
 This skill is intentionally minimal. Verification guidance is **passive context**:
-- `@.cursor/guides/verify-checklist.md`
-- `@.cursor/rules/shared/proof-discipline.mdc`
-- `@.cursor/rules/shared/octocode-mandate.mdc`
+- [verify-checklist.md](../../guides/verify-checklist.md)
+- Proof Discipline (in AGENTS.md)
+- Cross-Repo Resolution / Octocode (in AGENTS.md)
 
 Use it as a quick pointer: verify edges connect (import/call/binding), prove cross-repo hops with Octocode, run the repo’s checks, and write a validation report artifact.

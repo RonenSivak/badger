@@ -8,10 +8,10 @@ alwaysApply: false
 
 Resolve is where you turn uncertainty into **provable edges**.
 
-## Mandatory references
-- `@.cursor/rules/shared/mcp-s-mandate.mdc`
-- `@.cursor/rules/shared/octocode-mandate.mdc`
-- `@.cursor/rules/shared/proof-discipline.mdc`
+## Core Principles (from AGENTS.md)
+- Internal Knowledge Search Protocol (ALL 4 sources)
+- Cross-Repo Resolution / Octocode (definition + implementation + boundary)
+- Proof Discipline (proof-first, connectivity, NOT FOUND discipline)
 
 ## Resolve loop (repeat until no unknowns)
 

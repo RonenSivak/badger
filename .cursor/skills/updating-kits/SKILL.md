@@ -7,6 +7,8 @@ description: "Update existing Cursor workflow kits to align with current best pr
 
 Update existing Cursor workflow kits to match current best practices.
 
+> **Reference**: [Wix Coding Agents Handbook](https://github.com/wix-private/coding-agents-handbook)
+
 ## Quick Start
 
 ```
@@ -34,37 +36,31 @@ Example:
 3. **Kit must exist** — Cannot update non-existent kit (use `/create-kit` instead)
 4. **Preserve content** — Only change what needs fixing
 
-## Best Practices Checklist
+## Best Practices Checklist (Handbook-Aligned)
 
-### Structure
-- Orchestrator at `.cursor/commands/<kit>.md`
-- Subcommands in `.cursor/commands/<kit>/`
-- Rules in `.cursor/rules/<kit>/`
-- Shared passive context (repo-wide):
-  - `.cursor/rules/shared/`
-  - `.cursor/guides/`
-- Skill at `.cursor/skills/<kit>/SKILL.md`
+Per the [Wix Coding Agents Handbook](https://github.com/wix-private/coding-agents-handbook):
 
-### Frontmatter (all .md/.mdc)
-- `description` — meaningful purpose
-- `globs` — file patterns (may be empty)
-- `alwaysApply` — typically false
+### Preferred Structure
+- **AGENTS.md** — Persistent context (always available, project-specific)
+- **Skills** at `.cursor/skills/<kit>/SKILL.md` — Action-specific workflows
+- **Guides** at `.cursor/guides/` — Domain-specific knowledge (progressive disclosure)
 
-### Orchestrator
-- Lists all subcommands with paths
-- References enforced rules
-- Documents workflow steps
-- Lists hard-fail conditions
+### Deprecated (avoid)
+- ~~`.cursor/rules/`~~ — Use AGENTS.md instead
+- ~~`.cursor/commands/`~~ — Use skills instead
 
-### Rules
-- `<kit>-laws.mdc` with workflow gates
-- Reuse common rules where applicable (prefer `.cursor/rules/shared/*` over duplicated mandates)
-
-### Skill
+### Skill Structure
+- `name` and `description` in frontmatter
 - Quick Start section
 - Workflow summary
 - Key Rules section
 - Examples section
+- References to guides for detailed patterns
+
+### AGENTS.md Guidelines
+- Keep it small and focused (every token loads on every request)
+- Use progressive disclosure — move domain-specific rules to separate files (guides)
+- Reference skills and guides rather than duplicating content
 
 ## Update Goals
 
@@ -72,9 +68,9 @@ Example:
 |------|-------------|
 | `full` | Align everything to best practices |
 | `frontmatter` | Fix missing/broken frontmatter only |
-| `rules` | Add missing rules like `<kit>-laws.mdc` |
 | `skill` | Add or update SKILL.md |
 | `refs` | Fix orphan references |
+| `handbook` | Migrate rules/commands to skills/AGENTS.md |
 
 ## Examples
 
@@ -88,9 +84,9 @@ Example:
 /update-kit testkit --focus frontmatter
 ```
 
-**Add missing rules:**
+**Migrate to handbook structure:**
 ```
-/update-kit continue --add-missing-rules
+/update-kit testkit --focus handbook
 ```
 
 ## Files Generated
@@ -106,7 +102,6 @@ Example:
 └── backup/             # Original files
 ```
 
-## Related Commands
+## Related Skills
 
-- `/create-kit` — Create a new kit from scratch
-- `/create-kit.verify` — Reused for verification logic
+- [creating-kits](../creating-kits/SKILL.md) — Create a new kit from scratch

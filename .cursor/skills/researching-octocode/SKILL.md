@@ -5,9 +5,11 @@ description: "Resolve non-local symbols with authoritative cross-repo proof: def
 
 # Researching Octocode
 
-This skill is intentionally minimal. Critical Octocode rules are **passive context**:
-- `@.cursor/rules/shared/octocode-mandate.mdc`
-- `@.cursor/rules/shared/proof-discipline.mdc`
+This skill is intentionally minimal. Critical rules are in **AGENTS.md** (passive context):
+- Cross-Repo Resolution (Octocode)
+- Proof Discipline
+
+See also: [octocode-patterns.md](../../guides/octocode-patterns.md)
 
 ## wix-private/* as Knowledge Source
 

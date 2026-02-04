@@ -8,9 +8,9 @@ alwaysApply: false
 
 Goal: verify correctness **and** prove the story connects in code.
 
-## Mandatory references
-- `@.cursor/rules/shared/proof-discipline.mdc`
-- `@.cursor/rules/shared/octocode-mandate.mdc`
+## Core Principles (from AGENTS.md)
+- Proof Discipline (proof-first, connectivity, NOT FOUND discipline)
+- Cross-Repo Resolution / Octocode (definition + implementation + boundary)
 
 ## Edge connectivity checks (required)
 For every new/edited hop, show evidence:
