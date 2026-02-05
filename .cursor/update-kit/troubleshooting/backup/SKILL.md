@@ -5,7 +5,7 @@ description: "Cross-ecosystem debugging with runtime evidence and proof-driven r
 
 # Troubleshooting
 
-Cross-ecosystem debugging: trace → resolve → hypothesize → fix plan → **verify (MANDATORY)**.
+Cross-ecosystem debugging: trace → resolve → hypothesize → fix plan → verify.
 
 ## Quick Start
 1. Clarify the bug (use clickable options below)
@@ -13,8 +13,8 @@ Cross-ecosystem debugging: trace → resolve → hypothesize → fix plan → **
 3. Resolve code connections (Octocode)
 4. Build hypothesis tree
 5. Create fix plan (no code yet)
-6. **VERIFY (MANDATORY GATE)** — prove root cause before claiming it
-7. Publish report (only after verification passes)
+6. Verify the fix
+7. Publish report
 
 ## Clarify (ALWAYS use AskQuestion tool)
 Start by asking with clickable options:
@@ -46,7 +46,7 @@ Copy and track your progress:
 - [ ] Code connections resolved (Octocode)
 - [ ] Hypothesis tree built
 - [ ] Fix plan created
-- [ ] **VERIFICATION GATE PASSED** (root cause PROVEN, not assumed)
+- [ ] Fix verified (tests/tsc/lint)
 - [ ] Report published
 ```
 
@@ -128,88 +128,15 @@ All outputs go to `.cursor/troubleshoot/<topic>/`:
 - `mcp-s-notes.md` - Internal context
 - `HYPOTHESIS-TREE.md` - Hypotheses
 - `FIX-PLAN.md` - Fix approach
-- `VALIDATION-REPORT.md` - **Proof certification (MANDATORY)**
 - `TROUBLESHOOT-REPORT.md` - Final report
 
----
-
-## MANDATORY VERIFICATION GATE (BLOCKER)
-
-**You CANNOT claim a root cause or publish a fix without verification.**
-
-### Root Cause Proof Requirements
-
-Before stating "The issue is X", you MUST have:
-
-1. **Code proof**: `repo/path:line` showing the bug
-2. **Runtime evidence**: Log/error that matches the code path
-3. **Repro confirmation**: Steps that trigger the exact code path
-
-### Hypothesis vs Conclusion
-
-**WRONG** (presenting hypothesis as conclusion):
-> "The issue is a missing null check in handleData."
-
-**CORRECT** (hypothesis until proven):
-> "⚠️ HYPOTHESIS (unverified): Missing null check in handleData."
-> [runs verification]
-> "✅ CONFIRMED: Missing null check causes crash."
-> **Proof**: `repo/handler.ts:45` — `data.value` accessed without check
-> **Runtime**: Console error "Cannot read property 'value' of null"
-
-### Create VALIDATION-REPORT.md
-
-```markdown
-## VALIDATION-REPORT.md
-
-### Root Cause Proof (REQUIRED)
-| Claim | Proof (`repo/path:line`) | Runtime Evidence | Tool Used |
-|-------|--------------------------|------------------|-----------|
-| <root cause> | `<file:line>` | <log/error> | <tool> |
-
-### Hypothesis Resolution
-| Hypothesis | Status | Proof |
-|------------|--------|-------|
-| <theory 1> | ✅ CONFIRMED / ❌ REFUTED | <evidence> |
-| <theory 2> | ✅ CONFIRMED / ❌ REFUTED | <evidence> |
-
-### 4 Mandatory Sources Check
-- [ ] Slack searched: <queries> → <results>
-- [ ] Jira searched: <queries> → <results>
-- [ ] Docs searched: <queries> → <results>
-- [ ] wix-private/* searched: <queries> → <results>
-
-### Anti-Hallucination Certification
-- [ ] Root cause backed by code proof from THIS session
-- [ ] Runtime evidence matches the code path
-- [ ] No hypothesis presented as conclusion without proof
-- [ ] NOT FOUND items have 3+ search attempts
-
-### Certification
-☐ I certify the root cause is PROVEN, not assumed.
-```
-
----
-
-## Hard-fail Conditions (INSTANT BLOCK)
-
-Publishing is **BLOCKED** if ANY of these are true:
-
-- ❌ Publishing before verification passes
-- ❌ **Root cause stated without code proof**
-- ❌ **Hypothesis presented as conclusion** (missing proof)
-- ❌ **Skipping any of the 4 mandatory sources** (Slack, Jira, Docs, wix-private/*)
-- ❌ Non-local symbols without Octocode proof
-- ❌ "It's fixed" without verification signals
-- ❌ Frontend bug without console log query
-- ❌ Backend bug without `find_error_pattern_logs`
-- ❌ Request ID found but RCA not called
-- ❌ Missing `mcp-s-notes.md`
-- ❌ NOT FOUND marked without 3+ query variations
-
----
-
-## Detailed Guidance
-- See [verify-checklist.md](../../guides/verify-checklist.md) for verification template
-- See [proof-discipline.md](../../guides/proof-discipline.md) for proof format
-- See [request-id-tracing.md](../../guides/request-id-tracing.md) for request ID usage
+## Hard-fail Conditions
+- Publishing before verify passes
+- **Skipping any of the 4 mandatory sources** (Slack, Jira, Docs, wix-private/*)
+- Non-local symbols without Octocode proof
+- "It's fixed" without verification signals
+- Frontend bug without console log query
+- Backend bug without `find_error_pattern_logs`
+- Request ID found but RCA not called
+- Missing `mcp-s-notes.md`
+- Marking NOT FOUND without trying 3+ query variations per source

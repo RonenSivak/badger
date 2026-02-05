@@ -6,33 +6,43 @@ IMPORTANT: Prefer retrieval-led reasoning over pre-training-led reasoning for an
 
 ## Core Principles (always apply)
 
-### Proof Discipline
+### Proof Discipline (NON-NEGOTIABLE)
 
-Every **non-trivial** claim must be backed by evidence, not naming similarity.
+**If you can't cite it, you can't claim it.**
 
-**Minimum proof format**: `repo/path + line range + snippet`
+Every **non-trivial** claim must be backed by evidence retrieved **in this session**.
 
-**Hypothesis Discipline (CRITICAL)**:
+**Minimum proof format**: `repo/path:line` + snippet from tool retrieval
+
+**Anti-Hallucination Rule (CRITICAL)**:
+- Proofs must come from tools (Read, Grep, Octocode, MCP-S), NOT from memory
+- If you didn't retrieve it in THIS session, you CANNOT cite it
+- "I know this from training" is NOT proof
+
+**Hypothesis Discipline**:
 - **NEVER** state a conclusion without proof
 - Mark unverified claims as `⚠️ HYPOTHESIS (unverified): <your theory>`
 - State verification needed: "Requires: [Slack search | code proof | runtime test]"
 - Do NOT present hypotheses as root causes or solutions
 
 **Connectivity requirement**: When asserting E2E hops, prove the edge connects:
-- import → usage
-- call site → implementation
-- route/RPC binding → handler
+- import → usage (show both lines)
+- call site → implementation (show call + definition)
+- route/RPC binding → handler (show config + handler)
 - cross-repo hop → Octocode proof (definition + implementation + boundary)
 
 **NOT FOUND discipline**: If you cannot prove something:
 - Mark it **NOT FOUND**
-- Include exact searches tried (patterns/keywords)
-- Include scope searched (repos/packages/paths)
+- Include **exact searches tried** (3+ variations required)
+- Include **scope searched** (repos/packages/paths)
 
-**"Exists" is not enough**:
+**"Exists" is NOT proof**:
 - "File exists" ≠ "Edge is connected"
 - "Name matches" ≠ "Same symbol/contract"
 - "Pattern similar" ≠ "Same root cause"
+- "I saw it before" ≠ "Retrieved this session"
+
+See [proof-discipline.md](.cursor/guides/proof-discipline.md) for detailed patterns.
 
 ### Cross-Repo Resolution (Octocode)
 
@@ -73,7 +83,7 @@ See [internal-knowledge-search.md](.cursor/guides/internal-knowledge-search.md) 
 
 ### Workflow Pattern
 
-All workflows follow: **Clarify → Plan → Execute → Verify → Publish**
+All workflows follow: **Clarify → Plan → Execute → VERIFY (GATE) → Publish**
 
 **Clarify**: Run a clarification loop until an explicit Spec exists (intent + inputs + boundaries + expected outputs).
 
@@ -81,9 +91,15 @@ All workflows follow: **Clarify → Plan → Execute → Verify → Publish**
 
 **Execute**: Implement the smallest safe change-set that satisfies the plan.
 
-**Verify**: Prove connectivity for every asserted hop. Run required checks (lint/typecheck/tests).
+**VERIFY (MANDATORY GATE)**: This is a **BLOCKER**, not optional.
+- Prove connectivity for every asserted hop (import→usage, call→impl)
+- Run required checks (lint/typecheck/tests)
+- Complete proof certification in `VALIDATION-REPORT.md`
+- If certification incomplete → DO NOT proceed to Publish
 
-**Publish**: Only after verification passes. Write artifacts to files AND print concise summary to chat.
+**Publish**: ONLY after verification passes. Write artifacts to files AND print concise summary to chat.
+
+See [verify-checklist.md](.cursor/guides/verify-checklist.md) for the mandatory certification template.
 
 ### Context Budget Management (CRITICAL)
 
@@ -176,11 +192,12 @@ Guides provide domain-specific knowledge (progressive disclosure). Reference whe
 
 | Guide | Purpose |
 |-------|---------|
+| [proof-discipline.md](.cursor/guides/proof-discipline.md) | **Anti-hallucination proofs + certification format** |
+| [verify-checklist.md](.cursor/guides/verify-checklist.md) | **Mandatory verification gate template** |
 | [internal-knowledge-search.md](.cursor/guides/internal-knowledge-search.md) | Complete protocol for ALL 4 internal sources |
 | [clarify-patterns.md](.cursor/guides/clarify-patterns.md) | How to run clarification loops |
 | [clickable-questions.md](.cursor/guides/clickable-questions.md) | Interactive options using AskQuestion tool |
 | [resolve-workflow.md](.cursor/guides/resolve-workflow.md) | Resolution patterns for deep research |
-| [verify-checklist.md](.cursor/guides/verify-checklist.md) | Verification gates and checks |
 | [tool-selection.md](.cursor/guides/tool-selection.md) | When to use which tools |
 | [request-id-tracing.md](.cursor/guides/request-id-tracing.md) | Tracing with x-wix-request-id |
 | [octocode-patterns.md](.cursor/guides/octocode-patterns.md) | Cross-repo resolution patterns |

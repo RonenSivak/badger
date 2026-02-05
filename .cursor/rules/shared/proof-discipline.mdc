@@ -1,0 +1,85 @@
+---
+description: Proof-first discipline shared across all kits (anti-hallucination + connectivity evidence + NOT FOUND rules)
+globs:
+alwaysApply: false
+---
+
+# Proof Discipline ✅ (Shared)
+
+## Core Rule (NON-NEGOTIABLE)
+
+> **If you can't cite it, you can't claim it.**
+
+## Anti-Hallucination (CRITICAL)
+
+Proofs MUST come from tools retrieved **in THIS session**:
+- ✅ Read tool → actual file content
+- ✅ Grep/Search → actual search results
+- ✅ Octocode → actual cross-repo retrieval
+- ✅ MCP-S → actual Slack/Jira/Docs results
+- ❌ "I know this from training" → NOT PROOF
+- ❌ "I remember seeing" → NOT PROOF
+- ❌ "This is how it typically works" → NOT PROOF
+
+## Proof Format (REQUIRED)
+
+Every non-trivial claim must include:
+
+```
+**Proof**: `repo/path:line` (Tool: <tool name>)
+```<snippet from tool output>
+```
+```
+
+## Hypothesis Discipline
+
+If you haven't verified via tool/code proof:
+
+1. **Mark as hypothesis**: `⚠️ HYPOTHESIS (unverified): <theory>`
+2. **State verification needed**: "Requires: [code search | Slack | runtime test]"
+3. **NEVER present hypothesis as conclusion**
+
+### Anti-pattern (WRONG)
+> "The issue is X" → states conclusion without proof
+
+### Correct pattern
+> "⚠️ HYPOTHESIS: The issue might be X. Verifying..."
+> → runs verification tool
+> "✅ CONFIRMED: The issue is X"
+> **Proof**: `repo/path:line` (Tool: Read) → `<snippet>`
+
+## Connectivity Requirement
+
+When asserting E2E hops, prove the edge connects:
+- import → usage (show both lines)
+- call site → implementation (show call + definition)
+- route/RPC binding → handler (show config + handler)
+- cross-repo hop → Octocode proof (definition + implementation + boundary)
+
+## NOT FOUND Discipline
+
+If you cannot prove something:
+- Mark it **NOT FOUND**
+- Include **exact searches** tried (3+ variations required)
+- Include **scope searched** (repos/packages/paths)
+
+```
+**NOT FOUND**: <what was sought>
+**Searches**:
+1. `<query 1>` in `<scope>` → 0 results
+2. `<query 2>` in `<scope>` → 0 results
+3. `<query 3>` in `<scope>` → 0 results
+```
+
+## "Exists" is NOT Proof
+
+- "File exists" ≠ "Edge is connected"
+- "Name matches" ≠ "Same symbol/contract"
+- "Pattern similar" ≠ "Same root cause"
+- "I saw it before" ≠ "Retrieved this session"
+
+## Verification Gate
+
+Before publishing, complete proof certification per [verify-checklist.md](../../guides/verify-checklist.md).
+
+**If certification incomplete → DO NOT PUBLISH.**
